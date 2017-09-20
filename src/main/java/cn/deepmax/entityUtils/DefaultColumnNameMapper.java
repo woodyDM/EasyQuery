@@ -1,4 +1,4 @@
-package cn.deepmax.mapper;
+package cn.deepmax.entityUtils;
 
 import java.util.HashMap;
 import java.util.Map;
@@ -15,15 +15,16 @@ public class DefaultColumnNameMapper implements ColumnNameMapper {
      * @return
      */
     @Override
-    public String toEntityPropertyName(String columnName) {
+    public String toEntityPropertyName(Class clazz,String columnName) {
         Objects.requireNonNull(columnName,"columnName is empty");
+
         return columnName;
     }
 
     /**
      * 特殊映射规定
      *
-     * @param specialMap
+     * @param specialMap   <columName,propertyName>
      */
     @Override
     public void setSpecial(Map<Class, Map<String, String>> specialMap) {

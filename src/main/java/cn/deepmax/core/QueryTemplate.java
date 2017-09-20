@@ -1,7 +1,6 @@
 package cn.deepmax.core;
 
 import cn.deepmax.entity.Pair;
-import cn.deepmax.mapper.ColumnNameMapper;
 import cn.deepmax.rowrecord.RowRecord;
 import org.springframework.jdbc.datasource.DataSourceUtils;
 
@@ -13,7 +12,7 @@ public class QueryTemplate {
 
     DataSource dataSource;
     private ResultSetHandler resultSetHandler;
-    private ColumnNameMapper columnNameMapper;
+
 
     public QueryTemplate(DataSource dataSource) {
         Objects.requireNonNull(dataSource,"dataSource is empty.");

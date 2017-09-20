@@ -1,4 +1,4 @@
-package cn.deepmax.mapper;
+package cn.deepmax.entityUtils;
 
 
 import java.util.Map;
@@ -10,7 +10,7 @@ public interface ColumnNameMapper {
      * @param columnName
      * @return
      */
-    String toEntityPropertyName(String columnName);
+    String toEntityPropertyName(Class clazz,String columnName);
 
     /**
      * 特殊映射规定
