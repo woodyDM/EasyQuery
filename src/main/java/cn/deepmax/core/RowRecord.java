@@ -1,4 +1,4 @@
-package cn.deepmax.rowrecord;
+package cn.deepmax.core;
 
 import java.math.BigDecimal;
 import java.sql.Date;
@@ -6,7 +6,6 @@ import java.sql.ResultSetMetaData;
 import java.sql.Timestamp;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
-import java.util.HashMap;
 import java.util.LinkedHashMap;
 import java.util.Map;
 

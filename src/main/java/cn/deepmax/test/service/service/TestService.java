@@ -3,9 +3,8 @@ package cn.deepmax.test.service.service;
 
 import cn.deepmax.core.QueryTemplate;
 import cn.deepmax.entity.EQMock;
-import cn.deepmax.rowrecord.RowRecord;
+import cn.deepmax.core.RowRecord;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.jdbc.datasource.DataSourceUtils;
 import org.springframework.stereotype.Service;
 
 import javax.sql.DataSource;

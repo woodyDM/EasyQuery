@@ -1,7 +1,6 @@
 package cn.deepmax.core;
 
 import cn.deepmax.entity.Pair;
-import cn.deepmax.rowrecord.RowRecord;
 import org.springframework.jdbc.datasource.DataSourceUtils;
 
 import javax.sql.DataSource;
