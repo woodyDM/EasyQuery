@@ -5,6 +5,9 @@ import cn.deepmax.resultsethandler.RowRecord;
 import cn.deepmax.entity.Pair;
 import cn.deepmax.entityUtils.EntityFactory;
 import cn.deepmax.transaction.Transaction;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
 import java.sql.*;
 import java.util.*;
 
@@ -14,11 +17,11 @@ import java.util.*;
  */
 public class DefaultQueryTemplate implements QueryTemplate {
 
-
+    private static final Logger logger = LoggerFactory.getLogger(DefaultQueryTemplate.class);
     private ResultSetHandler resultSetHandler;
     private Transaction transaction;
     private EntityFactory entityFactory;
-
+    private boolean isShowSql=true;
 
     public DefaultQueryTemplate(ResultSetHandler resultSetHandler, Transaction transaction, EntityFactory entityFactory) {
 
@@ -99,11 +102,16 @@ public class DefaultQueryTemplate implements QueryTemplate {
 
     @Override
     public int executeUpdate(String sql,Object... params){
+
         Connection cn = transaction.getConnection();
         PreparedStatement ps=null;
+
         try {
             ps = cn.prepareStatement(sql);
             setPrepareStatementParams(ps,params);
+            if(isShowSql){
+                logger.debug("[executeUpdate] "+sql);
+            }
             return ps.executeUpdate();
 
         } catch (SQLException e) {
@@ -114,12 +122,16 @@ public class DefaultQueryTemplate implements QueryTemplate {
     }
 
     private Pair<List<Map<String,Object>>,ResultSetMetaData> rawSelect(String sql, Object... params){
+
         Connection cn = transaction.getConnection();
         PreparedStatement ps=null;
         ResultSet rs=null;
         try {
             ps = cn.prepareStatement(sql);
             setPrepareStatementParams(ps,params);
+            if(isShowSql){
+                logger.debug("[select] "+sql);
+            }
             rs = ps.executeQuery();
             ResultSetMetaData metaData = rs.getMetaData();
             List<Map<String,Object>> resultDate = resultSetHandler.handle(rs);
@@ -146,6 +158,10 @@ public class DefaultQueryTemplate implements QueryTemplate {
         return transaction;
     }
 
+    @Override
+    public void showSql(boolean isShowSql) {
+        this.isShowSql = isShowSql;
+    }
 
     private void setPrepareStatementParams(PreparedStatement ps, Object... params){
         for (int i = 0; i < params.length; i++) {

@@ -47,7 +47,7 @@ public class DefaultTransaction implements Transaction {
                 }
             }
         }else{
-            logger.debug("already in transationMode with connection"+connection.toString()+"]");
+            logger.debug("already in transationMode with connection ["+connection.toString()+"]");
         }
     }
 
@@ -55,7 +55,7 @@ public class DefaultTransaction implements Transaction {
     @Override
     public void commit() {
         if(isTransationMode){
-            logger.debug("commit Transaction with connection"+connection.toString()+"]");
+            logger.debug("commit Transaction with connection ["+connection.toString()+"]");
             try {
                 connection.commit();
                 connection.setAutoCommit(oldAutoCommit);
@@ -73,7 +73,7 @@ public class DefaultTransaction implements Transaction {
     @Override
     public void rollback() {
         if(isTransationMode){
-            logger.debug("rollback Transaction with connection "+connection.toString()+"]");
+            logger.debug("rollback Transaction with connection ["+connection.toString()+"]");
             try {
                 connection.rollback();
                 connection.setAutoCommit(oldAutoCommit);
@@ -91,7 +91,7 @@ public class DefaultTransaction implements Transaction {
     @Override
     public void close() {
         if(connection!=null){
-            logger.debug("Close connection "+connection.toString()+"]");
+            logger.debug("Close connection ["+connection.toString()+"]");
             try {
                 connection.close();
                 connection = null;
@@ -114,7 +114,7 @@ public class DefaultTransaction implements Transaction {
             connection = dataSource.getConnection();
             isAutoCommit = connection.getAutoCommit();
             isTransationMode = false;
-            logger.debug(" Create new connection "+connection.toString()+"]");
+            logger.debug(" Create new connection ["+connection.toString()+"]");
         } catch (SQLException e) {
             e.printStackTrace();
         }

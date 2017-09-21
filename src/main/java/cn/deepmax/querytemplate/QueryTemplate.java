@@ -9,7 +9,7 @@ import java.util.Map;
 
 public interface QueryTemplate {
 
-
+    void showSql(boolean isShowSql);
     <T> List<RowRecord<T>> select(String sql, Class<T> clazz, Object... params);
     <T> List<T> selectEntity(String sql, Class<T> clazz, Object... params);
     List<Map<String,Object>> select(String sql, Object... params);
