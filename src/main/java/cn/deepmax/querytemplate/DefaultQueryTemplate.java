@@ -12,15 +12,15 @@ import java.util.*;
  * 查询接口，
  * 所有的都未释放连接
  */
-public abstract class AbstractQueryTemplate implements QueryTemplate {
+public class DefaultQueryTemplate implements QueryTemplate {
 
 
-    protected ResultSetHandler resultSetHandler;
-    protected Transaction transaction;
-    protected EntityFactory entityFactory;
+    private ResultSetHandler resultSetHandler;
+    private Transaction transaction;
+    private EntityFactory entityFactory;
 
 
-    public AbstractQueryTemplate(ResultSetHandler resultSetHandler, Transaction transaction, EntityFactory entityFactory) {
+    public DefaultQueryTemplate(ResultSetHandler resultSetHandler, Transaction transaction, EntityFactory entityFactory) {
 
         this.resultSetHandler = resultSetHandler;
         this.transaction = transaction;
@@ -97,8 +97,21 @@ public abstract class AbstractQueryTemplate implements QueryTemplate {
     }
 
 
+    @Override
+    public int executeUpdate(String sql,Object... params){
+        Connection cn = transaction.getConnection();
+        PreparedStatement ps=null;
+        try {
+            ps = cn.prepareStatement(sql);
+            setPrepareStatementParams(ps,params);
+            return ps.executeUpdate();
 
-
+        } catch (SQLException e) {
+            throw new RuntimeException(e);
+        } finally {
+            closeResources(ps,null);
+        }
+    }
 
     private Pair<List<Map<String,Object>>,ResultSetMetaData> rawSelect(String sql, Object... params){
         Connection cn = transaction.getConnection();
@@ -118,7 +131,27 @@ public abstract class AbstractQueryTemplate implements QueryTemplate {
         }
     }
 
-    private void setPrepareStatementParams(PreparedStatement ps,Object... params){
+    @Override
+    public boolean save(Object obj) {
+        return false;
+    }
+
+    @Override
+    public boolean delete(Object obj) {
+        return false;
+    }
+
+    @Override
+    public Transaction transaction() {
+        return transaction;
+    }
+
+    @Override
+    public void close() {
+        transaction.close();
+    }
+
+    private void setPrepareStatementParams(PreparedStatement ps, Object... params){
         for (int i = 0; i < params.length; i++) {
             try {
                 ps.setObject(i+1,params[i]);

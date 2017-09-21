@@ -5,6 +5,6 @@ import javax.sql.DataSource;
 public class DefaultTransactionFactory implements TransactionFactory {
     @Override
     public Transaction newTransaction(DataSource dataSource) {
-        return null;
+        return new DefaultTransaction(dataSource);
     }
 }

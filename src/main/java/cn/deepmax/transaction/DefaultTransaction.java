@@ -17,6 +17,7 @@ public class DefaultTransaction implements Transaction {
 
     public DefaultTransaction(DataSource dataSource) {
         this.dataSource = dataSource;
+        getConnection();
     }
 
     @Override
@@ -26,6 +27,7 @@ public class DefaultTransaction implements Transaction {
 
     @Override
     public boolean isAutoCommit() {
+
         return isAutoCommit;
     }
 
@@ -33,6 +35,7 @@ public class DefaultTransaction implements Transaction {
 
     @Override
     public void beginTransaction() {
+
         if(!isTransationMode){
             logger.debug("open new Transaction.");
             isTransationMode = true;
@@ -40,6 +43,7 @@ public class DefaultTransaction implements Transaction {
             if(isAutoCommit){
                 try {
                     connection.setAutoCommit(false);
+                    isAutoCommit = false;
                 } catch (SQLException e) {
                     e.printStackTrace();
                     throw new RuntimeException("failed to set autocommit to false",e);
@@ -54,7 +58,9 @@ public class DefaultTransaction implements Transaction {
     @Override
     public void commit() {
         if(isTransationMode){
+            logger.debug("commit Transaction.");
             try {
+
                 connection.commit();
                 connection.setAutoCommit(oldAutoCommit);
                 isTransationMode = false;
@@ -70,6 +76,7 @@ public class DefaultTransaction implements Transaction {
     @Override
     public void rollback() {
         if(isTransationMode){
+            logger.debug("rollback Transaction.");
             try {
                 connection.rollback();
                 connection.setAutoCommit(oldAutoCommit);
@@ -89,6 +96,17 @@ public class DefaultTransaction implements Transaction {
             doGetConnection();
         }
         return connection;
+    }
+
+    @Override
+    public void close() {
+        if(connection!=null){
+            try {
+                connection.close();
+            } catch (SQLException e) {
+                e.printStackTrace();
+            }
+        }
     }
 
     private Connection doGetConnection(){

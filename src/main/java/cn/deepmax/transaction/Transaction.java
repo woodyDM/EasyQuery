@@ -10,6 +10,7 @@ public interface Transaction {
     void beginTransaction();
     void commit();
     void rollback();
+    void close();
     Connection getConnection();
 
 }

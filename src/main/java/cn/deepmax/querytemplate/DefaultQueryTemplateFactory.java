@@ -6,26 +6,25 @@ import cn.deepmax.resultsethandler.ResultSetHandler;
 import cn.deepmax.entityUtils.DefaultEntityFactory;
 import cn.deepmax.entityUtils.EntityFactory;
 import cn.deepmax.transaction.DefaultTransactionFactory;
-import cn.deepmax.transaction.SpringTransactionFactory;
 import cn.deepmax.transaction.Transaction;
 import cn.deepmax.transaction.TransactionFactory;
 import javax.sql.DataSource;
 
 
-public class SpringQueryTemplateFactory implements QueryTemplateFactory {
+public class DefaultQueryTemplateFactory implements QueryTemplateFactory {
 
     private DataSource dataSource;
     private ResultSetHandler resultSetHandler;
     private TransactionFactory transactionFactory;
     private EntityFactory entityFactory;
 
-    public SpringQueryTemplateFactory(DataSource dataSource) {
+    public DefaultQueryTemplateFactory(DataSource dataSource) {
         this.dataSource = dataSource;
         if(resultSetHandler==null){
             resultSetHandler = new DefaultResultSetHandler();
         }
         if(transactionFactory==null){
-            transactionFactory = new SpringTransactionFactory();
+            transactionFactory = new DefaultTransactionFactory();
         }
         if(entityFactory==null){
             entityFactory = new DefaultEntityFactory();
@@ -48,7 +47,7 @@ public class SpringQueryTemplateFactory implements QueryTemplateFactory {
     @Override
     public QueryTemplate create(){
         Transaction transaction = transactionFactory.newTransaction(dataSource);
-        return new SpringQueryTemplate(resultSetHandler,transaction,entityFactory);
+        return new DefaultQueryTemplate(resultSetHandler,transaction,entityFactory);
     }
 
 

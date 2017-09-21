@@ -67,17 +67,23 @@ public class SpringTransaction extends DefaultTransaction {
         return connection;
     }
 
+    @Override
+    public void close() {
+        if(connection!=null){
+            DataSourceUtils.releaseConnection(connection,dataSource);
+        }
+    }
+
     private Connection doGetConnection(){
         connection = DataSourceUtils.getConnection(dataSource);
         try {
             isAutoCommit = connection.getAutoCommit();
-            isAutoCommit = connection.getAutoCommit();
+            oldAutoCommit = isAutoCommit;
         } catch (SQLException e) {
             e.printStackTrace();
         }
         isInSpringTransactionMode = DataSourceUtils.isConnectionTransactional(connection,dataSource);
         isTransationMode = isInSpringTransactionMode;
-
         return connection;
     }
 }
