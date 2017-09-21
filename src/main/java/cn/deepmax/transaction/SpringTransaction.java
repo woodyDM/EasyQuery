@@ -3,14 +3,13 @@ package cn.deepmax.transaction;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.jdbc.datasource.DataSourceUtils;
-
 import javax.sql.DataSource;
 import java.sql.Connection;
 import java.sql.SQLException;
 
 public class SpringTransaction extends DefaultTransaction {
 
-    private static  final  Logger logger = LoggerFactory.getLogger(SpringTransaction.class);
+    private static final Logger logger = LoggerFactory.getLogger(SpringTransaction.class);
 
     private boolean isInSpringTransactionMode;
 
@@ -45,6 +44,7 @@ public class SpringTransaction extends DefaultTransaction {
     public void commit() {
         if(!isInSpringTransactionMode){
             super.commit();
+
         }else{
             logger.debug("already in springTransaction.");
         }
@@ -69,12 +69,19 @@ public class SpringTransaction extends DefaultTransaction {
 
     @Override
     public void close() {
-        if(connection!=null){
-            DataSourceUtils.releaseConnection(connection,dataSource);
+        if(!isInSpringTransactionMode){
+            if(connection!=null){
+                DataSourceUtils.releaseConnection(connection,dataSource);
+                connection = null;
+            }
+        }else{
+            logger.debug("already in springTransaction.");
         }
+
     }
 
     private Connection doGetConnection(){
+
         connection = DataSourceUtils.getConnection(dataSource);
         try {
             isAutoCommit = connection.getAutoCommit();

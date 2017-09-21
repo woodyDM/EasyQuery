@@ -14,8 +14,16 @@ public class TestController {
     ITestService testService;
 
 
-    @GetMapping("/index.json")
-    public String index() throws SQLException {
-        return testService.get(1);
+    @GetMapping("/testTransaction.json")
+    public String testTransaction() throws SQLException {
+        return testService.testTransaction();
+    }
+    @GetMapping("/testNoTransaction.json")
+    public String testNoTransaction() throws SQLException {
+        return testService.testNoTransaction();
+    }
+    @GetMapping("/testTransactionWithException.json")
+    public String testTransactionWithException() throws SQLException {
+        return testService.testTransactionWithException();
     }
 }

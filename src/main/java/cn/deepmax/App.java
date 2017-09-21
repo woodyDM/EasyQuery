@@ -3,6 +3,7 @@ package cn.deepmax;
 
 import cn.deepmax.querytemplate.QueryTemplateFactory;
 import cn.deepmax.querytemplate.DefaultQueryTemplateFactory;
+import cn.deepmax.transaction.SpringTransactionFactory;
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
 import org.springframework.context.annotation.Bean;
@@ -21,6 +22,8 @@ public class App {
 
     @Bean
     public QueryTemplateFactory queryTemplateFactory(DataSource dataSource){
-        return new DefaultQueryTemplateFactory(dataSource);
+        DefaultQueryTemplateFactory factory = new DefaultQueryTemplateFactory(dataSource);
+       // factory.setTransactionFactory(new SpringTransactionFactory());
+        return factory;
     }
 }

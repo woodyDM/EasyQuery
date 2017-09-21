@@ -21,6 +21,6 @@ public interface QueryTemplate {
     boolean save(Object obj);
     boolean delete(Object obj);
     Transaction transaction();
-    void close();
+
 
 }

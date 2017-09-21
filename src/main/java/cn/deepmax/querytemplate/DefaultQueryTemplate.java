@@ -109,7 +109,7 @@ public class DefaultQueryTemplate implements QueryTemplate {
         } catch (SQLException e) {
             throw new RuntimeException(e);
         } finally {
-            closeResources(ps,null);
+            closeResources(ps,null,transaction);
         }
     }
 
@@ -127,7 +127,7 @@ public class DefaultQueryTemplate implements QueryTemplate {
         } catch (SQLException e) {
             throw new RuntimeException(e);
         } finally {
-            closeResources(ps,rs);
+            closeResources(ps,rs,transaction);
         }
     }
 
@@ -146,10 +146,6 @@ public class DefaultQueryTemplate implements QueryTemplate {
         return transaction;
     }
 
-    @Override
-    public void close() {
-        transaction.close();
-    }
 
     private void setPrepareStatementParams(PreparedStatement ps, Object... params){
         for (int i = 0; i < params.length; i++) {
@@ -161,7 +157,7 @@ public class DefaultQueryTemplate implements QueryTemplate {
         }
     }
 
-    private void closeResources(Statement statement, ResultSet resultSet){
+    private void closeResources(Statement statement, ResultSet resultSet,Transaction transaction){
         if(statement!=null) {
             try {
                 statement.close();
@@ -176,7 +172,9 @@ public class DefaultQueryTemplate implements QueryTemplate {
                 e.printStackTrace();
             }
         }
-
+        if(!transaction.isTransactionMode()){
+            transaction.close();
+        }
     }
 
 }

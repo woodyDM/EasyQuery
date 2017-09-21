@@ -15,6 +15,7 @@ public class DefaultTransaction implements Transaction {
     protected boolean isAutoCommit;
     protected boolean oldAutoCommit;
 
+
     public DefaultTransaction(DataSource dataSource) {
         this.dataSource = dataSource;
         getConnection();
@@ -27,17 +28,14 @@ public class DefaultTransaction implements Transaction {
 
     @Override
     public boolean isAutoCommit() {
-
         return isAutoCommit;
     }
-
-
 
     @Override
     public void beginTransaction() {
 
         if(!isTransationMode){
-            logger.debug("open new Transaction.");
+            logger.debug("open new Transaction with connection ["+connection.toString()+"]");
             isTransationMode = true;
             oldAutoCommit = isAutoCommit;
             if(isAutoCommit){
@@ -45,12 +43,11 @@ public class DefaultTransaction implements Transaction {
                     connection.setAutoCommit(false);
                     isAutoCommit = false;
                 } catch (SQLException e) {
-                    e.printStackTrace();
                     throw new RuntimeException("failed to set autocommit to false",e);
                 }
             }
         }else{
-            logger.debug("already in transationMode");
+            logger.debug("already in transationMode with connection"+connection.toString()+"]");
         }
     }
 
@@ -58,13 +55,13 @@ public class DefaultTransaction implements Transaction {
     @Override
     public void commit() {
         if(isTransationMode){
-            logger.debug("commit Transaction.");
+            logger.debug("commit Transaction with connection"+connection.toString()+"]");
             try {
-
                 connection.commit();
                 connection.setAutoCommit(oldAutoCommit);
                 isTransationMode = false;
                 isAutoCommit = oldAutoCommit;
+                close();
             } catch (SQLException e) {
                 throw new RuntimeException("fail to commit.",e);
             }
@@ -76,7 +73,7 @@ public class DefaultTransaction implements Transaction {
     @Override
     public void rollback() {
         if(isTransationMode){
-            logger.debug("rollback Transaction.");
+            logger.debug("rollback Transaction with connection "+connection.toString()+"]");
             try {
                 connection.rollback();
                 connection.setAutoCommit(oldAutoCommit);
@@ -101,8 +98,13 @@ public class DefaultTransaction implements Transaction {
     @Override
     public void close() {
         if(connection!=null){
+            logger.debug("Close connection "+connection.toString()+"]");
             try {
+                if(isTransationMode){
+                    rollback();
+                }
                 connection.close();
+                connection = null;
             } catch (SQLException e) {
                 e.printStackTrace();
             }
@@ -114,6 +116,7 @@ public class DefaultTransaction implements Transaction {
             connection = dataSource.getConnection();
             isAutoCommit = connection.getAutoCommit();
             isTransationMode = false;
+            logger.debug(" Create new connection "+connection.toString()+"]");
         } catch (SQLException e) {
             e.printStackTrace();
         }
