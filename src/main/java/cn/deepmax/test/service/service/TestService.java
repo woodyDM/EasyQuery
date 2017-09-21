@@ -1,7 +1,9 @@
 package cn.deepmax.test.service.service;
 
 
+import cn.deepmax.core.AbstractQueryTemplate;
 import cn.deepmax.core.QueryTemplate;
+import cn.deepmax.core.SpringQueryTemplate;
 import cn.deepmax.entity.EQMock;
 import cn.deepmax.core.RowRecord;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -18,7 +20,7 @@ public class TestService implements ITestService{
     DataSource dataSource;
 
     public String get(Integer id) throws SQLException {
-        QueryTemplate template = new QueryTemplate(dataSource);
+        QueryTemplate template = new SpringQueryTemplate(dataSource);
 
 
         String sql = "select A.* ,B.* from t_user A  " +
