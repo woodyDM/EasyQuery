@@ -79,6 +79,7 @@ public class DefaultTransaction implements Transaction {
                 connection.setAutoCommit(oldAutoCommit);
                 isTransationMode = false;
                 isAutoCommit = oldAutoCommit;
+                close();
             } catch (SQLException e) {
                 throw new RuntimeException("fail to rollback.",e);
             }
@@ -88,27 +89,24 @@ public class DefaultTransaction implements Transaction {
     }
 
     @Override
-    public Connection getConnection() {
-        if(connection==null){
-            doGetConnection();
-        }
-        return connection;
-    }
-
-    @Override
     public void close() {
         if(connection!=null){
             logger.debug("Close connection "+connection.toString()+"]");
             try {
-                if(isTransationMode){
-                    rollback();
-                }
                 connection.close();
                 connection = null;
             } catch (SQLException e) {
                 e.printStackTrace();
             }
         }
+    }
+
+    @Override
+    public Connection getConnection() {
+        if(connection==null){
+            doGetConnection();
+        }
+        return connection;
     }
 
     private Connection doGetConnection(){
