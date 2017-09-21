@@ -1,30 +1,31 @@
-package cn.deepmax.core;
+package cn.deepmax.querytemplate;
 
+import cn.deepmax.resultsethandler.ResultSetHandler;
+import cn.deepmax.resultsethandler.RowRecord;
 import cn.deepmax.entity.Pair;
+import cn.deepmax.entityUtils.EntityFactory;
 import cn.deepmax.transaction.Transaction;
-
-import javax.sql.DataSource;
 import java.sql.*;
 import java.util.*;
 
+/**
+ * 查询接口，
+ * 所有的都未释放连接
+ */
 public abstract class AbstractQueryTemplate implements QueryTemplate {
 
-    DataSource dataSource;
-    private ResultSetHandler resultSetHandler;
-    private Transaction transaction;
+
+    protected ResultSetHandler resultSetHandler;
+    protected Transaction transaction;
+    protected EntityFactory entityFactory;
 
 
-    public AbstractQueryTemplate(DataSource dataSource) {
-        Objects.requireNonNull(dataSource,"dataSource is empty.");
-        resultSetHandler = new DefaultResultSetHandler();
-        this.dataSource = dataSource;
-    }
+    public AbstractQueryTemplate(ResultSetHandler resultSetHandler, Transaction transaction, EntityFactory entityFactory) {
 
-    public AbstractQueryTemplate(DataSource dataSource, ResultSetHandler resultSetHandler) {
-        this.dataSource = dataSource;
         this.resultSetHandler = resultSetHandler;
+        this.transaction = transaction;
+        this.entityFactory = entityFactory;
     }
-
 
     /**
      * 选出list
@@ -100,7 +101,7 @@ public abstract class AbstractQueryTemplate implements QueryTemplate {
 
 
     private Pair<List<Map<String,Object>>,ResultSetMetaData> rawSelect(String sql, Object... params){
-        Connection cn = getCurrentConnection();
+        Connection cn = transaction.getConnection();
         PreparedStatement ps=null;
         ResultSet rs=null;
         try {
@@ -142,10 +143,7 @@ public abstract class AbstractQueryTemplate implements QueryTemplate {
                 e.printStackTrace();
             }
         }
+
     }
 
-    @Override
-    public Transaction transaction() {
-        return transaction;
-    }
 }

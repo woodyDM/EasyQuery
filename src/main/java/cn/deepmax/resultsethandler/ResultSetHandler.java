@@ -1,4 +1,4 @@
-package cn.deepmax.core;
+package cn.deepmax.resultsethandler;
 
 import java.sql.ResultSet;
 import java.util.List;

@@ -1,4 +1,4 @@
-package cn.deepmax.core;
+package cn.deepmax.resultsethandler;
 
 public interface ResultRowSet {
     String getString(String columnName);

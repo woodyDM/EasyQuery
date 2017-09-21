@@ -1,5 +1,6 @@
-package cn.deepmax.core;
+package cn.deepmax.querytemplate;
 
+import cn.deepmax.resultsethandler.RowRecord;
 import cn.deepmax.transaction.Transaction;
 
 import java.sql.Connection;
@@ -8,7 +9,7 @@ import java.util.Map;
 
 public interface QueryTemplate {
 
-    Connection getCurrentConnection();
+
     <T> List<RowRecord<T>> select(String sql, Class<T> clazz, Object... params);
     <T> List<T> selectEntity(String sql, Class<T> clazz, Object... params);
     List<Map<String,Object>> select(String sql, Object... params);
@@ -19,4 +20,8 @@ public interface QueryTemplate {
 
     <T> T selectScalar(String sql, Class<T> clazz, Object... params);
     Transaction transaction();
+
+    int execute(String sql,Object... params);
+    boolean save(Object obj);
+    boolean delete(Object obj);
 }

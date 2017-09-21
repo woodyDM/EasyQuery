@@ -1,11 +1,11 @@
 package cn.deepmax.test.service.service;
 
 
-import cn.deepmax.core.AbstractQueryTemplate;
-import cn.deepmax.core.QueryTemplate;
-import cn.deepmax.core.SpringQueryTemplate;
+import cn.deepmax.querytemplate.QueryTemplate;
+import cn.deepmax.querytemplate.QueryTemplateFactory;
+import cn.deepmax.querytemplate.SpringQueryTemplate;
 import cn.deepmax.entity.EQMock;
-import cn.deepmax.core.RowRecord;
+import cn.deepmax.resultsethandler.RowRecord;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
@@ -17,10 +17,10 @@ import java.util.List;
 public class TestService implements ITestService{
 
     @Autowired
-    DataSource dataSource;
+    QueryTemplateFactory factory;
 
     public String get(Integer id) throws SQLException {
-        QueryTemplate template = new SpringQueryTemplate(dataSource);
+        QueryTemplate template = factory.create();
 
 
         String sql = "select A.* ,B.* from t_user A  " +
@@ -29,6 +29,8 @@ public class TestService implements ITestService{
         List<RowRecord<EQMock>> list = template.select(sql,EQMock.class,1);
         System.out.println(list.get(0).getTimestamp("create_time"));
 
+        System.out.println(template.transaction().isAutoCommit());
+        System.out.println(template.transaction().isTransactionMode());
         return "OK";
 
     }
