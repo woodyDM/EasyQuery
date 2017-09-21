@@ -91,9 +91,10 @@ public class DefaultTransaction implements Transaction {
     @Override
     public void close() {
         if(connection!=null){
-            logger.debug("Close connection ["+connection.toString()+"]");
+
             try {
                 connection.close();
+                logger.debug("Close connection ["+connection.toString()+"]");
                 connection = null;
             } catch (SQLException e) {
                 e.printStackTrace();

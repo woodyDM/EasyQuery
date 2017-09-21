@@ -71,6 +71,7 @@ public class SpringTransaction extends DefaultTransaction {
     public void close() {
         if(!isInSpringTransactionMode){
             if(connection!=null){
+                logger.debug("releaseSpringConnection ["+connection.toString()+"]");
                 DataSourceUtils.releaseConnection(connection,dataSource);
                 connection = null;
             }
