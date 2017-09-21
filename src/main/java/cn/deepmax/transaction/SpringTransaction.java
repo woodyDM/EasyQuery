@@ -63,7 +63,9 @@ public class SpringTransaction extends DefaultTransaction {
     public Connection getConnection() {
         if(connection==null){
             doGetConnection();
+            logger.debug("DataSourceUtils.getConnection Create connection ["+connection.toString()+"]");
         }
+
         return connection;
     }
 

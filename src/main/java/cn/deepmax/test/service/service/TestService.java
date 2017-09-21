@@ -5,6 +5,7 @@ import cn.deepmax.querytemplate.QueryTemplate;
 import cn.deepmax.querytemplate.QueryTemplateFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Propagation;
 import org.springframework.transaction.annotation.Transactional;
 import java.sql.*;
 import java.util.List;

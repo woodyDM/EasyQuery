@@ -23,7 +23,7 @@ public class App {
     @Bean
     public QueryTemplateFactory queryTemplateFactory(DataSource dataSource){
         DefaultQueryTemplateFactory factory = new DefaultQueryTemplateFactory(dataSource);
-       // factory.setTransactionFactory(new SpringTransactionFactory());
+        factory.setTransactionFactory(new SpringTransactionFactory());
         return factory;
     }
 }
