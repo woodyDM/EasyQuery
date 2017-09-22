@@ -61,7 +61,6 @@ public class DefaultTransaction implements Transaction {
                 connection.setAutoCommit(oldAutoCommit);
                 isTransationMode = false;
                 isAutoCommit = oldAutoCommit;
-                close();
             } catch (SQLException e) {
                 throw new RuntimeException("fail to commit.",e);
             }
@@ -79,7 +78,6 @@ public class DefaultTransaction implements Transaction {
                 connection.setAutoCommit(oldAutoCommit);
                 isTransationMode = false;
                 isAutoCommit = oldAutoCommit;
-                close();
             } catch (SQLException e) {
                 throw new RuntimeException("fail to rollback.",e);
             }
