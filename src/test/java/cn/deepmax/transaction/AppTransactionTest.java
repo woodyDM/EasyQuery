@@ -8,6 +8,7 @@ import org.springframework.boot.autoconfigure.SpringBootApplication;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.ComponentScan;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.jdbc.core.JdbcTemplate;
 
 import javax.sql.DataSource;
 
@@ -21,7 +22,7 @@ public class AppTransactionTest {
 
     @Bean
     public QueryTemplateFactory queryTemplateFactory(DataSource dataSource){
-        DefaultQueryTemplateFactory factory = new DefaultQueryTemplateFactory(dataSource);
+        QueryTemplateFactory factory = new DefaultQueryTemplateFactory(dataSource);
         factory.setTransactionFactory(new SpringTransactionFactory());
         return factory;
     }

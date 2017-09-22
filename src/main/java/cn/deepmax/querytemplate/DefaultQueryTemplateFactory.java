@@ -30,15 +30,15 @@ public class DefaultQueryTemplateFactory implements QueryTemplateFactory {
             entityFactory = new DefaultEntityFactory();
         }
     }
-
+    @Override
     public void setResultSetHandler(ResultSetHandler resultSetHandler) {
         this.resultSetHandler = resultSetHandler;
     }
-
+    @Override
     public void setTransactionFactory(TransactionFactory transactionFactory) {
         this.transactionFactory = transactionFactory;
     }
-
+    @Override
     public void setEntityFactory(EntityFactory entityFactory) {
         this.entityFactory = entityFactory;
     }
