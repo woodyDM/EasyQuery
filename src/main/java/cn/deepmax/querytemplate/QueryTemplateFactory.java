@@ -1,6 +1,6 @@
 package cn.deepmax.querytemplate;
 
-import cn.deepmax.entityUtils.EntityFactory;
+import cn.deepmax.entity.EntityFactory;
 import cn.deepmax.resultsethandler.ResultSetHandler;
 import cn.deepmax.transaction.TransactionFactory;
 

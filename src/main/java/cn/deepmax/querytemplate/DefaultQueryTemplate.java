@@ -2,8 +2,8 @@ package cn.deepmax.querytemplate;
 
 import cn.deepmax.resultsethandler.ResultSetHandler;
 import cn.deepmax.resultsethandler.RowRecord;
-import cn.deepmax.entity.Pair;
-import cn.deepmax.entityUtils.EntityFactory;
+import cn.deepmax.model.Pair;
+import cn.deepmax.entity.EntityFactory;
 import cn.deepmax.transaction.Transaction;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;

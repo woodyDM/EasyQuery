@@ -3,8 +3,8 @@ package cn.deepmax.querytemplate;
 
 import cn.deepmax.resultsethandler.DefaultResultSetHandler;
 import cn.deepmax.resultsethandler.ResultSetHandler;
-import cn.deepmax.entityUtils.DefaultEntityFactory;
-import cn.deepmax.entityUtils.EntityFactory;
+import cn.deepmax.entity.DefaultEntityFactory;
+import cn.deepmax.entity.EntityFactory;
 import cn.deepmax.transaction.DefaultTransactionFactory;
 import cn.deepmax.transaction.Transaction;
 import cn.deepmax.transaction.TransactionFactory;

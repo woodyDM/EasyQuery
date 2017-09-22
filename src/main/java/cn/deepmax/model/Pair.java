@@ -1,4 +1,4 @@
-package cn.deepmax.entity;
+package cn.deepmax.model;
 
 public class Pair<U,V> {
     public U first;
