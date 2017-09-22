@@ -1,6 +1,5 @@
 package cn.deepmax.entityUtils;
 
-import javax.persistence.EntityManager;
 import java.util.Map;
 
 public class DefaultEntityFactory  implements EntityFactory {

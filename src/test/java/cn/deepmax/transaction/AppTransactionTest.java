@@ -1,9 +1,8 @@
-package cn.deepmax;
+package cn.deepmax.transaction;
 
 
 import cn.deepmax.querytemplate.QueryTemplateFactory;
 import cn.deepmax.querytemplate.DefaultQueryTemplateFactory;
-import cn.deepmax.transaction.SpringTransactionFactory;
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
 import org.springframework.context.annotation.Bean;
@@ -15,9 +14,9 @@ import javax.sql.DataSource;
 @SpringBootApplication
 @Configuration
 @ComponentScan(basePackages = {"cn.deepmax"})
-public class App {
+public class AppTransactionTest {
     public static void main(String[] args) {
-        SpringApplication.run(App.class,args);
+        SpringApplication.run(AppTransactionTest.class,args);
     }
 
     @Bean
