@@ -17,11 +17,8 @@ public interface QueryTemplate {
     <T> RowRecord<T> selectOne(String sql, Class<T> clazz, Object... params);
     <T> T selectOneEntity(String sql, Class<T> clazz, Object... params);
     <T> T selectScalar(String sql, Class<T> clazz, Object... params);
-    Transaction transaction();
-    void showSql(boolean isShowSql);
-    int executeUpdate(String sql,Object... params);
-    boolean save(Object obj);
-    boolean delete(Object obj);
 
+    Transaction transaction();
+    int executeUpdate(String sql,Object... params);
 
 }

@@ -35,7 +35,7 @@ public class SpringTransaction extends DefaultTransaction {
         if(!isInSpringTransactionMode){
             super.beginTransaction();
         }else{
-            logger.debug("already in springtransaction.");
+            logger.debug("Already in springTransaction.");
         }
     }
 
@@ -44,9 +44,8 @@ public class SpringTransaction extends DefaultTransaction {
     public void commit() {
         if(!isInSpringTransactionMode){
             super.commit();
-
         }else{
-            logger.debug("already in springTransaction.");
+            logger.debug("Already in springTransaction.");
         }
     }
 
@@ -55,7 +54,7 @@ public class SpringTransaction extends DefaultTransaction {
         if(!isInSpringTransactionMode){
             super.rollback();
         }else{
-            logger.debug("already in springTransaction.");
+            logger.debug("Already in springTransaction.");
         }
     }
 
@@ -65,7 +64,6 @@ public class SpringTransaction extends DefaultTransaction {
             doGetConnection();
 
         }
-
         return connection;
     }
 
@@ -73,18 +71,16 @@ public class SpringTransaction extends DefaultTransaction {
     public void close() {
         if(!isInSpringTransactionMode){
             if(connection!=null){
-                logger.debug("releaseSpringConnection ["+connection.toString()+"]");
+                logger.debug("ReleaseSpringConnection ["+connection.toString()+"]");
                 DataSourceUtils.releaseConnection(connection,dataSource);
                 connection = null;
             }
         }else{
-            logger.debug("already in springTransaction.");
+            logger.debug("Already in springTransaction.");
         }
-
     }
 
     private Connection doGetConnection(){
-
         connection = DataSourceUtils.getConnection(dataSource);
         try {
             isAutoCommit = connection.getAutoCommit();

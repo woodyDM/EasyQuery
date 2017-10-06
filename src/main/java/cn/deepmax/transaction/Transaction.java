@@ -6,7 +6,6 @@ public interface Transaction {
 
     boolean isTransactionMode();
     boolean isAutoCommit();
-
     void beginTransaction();
     void commit();
     void rollback();

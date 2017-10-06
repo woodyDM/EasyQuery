@@ -21,13 +21,15 @@ public class DefaultQueryTemplate implements QueryTemplate {
     private ResultSetHandler resultSetHandler;
     private Transaction transaction;
     private EntityFactory entityFactory;
-    private boolean isShowSql=true;
+    private boolean isShowSql;
 
-    public DefaultQueryTemplate(ResultSetHandler resultSetHandler, Transaction transaction, EntityFactory entityFactory) {
+    public DefaultQueryTemplate(ResultSetHandler resultSetHandler, Transaction transaction, EntityFactory entityFactory, boolean isShowSql) {
 
         this.resultSetHandler = resultSetHandler;
         this.transaction = transaction;
         this.entityFactory = entityFactory;
+        this.isShowSql = isShowSql;
+
     }
 
     /**
@@ -144,24 +146,11 @@ public class DefaultQueryTemplate implements QueryTemplate {
     }
 
     @Override
-    public boolean save(Object obj) {
-        return false;
-    }
-
-    @Override
-    public boolean delete(Object obj) {
-        return false;
-    }
-
-    @Override
     public Transaction transaction() {
         return transaction;
     }
 
-    @Override
-    public void showSql(boolean isShowSql) {
-        this.isShowSql = isShowSql;
-    }
+
 
     private void setPrepareStatementParams(PreparedStatement ps, Object... params){
         for (int i = 0; i < params.length; i++) {

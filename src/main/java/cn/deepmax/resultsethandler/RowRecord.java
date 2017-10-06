@@ -24,12 +24,6 @@ public class RowRecord<T> implements ResultRowSet {
     private Class<T> clazz;
     private ResultSetMetaData metaData;
 
-    public void setMetaData(ResultSetMetaData metaData){
-        this.metaData = metaData;
-    }
-    public void setRowResult(Map<String,Object> rowResult){
-        this.rowResult = rowResult;
-    }
 
     public RowRecord(Map<String, Object> rowResult, Class<T> clazz, ResultSetMetaData metaData) {
         this.rowResult = rowResult;

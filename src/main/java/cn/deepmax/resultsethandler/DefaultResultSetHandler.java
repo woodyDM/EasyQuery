@@ -24,7 +24,6 @@ public class DefaultResultSetHandler implements ResultSetHandler{
                 list.add(row);
             }
         } catch (SQLException e) {
-            e.printStackTrace();
             throw new RuntimeException(e);
         }
         return list;
@@ -33,6 +32,9 @@ public class DefaultResultSetHandler implements ResultSetHandler{
     private void addToMap(Map<String,Object> target,ResultSet rs,ResultSetMetaData metaData,int pos){
         try {
             String labelName = metaData.getColumnLabel(pos);
+            if( null == labelName || 0 == labelName.length()){
+                labelName = metaData.getColumnName(pos);
+            }
             String oldLableName = labelName;
             Object result =rs.getObject(pos);
             int start = 0;
@@ -41,9 +43,7 @@ public class DefaultResultSetHandler implements ResultSetHandler{
                 labelName = oldLableName+start;
             }
             target.put(labelName,result);
-
         } catch (SQLException e) {
-            e.printStackTrace();
             throw new RuntimeException(e);
         }
     }

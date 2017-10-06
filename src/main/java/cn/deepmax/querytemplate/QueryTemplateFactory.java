@@ -9,5 +9,5 @@ public interface QueryTemplateFactory {
     void setResultSetHandler( ResultSetHandler resultSetHandler);
     void setTransactionFactory ( TransactionFactory transactionFactory);
     void setEntityFactory( EntityFactory entityFactory);
-
+    void setShowSql(boolean isShowSql);
 }
