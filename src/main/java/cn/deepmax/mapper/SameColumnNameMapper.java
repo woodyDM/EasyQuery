@@ -8,7 +8,6 @@ public class SameColumnNameMapper implements ColumnNameMapper {
 
     /**
      * 将数据库名称转化成实体字段名称
-     *
      * @param clazz
      * @param columnName
      * @return
@@ -18,14 +17,5 @@ public class SameColumnNameMapper implements ColumnNameMapper {
         return columnName;
     }
 
-    /**
-     * 特殊映射规定
-     *
-     * @param clazz
-     * @param entityPropertyName
-     */
-    @Override
-    public String toColumnName(Class clazz, String entityPropertyName) {
-        return entityPropertyName;
-    }
+
 }

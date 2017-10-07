@@ -108,7 +108,7 @@ public class RowRecord<T> implements ResultRowSet {
         }catch (NumberFormatException e){
             try{
                 Double d = getDouble(columnName);
-                double ERROR = 1e-7;
+                double ERROR = 1e-30;
                 return (Math.abs(d)>ERROR);
             }catch (NumberFormatException ee){
                 throw new RuntimeException("can't cast column "+columnName+" to boolean.");

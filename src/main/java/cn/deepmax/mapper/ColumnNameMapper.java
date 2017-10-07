@@ -14,11 +14,6 @@ public interface ColumnNameMapper {
     String toEntityPropertyName(Class clazz,String columnName);
 
 
-    /**
-     * 特殊映射规定
-     * @param clazz
-     * @param entityPropertyName
-     */
-    String toColumnName(Class clazz,String entityPropertyName);
+
 
 }
