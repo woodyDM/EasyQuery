@@ -1,5 +1,6 @@
 package cn.deepmax.querytemplate;
 
+import cn.deepmax.mapper.ColumnNameMapper;
 import cn.deepmax.resultsethandler.RowRecord;
 import cn.deepmax.transaction.Transaction;
 
@@ -17,7 +18,8 @@ public interface QueryTemplate {
     <T> RowRecord<T> selectOne(String sql, Class<T> clazz, Object... params);
     <T> T selectOneEntity(String sql, Class<T> clazz, Object... params);
     <T> T selectScalar(String sql, Class<T> clazz, Object... params);
-
+    int[] executeBatch(String sql, Object... params);
+    void setColumnNameMapper(ColumnNameMapper columnNameMapper);
     Transaction transaction();
     int executeUpdate(String sql,Object... params);
 

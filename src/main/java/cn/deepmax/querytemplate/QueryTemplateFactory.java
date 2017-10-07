@@ -1,13 +1,12 @@
 package cn.deepmax.querytemplate;
 
-import cn.deepmax.entity.EntityFactory;
-import cn.deepmax.resultsethandler.ResultSetHandler;
+import cn.deepmax.mapper.ColumnNameMapper;
 import cn.deepmax.transaction.TransactionFactory;
 
 public interface QueryTemplateFactory {
+
     QueryTemplate create();
-    void setResultSetHandler( ResultSetHandler resultSetHandler);
+    void setColumnNameMapper( ColumnNameMapper columnNameMapper);
     void setTransactionFactory ( TransactionFactory transactionFactory);
-    void setEntityFactory( EntityFactory entityFactory);
     void setShowSql(boolean isShowSql);
 }

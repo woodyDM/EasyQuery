@@ -1,9 +1,10 @@
 package cn.deepmax.querytemplate;
 
+import cn.deepmax.entity.EntityFactory;
+import cn.deepmax.mapper.ColumnNameMapper;
 import cn.deepmax.resultsethandler.ResultSetHandler;
 import cn.deepmax.resultsethandler.RowRecord;
 import cn.deepmax.model.Pair;
-import cn.deepmax.entity.EntityFactory;
 import cn.deepmax.transaction.Transaction;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -17,19 +18,28 @@ import java.util.*;
  */
 public class DefaultQueryTemplate implements QueryTemplate {
 
-    private static final Logger logger = LoggerFactory.getLogger(DefaultQueryTemplate.class);
-    private ResultSetHandler resultSetHandler;
+
+
     private Transaction transaction;
     private EntityFactory entityFactory;
     private boolean isShowSql;
 
-    public DefaultQueryTemplate(ResultSetHandler resultSetHandler, Transaction transaction, EntityFactory entityFactory, boolean isShowSql) {
+    private static final Logger logger = LoggerFactory.getLogger(DefaultQueryTemplate.class);
 
-        this.resultSetHandler = resultSetHandler;
+    public DefaultQueryTemplate(Transaction transaction, EntityFactory entityFactory, boolean isShowSql) {
         this.transaction = transaction;
         this.entityFactory = entityFactory;
         this.isShowSql = isShowSql;
+    }
 
+    @Override
+    public void setColumnNameMapper(ColumnNameMapper columnNameMapper) {
+        entityFactory = new EntityFactory(columnNameMapper);
+    }
+
+    @Override
+    public Transaction transaction() {
+        return transaction;
     }
 
     /**
@@ -41,7 +51,7 @@ public class DefaultQueryTemplate implements QueryTemplate {
      * @return
      */
     public <T> List<RowRecord<T>> select(String sql, Class<T> clazz, Object... params){
-        Pair<List<Map<String,Object>>,ResultSetMetaData> pair = rawSelect(sql,params);
+        Pair<List<Map<String,Object>>,ResultSetMetaData> pair = doSelect(sql,params);
         List<RowRecord<T>> list = new ArrayList<>();
         for(Map<String,Object> it:pair.first){
             RowRecord<T> temp = new RowRecord<>(it,clazz,pair.last);
@@ -57,7 +67,7 @@ public class DefaultQueryTemplate implements QueryTemplate {
      * @return
      */
     public List<Map<String,Object>> select(String sql, Object... params){
-        return rawSelect(sql,params).first;
+        return doSelect(sql,params).first;
     }
 
     @Override
@@ -101,6 +111,28 @@ public class DefaultQueryTemplate implements QueryTemplate {
         return null;
     }
 
+    @Override
+    public int[] executeBatch(String sql, Object... params) {
+        Connection cn = transaction.getConnection();
+        PreparedStatement ps=null;
+
+        try {
+            ps = cn.prepareStatement(sql);
+
+            setPrepareStatementParams(ps,params);
+            if(isShowSql){
+                logger.debug("[executeUpdate] "+sql);
+            }
+            return ps.executeBatch();
+
+        } catch (SQLException e) {
+            throw new RuntimeException(e);
+        } finally {
+            closeResources(ps,null, transaction);
+        }
+
+    }
+
 
     @Override
     public int executeUpdate(String sql,Object... params){
@@ -119,11 +151,11 @@ public class DefaultQueryTemplate implements QueryTemplate {
         } catch (SQLException e) {
             throw new RuntimeException(e);
         } finally {
-            closeResources(ps,null,transaction);
+            closeResources(ps,null, transaction);
         }
     }
 
-    private Pair<List<Map<String,Object>>,ResultSetMetaData> rawSelect(String sql, Object... params){
+    private Pair<List<Map<String,Object>>,ResultSetMetaData> doSelect(String sql, Object... params){
 
         Connection cn = transaction.getConnection();
         PreparedStatement ps=null;
@@ -134,9 +166,10 @@ public class DefaultQueryTemplate implements QueryTemplate {
             if(isShowSql){
                 logger.debug("[select] "+sql);
             }
+
             rs = ps.executeQuery();
             ResultSetMetaData metaData = rs.getMetaData();
-            List<Map<String,Object>> resultDate = resultSetHandler.handle(rs);
+            List<Map<String,Object>> resultDate = ResultSetHandler.handle(rs);
             return new Pair<>(resultDate,metaData);
         } catch (SQLException e) {
             throw new RuntimeException(e);
@@ -145,19 +178,12 @@ public class DefaultQueryTemplate implements QueryTemplate {
         }
     }
 
-    @Override
-    public Transaction transaction() {
-        return transaction;
-    }
-
-
-
     private void setPrepareStatementParams(PreparedStatement ps, Object... params){
         for (int i = 0; i < params.length; i++) {
             try {
                 ps.setObject(i+1,params[i]);
             } catch (SQLException e) {
-                throw new RuntimeException(e);
+                throw new IllegalArgumentException("Setting preparestatement params error, check your parameters.",e);
             }
         }
     }
@@ -167,14 +193,14 @@ public class DefaultQueryTemplate implements QueryTemplate {
             try {
                 statement.close();
             } catch (SQLException e) {
-                e.printStackTrace();
+                //Quitely
             }
         }
         if(resultSet!=null){
             try {
                 resultSet.close();
             } catch (SQLException e) {
-                e.printStackTrace();
+                //Quitely
             }
         }
         if(!transaction.isTransactionMode()){

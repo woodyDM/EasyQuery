@@ -168,9 +168,6 @@ public class RowRecord<T> implements ResultRowSet {
 
 
 
-    public static void main(String[] args) {
-
-    }
 
 
 }
