@@ -111,29 +111,39 @@ public class DefaultQueryTemplate implements QueryTemplate {
         return null;
     }
 
+    /**
+     * 批量update insert delete执行
+     * @param sql
+     * @param paramList
+     * @return
+     */
     @Override
-    public int[] executeBatch(String sql, Object... params) {
+    public int[] executeBatch(String sql, List<List<Object>> paramList) {
         Connection cn = transaction.getConnection();
         PreparedStatement ps=null;
-
         try {
             ps = cn.prepareStatement(sql);
-
-            setPrepareStatementParams(ps,params);
+            for(List<Object> params:paramList){
+                setPrepareStatementParams(ps,params.toArray());
+                ps.addBatch();
+            }
             if(isShowSql){
-                logger.debug("[executeUpdate] "+sql);
+                logger.debug("[executeBatch] "+sql);
             }
             return ps.executeBatch();
-
         } catch (SQLException e) {
             throw new RuntimeException(e);
         } finally {
             closeResources(ps,null, transaction);
         }
-
     }
 
-
+    /**
+     * 单个update insert delete执行
+     * @param sql
+     * @param params
+     * @return
+     */
     @Override
     public int executeUpdate(String sql,Object... params){
 
@@ -155,8 +165,13 @@ public class DefaultQueryTemplate implements QueryTemplate {
         }
     }
 
+    /**
+     * 查询语句执行
+     * @param sql
+     * @param params
+     * @return
+     */
     private Pair<List<Map<String,Object>>,ResultSetMetaData> doSelect(String sql, Object... params){
-
         Connection cn = transaction.getConnection();
         PreparedStatement ps=null;
         ResultSet rs=null;
