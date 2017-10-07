@@ -51,10 +51,10 @@ public class DefaultQueryTemplate implements QueryTemplate {
      * @return
      */
     public <T> List<RowRecord<T>> select(String sql, Class<T> clazz, Object... params){
-        Pair<List<Map<String,Object>>,ResultSetMetaData> pair = doSelect(sql,params);
+        Pair<List<Map<String,Object>>,Map<String,String>> pair = doSelect(sql,params);
         List<RowRecord<T>> list = new ArrayList<>();
         for(Map<String,Object> it:pair.first){
-            RowRecord<T> temp = new RowRecord<>(it,clazz,pair.last);
+            RowRecord<T> temp = new RowRecord<>(it,pair.last,clazz);
             list.add(temp);
         }
         return list;
@@ -171,7 +171,7 @@ public class DefaultQueryTemplate implements QueryTemplate {
      * @param params
      * @return
      */
-    private Pair<List<Map<String,Object>>,ResultSetMetaData> doSelect(String sql, Object... params){
+    private Pair<List<Map<String,Object>>,Map<String,String>> doSelect(String sql, Object... params){
         Connection cn = transaction.getConnection();
         PreparedStatement ps=null;
         ResultSet rs=null;
@@ -181,11 +181,9 @@ public class DefaultQueryTemplate implements QueryTemplate {
             if(isShowSql){
                 logger.debug("[select] "+sql);
             }
-
             rs = ps.executeQuery();
-            ResultSetMetaData metaData = rs.getMetaData();
-            List<Map<String,Object>> resultDate = ResultSetHandler.handle(rs);
-            return new Pair<>(resultDate,metaData);
+            return ResultSetHandler.handle(rs);
+
         } catch (SQLException e) {
             throw new RuntimeException(e);
         } finally {

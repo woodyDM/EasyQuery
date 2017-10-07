@@ -12,32 +12,17 @@ import java.util.Map;
 public class RowRecord<T> implements ResultRowSet {
 
 
-    /**
-     * 用于数据获取，取值
-     */
-    private Map<String,Object> rowResult = new LinkedHashMap<>();
 
-    /**
-     * 用于实体映射
-     */
+    private Map<String,Object> rowResult = new LinkedHashMap<>();
+    private Map<String,String> typeMetaData;
     public T e;
     private Class<T> clazz;
-    private ResultSetMetaData metaData;
 
 
-    public RowRecord(Map<String, Object> rowResult, Class<T> clazz, ResultSetMetaData metaData) {
+    public RowRecord(Map<String, Object> rowResult,  Map<String,String> metaData,Class<T> clazz) {
         this.rowResult = rowResult;
         this.clazz = clazz;
-        this.metaData = metaData;
-    }
-
-    public RowRecord(){}
-    public RowRecord(Class<T> clazz){
-        this.clazz = clazz;
-    }
-    public RowRecord(Map<String,Object> map,Class<T> clazz){
-        this.rowResult = map;
-        this.clazz = clazz;
+        this.typeMetaData = metaData;
     }
 
     @Override

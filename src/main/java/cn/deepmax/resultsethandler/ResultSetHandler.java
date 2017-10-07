@@ -1,5 +1,7 @@
 package cn.deepmax.resultsethandler;
 
+import cn.deepmax.model.Pair;
+
 import java.sql.ResultSet;
 import java.sql.ResultSetMetaData;
 import java.sql.SQLException;
@@ -7,29 +9,32 @@ import java.util.*;
 
 public class ResultSetHandler {
 
-    public static List<Map<String,Object>> handle(ResultSet rs) {
-        List<Map<String,Object>> list = new ArrayList<>();
+    public static Pair<List<Map<String,Object>>,Map<String,String>> handle(ResultSet rs) {
+        List<Map<String,Object>> resultsList = new ArrayList<>();
+        Map<String,String> typeMap = new LinkedHashMap<>();
+        Pair<List<Map<String,Object>>,Map<String,String>> re = new Pair<>(resultsList,typeMap);
         if(rs==null){
-            return list;
+            return re;
         }
-        ResultSetMetaData metaData = null;
         try {
-            metaData = rs.getMetaData();
             while (rs.next()){
                 Map<String,Object> row = new LinkedHashMap<>();
-                for (int i = 0; i < metaData.getColumnCount(); i++) {
-                    addToMap(row,rs,metaData,i+1);
+                int totalColumnCount = rs.getMetaData().getColumnCount();
+                for (int i = 1; i <= totalColumnCount; i++) {
+                    addToMap(row,typeMap,rs,i);
                 }
-                list.add(row);
+                resultsList.add(row);
             }
         } catch (SQLException e) {
             throw new RuntimeException(e);
         }
-        return list;
+        return re;
     }
 
-    private static void addToMap(Map<String,Object> target,ResultSet rs,ResultSetMetaData metaData,int pos){
+    private static void addToMap(Map<String,Object> oneResult,Map<String,String> typeMap,ResultSet rs,int pos){
+
         try {
+            ResultSetMetaData metaData = rs.getMetaData();
             String labelName = metaData.getColumnLabel(pos);
             if( null == labelName || 0 == labelName.length()){
                 labelName = metaData.getColumnName(pos);
@@ -37,11 +42,14 @@ public class ResultSetHandler {
             String oldLableName = labelName;
             Object result =rs.getObject(pos);
             int start = 0;
-            while (target.containsKey(labelName)){
+            while (oneResult.containsKey(labelName)){
                 start++;
                 labelName = oldLableName+start;
             }
-            target.put(labelName,result);
+            oneResult.put(labelName,result);
+            if(typeMap.size()!=metaData.getColumnCount()){
+                typeMap.put(labelName,metaData.getColumnTypeName(pos));
+            }
         } catch (SQLException e) {
             throw new RuntimeException(e);
         }
