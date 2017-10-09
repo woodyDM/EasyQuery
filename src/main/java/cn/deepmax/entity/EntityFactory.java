@@ -21,23 +21,33 @@ public class EntityFactory {
         this.columnNameMapper = columnNameMapper;
     }
 
+    public ColumnNameMapper getColumnNameMapper() {
+        return columnNameMapper;
+    }
+
     /**
      * 转化为实体
      * @param clazz         转化为实体的类型
-     * @param columnNameWithPropertyValueMap    <columnName, value> 需要为实体字段
+     * @param columnNameWithFieldValueMap    <columnName, value> 需要为实体字段
      * @param <T>
      * @return
      */
-    public  <T> T create(Class<T> clazz, Map<String, Object> columnNameWithPropertyValueMap) {
+    public  <T> T create(Class<T> clazz, Map<String, Object> columnNameWithFieldValueMap) {
         T obj = newInstance(clazz);
-        for(Map.Entry<String,Object> entry:columnNameWithPropertyValueMap.entrySet()){
+        Map<String,PropertyDescriptor> propertyDescriptorMap = getPropertyDescriptorMap(clazz);
+        for(Map.Entry<String,Object> entry:columnNameWithFieldValueMap.entrySet()){
             String key = entry.getKey();
             Object value = entry.getValue();
-            String property = columnNameMapper.toEntityPropertyName(clazz,key);
-            Map<String,PropertyDescriptor> propertyDescriptorMap = getPropertyDescriptorMap(clazz);
-            Method setter = propertyDescriptorMap.get(property).getWriteMethod();
-            Class<?> beanValueType = propertyDescriptorMap.get(property).getPropertyType();
-            setValue(obj, value, setter, beanValueType);
+            String fieldName = columnNameMapper.toEntityFieldName(clazz,key);
+
+            if(fieldName!=null && fieldName.length()!=0){
+                PropertyDescriptor propertyDescriptor = propertyDescriptorMap.get(fieldName);
+                if(propertyDescriptor!=null){
+                    Method setter = propertyDescriptor.getWriteMethod();
+                    Class<?> beanValueType = propertyDescriptor.getPropertyType();
+                    setValue(obj, value, setter, beanValueType);
+                }
+            }
         }
         return obj;
     }

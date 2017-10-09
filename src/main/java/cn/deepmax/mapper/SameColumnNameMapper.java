@@ -7,13 +7,13 @@ import java.util.Objects;
 public class SameColumnNameMapper implements ColumnNameMapper {
 
     /**
-     * 将数据库名称转化成实体字段名称
+     *
      * @param clazz
      * @param columnName
      * @return
      */
     @Override
-    public String toEntityPropertyName(Class clazz, String columnName) {
+    public String toEntityFieldName(Class<?> clazz, String columnName) {
         return columnName;
     }
 

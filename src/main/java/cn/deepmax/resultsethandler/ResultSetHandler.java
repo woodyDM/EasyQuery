@@ -9,30 +9,27 @@ import java.util.*;
 
 public class ResultSetHandler {
 
-    public static Pair<List<Map<String,Object>>,Map<String,String>> handle(ResultSet rs) {
+    public static List<Map<String,Object>> handle(ResultSet rs) {
         List<Map<String,Object>> resultsList = new ArrayList<>();
-        Map<String,String> typeMap = new LinkedHashMap<>();
-        Pair<List<Map<String,Object>>,Map<String,String>> re = new Pair<>(resultsList,typeMap);
         if(rs==null){
-            return re;
+            return resultsList;
         }
         try {
             while (rs.next()){
                 Map<String,Object> row = new LinkedHashMap<>();
                 int totalColumnCount = rs.getMetaData().getColumnCount();
                 for (int i = 1; i <= totalColumnCount; i++) {
-                    addToMap(row,typeMap,rs,i);
+                    addToMap(row,rs,i);
                 }
                 resultsList.add(row);
             }
         } catch (SQLException e) {
             throw new RuntimeException(e);
         }
-        return re;
+        return resultsList;
     }
 
-    private static void addToMap(Map<String,Object> oneResult,Map<String,String> typeMap,ResultSet rs,int pos){
-
+    private static void addToMap(Map<String,Object> oneResult,ResultSet rs,int pos){
         try {
             ResultSetMetaData metaData = rs.getMetaData();
             String labelName = metaData.getColumnLabel(pos);
@@ -47,9 +44,6 @@ public class ResultSetHandler {
                 labelName = oldLableName+start;
             }
             oneResult.put(labelName,result);
-            if(typeMap.size()!=metaData.getColumnCount()){
-                typeMap.put(labelName,metaData.getColumnTypeName(pos));
-            }
         } catch (SQLException e) {
             throw new RuntimeException(e);
         }

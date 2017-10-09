@@ -1,7 +1,9 @@
 package cn.deepmax.querytemplate;
 
 import cn.deepmax.entity.EntityFactory;
+import cn.deepmax.exception.EasyQueryException;
 import cn.deepmax.mapper.ColumnNameMapper;
+import cn.deepmax.mapper.MapColumnNameMapper;
 import cn.deepmax.resultsethandler.ResultSetHandler;
 import cn.deepmax.resultsethandler.RowRecord;
 import cn.deepmax.model.Pair;
@@ -17,8 +19,6 @@ import java.util.*;
  * 所有的都未释放连接
  */
 public class DefaultQueryTemplate implements QueryTemplate {
-
-
 
     private Transaction transaction;
     private EntityFactory entityFactory;
@@ -42,74 +42,109 @@ public class DefaultQueryTemplate implements QueryTemplate {
         return transaction;
     }
 
-    /**
-     * 选出list
-     * @param sql
-     * @param clazz
-     * @param params
-     * @param <T>
-     * @return
-     */
-    public <T> List<RowRecord<T>> select(String sql, Class<T> clazz, Object... params){
-        Pair<List<Map<String,Object>>,Map<String,String>> pair = doSelect(sql,params);
-        List<RowRecord<T>> list = new ArrayList<>();
-        for(Map<String,Object> it:pair.first){
-            RowRecord<T> temp = new RowRecord<>(it,pair.last,clazz);
-            list.add(temp);
-        }
-        return list;
+    @Override
+    public List<Map<String,Object>> select(String sql, Object... params){
+        return doSelect(sql,params);
     }
 
-    /**
-     * 选出list
-     * @param sql
-     * @param params
-     * @return
-     */
-    public List<Map<String,Object>> select(String sql, Object... params){
-        return doSelect(sql,params).first;
+    public <T> List<RowRecord<T>> select(String sql, Class<T> clazz, Object... params){
+        return select(sql, clazz, entityFactory.getColumnNameMapper(), entityFactory, params);
+    }
+
+    @Override
+    public <T> List<RowRecord<T>> select(String sql, Class<T> clazz, Map<String, String> columnNameToFieldNameMap, Object... params) {
+        ColumnNameMapper columnNameMapper = new MapColumnNameMapper(columnNameToFieldNameMap);
+        return select(sql,clazz,columnNameMapper,params);
+    }
+    @Override
+    public <T> List<RowRecord<T>> select(String sql, Class<T> clazz, ColumnNameMapper columnNameMapper, Object... params) {
+        EntityFactory tempFactory = new EntityFactory(columnNameMapper);
+        return select(sql, clazz, columnNameMapper, tempFactory, params);
+    }
+
+
+    private  <T> List<RowRecord<T>> select(String sql, Class<T> clazz, ColumnNameMapper columnNameMapper,EntityFactory entityFactory, Object... params) {
+        List<Map<String,Object>> rawResults = doSelect(sql,params);
+        List<RowRecord<T>> results = new ArrayList<>();
+        for(Map<String,Object> it:rawResults){
+            T obj = entityFactory.create(clazz,it);
+            RowRecord<T> oneRecord = new RowRecord<>(it,clazz,obj,columnNameMapper);
+            results.add(oneRecord);
+        }
+        return results;
     }
 
     @Override
     public <T> List<T> selectEntity(String sql, Class<T> clazz, Object... params) {
-        return null;
+        return rawSelectEntity(sql,clazz,entityFactory,params);
     }
-    /**
-     * 选出单个
-     * @param sql
-     * @param params
-     * @return
-     */
+
+    @Override
+    public <T> List<T> selectEntity(String sql, Class<T> clazz, Map<String, String> columnNameToFieldNameMap, Object... params) {
+        ColumnNameMapper columnNameMapper = new MapColumnNameMapper(columnNameToFieldNameMap);
+        return rawSelectEntity(sql,clazz,new EntityFactory(columnNameMapper),params);
+    }
+
+    @Override
+    public <T> List<T> selectEntity(String sql, Class<T> clazz, ColumnNameMapper columnNameMapper, Object... params) {
+        return rawSelectEntity(sql,clazz,new EntityFactory(columnNameMapper),params);
+    }
+
+    private <T> List<T> rawSelectEntity(String sql, Class<T> clazz,EntityFactory entityFactory, Object... params) {
+        List<Map<String,Object>> rawResults = doSelect(sql,params);
+        List<T> results = new ArrayList<>();
+        for(Map<String,Object> it:rawResults){
+            T obj = entityFactory.create(clazz,it);
+            results.add(obj);
+        }
+        return results;
+    }
+
+    @Override
     public Map<String,Object> selectOne(String sql, Object... params){
+        List<Map<String,Object>> results = select(sql, params);
+        return (Map<String,Object>) handleUnique(results);
+    }
+
+    @Override
+    public <T> RowRecord<T> selectOne(String sql, Class<T> clazz, Object... params){
         return null;
     }
 
-    /**
-     * 选出单个
-     * @param sql
-     * @param clazz
-     * @param params
-     * @param <T>
-     * @return
-     */
-    public <T> RowRecord<T> selectOne(String sql, Class<T> clazz, Object... params){
+    @Override
+    public <T> RowRecord<T> selectOne(String sql, Class<T> clazz, ColumnNameMapper columnNameMapper, Object... params) {
+        return null;
+    }
+
+    @Override
+    public <T> RowRecord<T> selectOne(String sql, Class<T> clazz, Map<String, String> columnNameToFieldNameMap, Object... params) {
         return null;
     }
     @Override
     public <T> T selectOneEntity(String sql, Class<T> clazz, Object... params) {
         return null;
     }
-    /**
-     * 选向量
-     * @param sql
-     * @param clazz
-     * @param params
-     * @param <T>
-     * @return
-     */
+
+
+    @Override
+    public <T> T selectOneEntity(String sql, Class<T> clazz, ColumnNameMapper columnNameMapper, Object... params) {
+        return null;
+    }
+
+    @Override
+    public <T> T selectOneEntity(String sql, Class<T> clazz, Map<String, String> columnNameToFieldNameMap, Object... params) {
+        return null;
+    }
+
+
+
+    @Override
     public <T> T selectScalar(String sql, Class<T> clazz, Object... params){
         return null;
     }
+
+
+
 
     /**
      * 批量update insert delete执行
@@ -149,7 +184,6 @@ public class DefaultQueryTemplate implements QueryTemplate {
 
         Connection cn = transaction.getConnection();
         PreparedStatement ps=null;
-
         try {
             ps = cn.prepareStatement(sql);
             setPrepareStatementParams(ps,params);
@@ -171,7 +205,7 @@ public class DefaultQueryTemplate implements QueryTemplate {
      * @param params
      * @return
      */
-    private Pair<List<Map<String,Object>>,Map<String,String>> doSelect(String sql, Object... params){
+    private List<Map<String,Object>> doSelect(String sql, Object... params){
         Connection cn = transaction.getConnection();
         PreparedStatement ps=null;
         ResultSet rs=null;
@@ -221,4 +255,13 @@ public class DefaultQueryTemplate implements QueryTemplate {
         }
     }
 
+    private Object handleUnique(List<?> list){
+        if(list.size()==0){
+            return null;
+        }else if(list.size()>1){
+            throw new EasyQueryException("Resultset is not unique.");
+        }else{
+            return list.get(0);
+        }
+    }
 }

@@ -18,9 +18,9 @@ public class TestServiceImpT implements TestServiceT {
 
     @Override
     public List testDefalt(Integer id) {
-        String sql = " select * from t_sys_role where id = ? ";
-        String sql2 = " update t_sys_role set user_id = ? where id = 1";
-        dao.update(sql2,id);
+        String sql = " select * from t_user where id = ? ";
+        String sql2 = " update t_user set name = ? where id = ?";
+        dao.update(sql2,"wang",id);
         return dao.select(sql,id);
     }
 

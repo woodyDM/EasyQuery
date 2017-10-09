@@ -1,6 +1,7 @@
 package cn.deepmax.transaction;
 
 
+import cn.deepmax.AppTest;
 import cn.deepmax.transaction.service.no.TestService;
 import cn.deepmax.transaction.service.yes.TestServiceT;
 import org.junit.Test;
@@ -14,7 +15,7 @@ import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
 
 
 @RunWith(SpringJUnit4ClassRunner.class)
-@SpringBootTest(classes = AppTransactionTest.class)
+@SpringBootTest(classes = AppTest.class)
 public class TransactionTest {
     @Autowired
     TestServiceT testServiceT;
