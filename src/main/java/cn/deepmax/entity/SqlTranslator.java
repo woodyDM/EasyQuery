@@ -1,25 +1,12 @@
 package cn.deepmax.entity;
 
-public class SqlTranslator {
-    private EntityInfo entityInfo;
+import cn.deepmax.model.Pair;
+import java.util.List;
 
-    public SqlTranslator(EntityInfo entityInfo) {
-        this.entityInfo = entityInfo;
-    }
 
-    public String getInsertSQL(Object obj){
-        return null;
-    }
-
-    public String getUpdateSQL(Object obj){
-        return null;
-    }
-
-    public String getSelectSQL(Object obj){
-        return null;
-    }
-
-    public String getDeleteSQL(Object obj){
-        return null;
-    }
+public interface SqlTranslator {
+    Pair<String,List<Object>> getInsertSQL(Object obj);
+    Pair<String,List<Object>> getUpdateSQL(Object obj);
+    Pair<String,List<Object>> getSelectSQL(Object obj);
+    Pair<String,List<Object>> getDeleteSQL(Object obj);
 }
