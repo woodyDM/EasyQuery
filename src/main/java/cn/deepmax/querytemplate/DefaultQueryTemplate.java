@@ -6,7 +6,6 @@ import cn.deepmax.mapper.ColumnNameMapper;
 import cn.deepmax.mapper.MapColumnNameMapper;
 import cn.deepmax.resultsethandler.ResultSetHandler;
 import cn.deepmax.resultsethandler.RowRecord;
-import cn.deepmax.model.Pair;
 import cn.deepmax.transaction.Transaction;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -76,21 +75,21 @@ public class DefaultQueryTemplate implements QueryTemplate {
 
     @Override
     public <T> List<T> selectEntity(String sql, Class<T> clazz, Object... params) {
-        return rawSelectEntity(sql,clazz,entityFactory,params);
+        return selectEntity(sql,clazz,entityFactory,params);
     }
 
     @Override
     public <T> List<T> selectEntity(String sql, Class<T> clazz, Map<String, String> columnNameToFieldNameMap, Object... params) {
         ColumnNameMapper columnNameMapper = new MapColumnNameMapper(columnNameToFieldNameMap);
-        return rawSelectEntity(sql,clazz,new EntityFactory(columnNameMapper),params);
+        return selectEntity(sql,clazz,new EntityFactory(columnNameMapper),params);
     }
 
     @Override
     public <T> List<T> selectEntity(String sql, Class<T> clazz, ColumnNameMapper columnNameMapper, Object... params) {
-        return rawSelectEntity(sql,clazz,new EntityFactory(columnNameMapper),params);
+        return selectEntity(sql,clazz,new EntityFactory(columnNameMapper),params);
     }
 
-    private <T> List<T> rawSelectEntity(String sql, Class<T> clazz,EntityFactory entityFactory, Object... params) {
+    private <T> List<T> selectEntity(String sql, Class<T> clazz, EntityFactory entityFactory, Object... params) {
         List<Map<String,Object>> rawResults = doSelect(sql,params);
         List<T> results = new ArrayList<>();
         for(Map<String,Object> it:rawResults){
@@ -106,43 +105,95 @@ public class DefaultQueryTemplate implements QueryTemplate {
         return (Map<String,Object>) handleUnique(results);
     }
 
-    @Override
-    public <T> RowRecord<T> selectOne(String sql, Class<T> clazz, Object... params){
-        return null;
-    }
+
 
     @Override
-    public <T> RowRecord<T> selectOne(String sql, Class<T> clazz, ColumnNameMapper columnNameMapper, Object... params) {
-        return null;
+    public <T> RowRecord<T> selectOne(String sql, Class<T> clazz, Object... params){
+        return selectOne(sql,clazz,entityFactory.getColumnNameMapper(),entityFactory,params);
     }
 
     @Override
     public <T> RowRecord<T> selectOne(String sql, Class<T> clazz, Map<String, String> columnNameToFieldNameMap, Object... params) {
-        return null;
+        ColumnNameMapper mapper = new MapColumnNameMapper(columnNameToFieldNameMap);
+        return selectOne(sql,clazz, mapper,params);
     }
+
+    @Override
+    public <T> RowRecord<T> selectOne(String sql, Class<T> clazz, ColumnNameMapper columnNameMapper, Object... params) {
+        return selectOne(sql, clazz, columnNameMapper, new EntityFactory(columnNameMapper),params);
+    }
+
+
+    private  <T> RowRecord<T> selectOne(String sql, Class<T> clazz, ColumnNameMapper columnNameMapper, EntityFactory  entityFactory,Object... params) {
+        Map<String,Object> rawResult = selectOne(sql,params);
+        if(rawResult==null){
+            return null;
+        }
+        T obj = entityFactory.create(clazz,rawResult);
+        return new RowRecord<>(rawResult,clazz, obj,  columnNameMapper);
+    }
+
+
     @Override
     public <T> T selectOneEntity(String sql, Class<T> clazz, Object... params) {
-        return null;
-    }
-
-
-    @Override
-    public <T> T selectOneEntity(String sql, Class<T> clazz, ColumnNameMapper columnNameMapper, Object... params) {
-        return null;
+        return selectOneEntity(sql,clazz,entityFactory,params);
     }
 
     @Override
     public <T> T selectOneEntity(String sql, Class<T> clazz, Map<String, String> columnNameToFieldNameMap, Object... params) {
-        return null;
+        return selectOneEntity(sql,clazz,new EntityFactory(new MapColumnNameMapper(columnNameToFieldNameMap)),params);
     }
 
+    @Override
+    public <T> T selectOneEntity(String sql, Class<T> clazz, ColumnNameMapper columnNameMapper, Object... params) {
+        return selectOneEntity(sql,clazz,new EntityFactory(columnNameMapper),params);
+    }
+
+    private  <T> T selectOneEntity(String sql, Class<T> clazz, EntityFactory entityFactory, Object... params) {
+        Map<String,Object> rawResult = selectOne(sql,params);
+        if(rawResult==null){
+            return null;
+        }
+        return entityFactory.create(clazz,rawResult);
+    }
+
+    private Object handleUnique(List<?> list){
+        if(list.size()==0){
+            return null;
+        }else if(list.size()>1){
+            throw new EasyQueryException("Resultset is not unique.");
+        }else{
+            return list.get(0);
+        }
+    }
 
 
     @Override
-    public <T> T selectScalar(String sql, Class<T> clazz, Object... params){
-        return null;
+    public <T> T selectScalar(String sql, Class<T> clazz, Object... params) {
+        Map<String,Object> oneResult = selectOne(sql,params);
+        if(oneResult==null){
+            return null;
+        }
+        if(oneResult.size()!=1){
+            throw new EasyQueryException("Result is not a scalar.");
+        }
+        String key = null;
+        for(String onekey:oneResult.keySet()){
+            key = onekey;
+        }
+        Object obj = oneResult.get(key);
+        return clazz.cast(obj);
     }
 
+    @Override
+    public <T> T selectScalar(String sql, String columnName, Class<T> clazz, Object... params){
+        Map<String,Object> oneResult = selectOne(sql,params);
+        if(oneResult==null){
+            return null;
+        }
+        Object obj = oneResult.get(columnName);
+        return clazz.cast(obj);
+    }
 
 
 
@@ -167,7 +218,7 @@ public class DefaultQueryTemplate implements QueryTemplate {
             }
             return ps.executeBatch();
         } catch (SQLException e) {
-            throw new RuntimeException(e);
+            throw new EasyQueryException(e);
         } finally {
             closeResources(ps,null, transaction);
         }
@@ -193,7 +244,7 @@ public class DefaultQueryTemplate implements QueryTemplate {
             return ps.executeUpdate();
 
         } catch (SQLException e) {
-            throw new RuntimeException(e);
+            throw new EasyQueryException(e);
         } finally {
             closeResources(ps,null, transaction);
         }
@@ -219,7 +270,7 @@ public class DefaultQueryTemplate implements QueryTemplate {
             return ResultSetHandler.handle(rs);
 
         } catch (SQLException e) {
-            throw new RuntimeException(e);
+            throw new EasyQueryException(e);
         } finally {
             closeResources(ps,rs,transaction);
         }
@@ -230,7 +281,7 @@ public class DefaultQueryTemplate implements QueryTemplate {
             try {
                 ps.setObject(i+1,params[i]);
             } catch (SQLException e) {
-                throw new IllegalArgumentException("Setting preparestatement params error, check your parameters.",e);
+                throw new EasyQueryException("Setting preparestatement params error, check your parameters.",e);
             }
         }
     }
@@ -255,13 +306,5 @@ public class DefaultQueryTemplate implements QueryTemplate {
         }
     }
 
-    private Object handleUnique(List<?> list){
-        if(list.size()==0){
-            return null;
-        }else if(list.size()>1){
-            throw new EasyQueryException("Resultset is not unique.");
-        }else{
-            return list.get(0);
-        }
-    }
+
 }

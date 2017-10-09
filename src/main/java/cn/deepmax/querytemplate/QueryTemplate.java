@@ -28,6 +28,8 @@ public interface QueryTemplate {
     <T> T selectOneEntity(String sql, Class<T> clazz, Map<String,String> columnNameToFieldNameMap,Object... params);
 
     <T> T selectScalar(String sql, Class<T> clazz, Object... params);
+    <T> T selectScalar(String sql, String columnName, Class<T> clazz, Object... params);
+
     void setColumnNameMapper(ColumnNameMapper columnNameMapper);
     Transaction transaction();
     int[] executeBatch(String sql, List<List<Object>> paramList);

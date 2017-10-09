@@ -29,5 +29,15 @@ public class MapSelectTest {
         QueryTemplate template = factory.create();
         List<RowRecord<User>> re = template.select(sql,User.class,1);
         Assert.assertTrue(re.size()==0);
+
+    }
+
+    @Test
+    public void testSelectScalar(){
+        String sql = "select count(*) from t_user where name like '%pp%' and 0=1 ";
+        QueryTemplate template = factory.create();
+        Long re = template.selectScalar(sql,Long.class);
+        Assert.assertTrue(re==0);
+
     }
 }
