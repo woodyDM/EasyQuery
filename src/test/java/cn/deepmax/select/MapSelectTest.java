@@ -13,6 +13,8 @@ import org.junit.runner.RunWith;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
+
+import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -48,7 +50,7 @@ public class MapSelectTest {
         String sql = "select * from t_user ";
         QueryTemplate template = factory.create();
         List<User> re = template.selectEntity(sql,User.class);
-        Assert.assertTrue(re.size()==2);
+        Assert.assertTrue(re!=null);
 
     }
 
@@ -56,8 +58,8 @@ public class MapSelectTest {
     public void testSelectOneEntity(){
         String sql = "select * from t_user where id1=? ";
         QueryTemplate template = factory.create();
-        User re = template.selectOneEntity(sql,User.class,2);
-        Assert.assertTrue(re!=null);
+        User re = template.selectOneEntity(sql,User.class,-1);
+        Assert.assertTrue(re==null);
     }
     @Test
     public void testSelectList2(){
@@ -67,8 +69,30 @@ public class MapSelectTest {
         map.put("id2","id2");
         map.put("create_time","createTime");
         map.put("big_decimal","bigDecimal");
-        SuperUser re = template.selectOneEntity(sql,SuperUser.class,map,1);
-        Assert.assertTrue(re!=null);
+        SuperUser re = template.selectOneEntity(sql,SuperUser.class,map,-1);
+        Assert.assertTrue(re==null);
     }
 
+    @Test
+    public void testBatch(){
+        String sql = "update t_user set name = ? where id1= ? ";
+        QueryTemplate template = factory.create();
+        List<Object> list = new ArrayList<>();
+        list.add("smalllllllllllll");
+        list.add(1);
+        List<Object> list2 = new ArrayList<>();
+        List<List<Object>> listAll = new ArrayList<>();
+        listAll.add(list);
+        listAll.add(list2);
+        list2.add("big");
+        list2.add(3);
+        int[] re = template.executeBatch(sql,listAll);
+        Assert.assertTrue(re.length==2);
+
+        List<Object> list1 = new ArrayList<>();
+        list1.add("okkkkkk");
+        list1.add(1);
+        template.executeUpdate(sql,list1.toArray());
+
+    }
 }

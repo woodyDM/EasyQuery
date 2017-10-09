@@ -105,8 +105,6 @@ public class DefaultQueryTemplate implements QueryTemplate {
         return (Map<String,Object>) handleUnique(results);
     }
 
-
-
     @Override
     public <T> RowRecord<T> selectOne(String sql, Class<T> clazz, Object... params){
         return selectOne(sql,clazz,entityFactory.getColumnNameMapper(),entityFactory,params);
@@ -123,7 +121,6 @@ public class DefaultQueryTemplate implements QueryTemplate {
         return selectOne(sql, clazz, columnNameMapper, new EntityFactory(columnNameMapper),params);
     }
 
-
     private  <T> RowRecord<T> selectOne(String sql, Class<T> clazz, ColumnNameMapper columnNameMapper, EntityFactory  entityFactory,Object... params) {
         Map<String,Object> rawResult = selectOne(sql,params);
         if(rawResult==null){
@@ -132,7 +129,6 @@ public class DefaultQueryTemplate implements QueryTemplate {
         T obj = entityFactory.create(clazz,rawResult);
         return new RowRecord<>(rawResult,clazz, obj,  columnNameMapper);
     }
-
 
     @Override
     public <T> T selectOneEntity(String sql, Class<T> clazz, Object... params) {
@@ -195,8 +191,6 @@ public class DefaultQueryTemplate implements QueryTemplate {
         return clazz.cast(obj);
     }
 
-
-
     /**
      * 批量update insert delete执行
      * @param sql
@@ -232,7 +226,6 @@ public class DefaultQueryTemplate implements QueryTemplate {
      */
     @Override
     public int executeUpdate(String sql,Object... params){
-
         Connection cn = transaction.getConnection();
         PreparedStatement ps=null;
         try {
@@ -242,7 +235,6 @@ public class DefaultQueryTemplate implements QueryTemplate {
                 logger.debug("[executeUpdate] "+sql);
             }
             return ps.executeUpdate();
-
         } catch (SQLException e) {
             throw new EasyQueryException(e);
         } finally {
