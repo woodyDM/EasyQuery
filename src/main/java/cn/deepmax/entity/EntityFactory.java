@@ -63,7 +63,7 @@ public class EntityFactory {
                 throw new RuntimeException("can't set value of type "+value.getClass().getName() +" to entity "+target.getClass().getName()+" "+setter.getName());
             }
         }else{
-            throw new IllegalArgumentException("type of value "+value.getClass().getName()+" is not compatible with "+beanValueType.getName());
+            throw new IllegalArgumentException("Target type is "+beanValueType.getName()+" with setter ["+setter.getName()+"], is not compatible with value type "+value.getClass().getName()+" from database ");
         }
     }
 

@@ -13,7 +13,9 @@ import org.junit.runner.RunWith;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 
 @RunWith(SpringJUnit4ClassRunner.class)
@@ -40,4 +42,33 @@ public class MapSelectTest {
         Assert.assertTrue(re==0);
 
     }
+
+    @Test
+    public void testSelectEntity(){
+        String sql = "select * from t_user ";
+        QueryTemplate template = factory.create();
+        List<User> re = template.selectEntity(sql,User.class);
+        Assert.assertTrue(re.size()==2);
+
+    }
+
+    @Test
+    public void testSelectOneEntity(){
+        String sql = "select * from t_user where id1=? ";
+        QueryTemplate template = factory.create();
+        User re = template.selectOneEntity(sql,User.class,2);
+        Assert.assertTrue(re!=null);
+    }
+    @Test
+    public void testSelectList2(){
+        String sql = "select id1 id2, createTime create_time,bigDecimal big_decimal, point1 from t_user where id1=? ";
+        QueryTemplate template = factory.create();
+        Map<String,String> map = new HashMap<>();
+        map.put("id2","id2");
+        map.put("create_time","createTime");
+        map.put("big_decimal","bigDecimal");
+        SuperUser re = template.selectOneEntity(sql,SuperUser.class,map,1);
+        Assert.assertTrue(re!=null);
+    }
+
 }
