@@ -36,6 +36,6 @@ public interface QueryTemplate {
     int executeUpdate(String sql,Object... params);
 
     Boolean save(Object obj);
-    void update(Object obj);
+
 
 }

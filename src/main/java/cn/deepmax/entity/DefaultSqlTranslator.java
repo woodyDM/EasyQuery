@@ -8,12 +8,13 @@ public class DefaultSqlTranslator implements SqlTranslator{
 
     private EntityInfo entityInfo;
 
-
+    /**
+     * sql cache Maps for entity, key is class.name  value is sql string.
+     */
     private Map<String,String> insertCache = new HashMap<>();
     private Map<String,String> updateCache = new HashMap<>();
     private Map<String,String> selectCache = new HashMap<>();
     private Map<String,String> deleteCache = new HashMap<>();
-
 
     public DefaultSqlTranslator(EntityInfo entityInfo) {
         this.entityInfo = entityInfo;
@@ -33,6 +34,12 @@ public class DefaultSqlTranslator implements SqlTranslator{
         return new Pair<>(sql,fieldValueList);
     }
 
+    /**
+     * get insert sql from cache.
+     * if not, create a insert sql and put it to cache.
+     * @param clazz
+     * @return
+     */
     private String getInsertSql(Class<?> clazz){
         List<String> fieldNameList = entityInfo.beanFieldNameList(clazz);
         String sql = selectCache.get(clazz.getName());
@@ -74,7 +81,7 @@ public class DefaultSqlTranslator implements SqlTranslator{
         Map<String,Object> values = BeanToMap.convert(obj);
         String sql = getUpdateSQL(clazz);
         List<Object> fieldValueList = getEntityFieldValues(clazz,values);
-        fieldValueList.add(entityInfo.getPrimaryKeyFieldValue(obj));
+        fieldValueList.add(entityInfo.getPrimaryKeyFieldValue(obj));    //add primary key value.
         return new Pair<>(sql,fieldValueList);
     }
 
@@ -96,7 +103,7 @@ public class DefaultSqlTranslator implements SqlTranslator{
         int counter=0;
         for(String fieldName:entityInfo.beanFieldNameList(clazz)){
             String columnName =fieldNameToColumnNameMap.get(fieldName);
-            if(columnName!=null && columnName.length()!=0 && !fieldName.equals(pkFieldName)){
+            if(columnName!=null && columnName.length()!=0 && !fieldName.equals(pkFieldName)){//exclude primarykey
                 sb.append(columnName).append(" = ? ,");
                 counter++;
             }
@@ -141,7 +148,11 @@ public class DefaultSqlTranslator implements SqlTranslator{
         return null;
     }
 
-
+    /**
+     * remove redundant comma at last char in stringbuilder.
+     * @param sb
+     * @param counter
+     */
     private void deleteLastChar(StringBuilder sb, Integer counter){
         if(counter!=null && counter!=0 ){
             sb.deleteCharAt(sb.length()-1);

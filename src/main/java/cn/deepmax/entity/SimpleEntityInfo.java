@@ -10,6 +10,9 @@ import java.util.Map;
 
 public class SimpleEntityInfo extends AbstractEntityInfo {
 
+    /**
+     * used to convert fieldName to columnName
+     */
     private FieldNameMapper fieldNameMapper;
 
     public SimpleEntityInfo() {
@@ -34,6 +37,11 @@ public class SimpleEntityInfo extends AbstractEntityInfo {
         return "user";  //TODO 修改
     }
 
+    /**
+     * simpleEntityInfo only supports "id" ,primaryKey fieldName.
+     * @param clazz
+     * @return
+     */
     @Override
     public String getPrimaryKeyFieldName(Class<?> clazz) {
         return "id";
@@ -49,6 +57,11 @@ public class SimpleEntityInfo extends AbstractEntityInfo {
         return map;
     }
 
+    /**
+     * simpleEntityInfo requires all fields has corresponding database column.
+     * @param clazz
+     * @return
+     */
     @Override
     List<String> getBeanFieldNameList(Class<?> clazz) {
         PropertyDescriptor[] propertyDescriptors = BeanToMap.getPropertyDescriptor(clazz);

@@ -30,17 +30,17 @@ public class SaveTest {
         u.setCreateTime(new Timestamp(System.currentTimeMillis()));
         u.setPoint1(33.3D);
         u.setPoint2(32.2D);
-        u.setPoint3(2F);
         u.setPoint4(3.4F);
         u.setUpdateDate(new Date());
         u.setBigDecimal(BigDecimal.TEN);
-
+        u.setId(34L);
         QueryTemplate template = factory.create();
         template.save(u);
         System.out.println("after save  "+u);
-        u.setPoint1(1111.1D);
+        u.setPoint1(2.1D);
         u.setBigDecimal(BigDecimal.ONE);
-        template.update(u);
+        u.setPoint3(444.44F);
+        template.save(u);
         System.out.println("after update  "+u);
     }
 }

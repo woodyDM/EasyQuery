@@ -168,9 +168,18 @@ public class DefaultQueryTemplate implements QueryTemplate {
         }
     }
 
-
     @Override
     public Boolean save(Object obj){
+        Objects.requireNonNull(obj);
+        Boolean isSaveMode = sqlTranslator.getEntityInfo().getPrimaryKeyFieldValue(obj)==null;
+        if(isSaveMode){
+            return doSave(obj);
+        }else{
+            return doUpdate(obj);
+        }
+    }
+
+    private Boolean doSave(Object obj){
         Pair<String,List<Object>> info = sqlTranslator.getInsertSQL(obj);
         Connection cn = transaction.getConnection();
         PreparedStatement ps=null;
@@ -186,7 +195,7 @@ public class DefaultQueryTemplate implements QueryTemplate {
                 return false;
             }
             rs = ps.getGeneratedKeys();
-            return setNextId(rs,obj);
+            return setEntityPrimaryKeyValue(rs,obj);
         } catch (SQLException e) {
             throw new EasyQueryException(e);
         } finally {
@@ -195,10 +204,12 @@ public class DefaultQueryTemplate implements QueryTemplate {
     }
 
 
-    private Boolean setNextId(ResultSet rs,Object target) throws SQLException {
+    private Boolean setEntityPrimaryKeyValue(ResultSet rs, Object target) throws SQLException {
         Object nextId=null;
         if(rs!=null){
             if(rs.next()){
+                //test on mysql 5.6, nextId would be type of Long.class,
+                // but still use EntityInfo to set its primaryKey value.
                 nextId = rs.getObject(1);
             }
         }
@@ -207,14 +218,15 @@ public class DefaultQueryTemplate implements QueryTemplate {
             return true;
         }
         return false;
-
     }
 
-    @Override
-    public void update(Object obj) {
+    private Boolean doUpdate(Object obj) {
+        Objects.requireNonNull(obj);
         Pair<String,List<Object>> pair = sqlTranslator.getUpdateSQL(obj);
-        executeUpdate(pair.first, pair.last.toArray());
+        int i =executeUpdate(pair.first, pair.last.toArray());
+        return (i!=0);
     }
+
 
     @Override
     public <T> T selectScalar(String sql, Class<T> clazz, Object... params) {

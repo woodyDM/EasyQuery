@@ -98,10 +98,10 @@ public abstract class AbstractEntityInfo implements EntityInfo {
     }
 
     /**
-     * 只支持 主键类型为Integer int Long long BigInteger String
-     * @param target
-     * @param value
-     * @param setter
+     * only support primaryKey type:Integer int Long long BigInteger String
+     * @param target    bean
+     * @param value     primaryKey value
+     * @param setter    primaryKeyField Setter
      */
     private void setPrimaryKeyFieldValue(Object target,Object value, Method setter){
         Class<?> targetType = getPrimaryKeyFieldType(target.getClass());
@@ -117,6 +117,12 @@ public abstract class AbstractEntityInfo implements EntityInfo {
         }
     }
 
+    /**
+     * change primarykey value to desired javabean primarykey type.
+     * @param targetType
+     * @param value
+     * @return
+     */
     private Object getCompatibleValue(Class<?> targetType, Object value){
         String v = value.toString();
         if(targetType==int.class || targetType==Integer.class){

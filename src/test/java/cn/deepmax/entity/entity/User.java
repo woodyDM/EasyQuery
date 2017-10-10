@@ -6,7 +6,7 @@ import java.sql.Timestamp;
 import java.util.Date;
 
 public class User {
-    private long id;
+    private Long id;
     private String name;
     private Timestamp createTime;
     private Date updateDate;
@@ -34,11 +34,11 @@ public class User {
         return sb.toString();
     }
 
-    public long getId() {
+    public Long getId() {
         return id;
     }
 
-    public void setId(long id) {
+    public void setId(Long id) {
         this.id = id;
     }
 
