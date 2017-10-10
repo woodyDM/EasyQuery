@@ -35,4 +35,7 @@ public interface QueryTemplate {
     int[] executeBatch(String sql, List<List<Object>> paramList);
     int executeUpdate(String sql,Object... params);
 
+    Boolean save(Object obj);
+    void update(Object obj);
+
 }

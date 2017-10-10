@@ -1,5 +1,6 @@
 package cn.deepmax.querytemplate;
 
+import cn.deepmax.entity.SqlTranslator;
 import cn.deepmax.mapper.ColumnNameMapper;
 import cn.deepmax.transaction.TransactionFactory;
 
@@ -9,4 +10,5 @@ public interface QueryTemplateFactory {
     void setColumnNameMapper( ColumnNameMapper columnNameMapper);
     void setTransactionFactory ( TransactionFactory transactionFactory);
     void setShowSql(boolean isShowSql);
+    void setSqlTranslator(SqlTranslator sqlTranslator);
 }

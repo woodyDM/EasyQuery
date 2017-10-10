@@ -1,14 +1,15 @@
 package cn.deepmax.entity.entity;
 
+import java.math.BigDecimal;
+import java.math.BigInteger;
 import java.sql.Timestamp;
+import java.util.Date;
 
 public class User {
-    private Integer id1;
-    private int id2;
-    private Long id3;
-    private long id4;
+    private long id;
     private String name;
     private Timestamp createTime;
+    private Date updateDate;
     private Boolean ok1;
     private boolean ok2;
     private double point1;
@@ -19,12 +20,10 @@ public class User {
     @Override
     public String toString() {
         final StringBuffer sb = new StringBuffer("User{");
-        sb.append("id1=").append(id1);
-        sb.append(", id2=").append(id2);
-        sb.append(", id3=").append(id3);
-        sb.append(", id4=").append(id4);
+        sb.append("id=").append(id);
         sb.append(", name='").append(name).append('\'');
         sb.append(", createTime=").append(createTime);
+        sb.append(", updateDate=").append(updateDate);
         sb.append(", ok1=").append(ok1);
         sb.append(", ok2=").append(ok2);
         sb.append(", point1=").append(point1);
@@ -35,36 +34,12 @@ public class User {
         return sb.toString();
     }
 
-    public Integer getId1() {
-        return id1;
+    public long getId() {
+        return id;
     }
 
-    public void setId1(Integer id1) {
-        this.id1 = id1;
-    }
-
-    public int getId2() {
-        return id2;
-    }
-
-    public void setId2(int id2) {
-        this.id2 = id2;
-    }
-
-    public Long getId3() {
-        return id3;
-    }
-
-    public void setId3(Long id3) {
-        this.id3 = id3;
-    }
-
-    public long getId4() {
-        return id4;
-    }
-
-    public void setId4(long id4) {
-        this.id4 = id4;
+    public void setId(long id) {
+        this.id = id;
     }
 
     public String getName() {
@@ -81,6 +56,16 @@ public class User {
 
     public void setCreateTime(Timestamp createTime) {
         this.createTime = createTime;
+    }
+
+
+
+    public Date getUpdateDate() {
+        return updateDate;
+    }
+
+    public void setUpdateDate(Date updateDate) {
+        this.updateDate = updateDate;
     }
 
     public Boolean getOk1() {

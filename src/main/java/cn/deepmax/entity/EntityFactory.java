@@ -53,6 +53,10 @@ public class EntityFactory {
     }
 
 
+    public void setEntityPrimaryKey(Object target,Object value,String primaryKeyName){
+
+    }
+
     private void setValue(Object target,Object value,Method setter,Class<?> beanValueType){
         if(isCompatibleType(value,beanValueType)){
             try {

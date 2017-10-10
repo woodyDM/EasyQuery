@@ -10,6 +10,9 @@ import java.lang.reflect.Method;
 import java.util.LinkedHashMap;
 import java.util.Map;
 
+/**
+ * used to convert a javabean to LinkedHashMap<String,Object>
+ */
 public class BeanToMap {
 
     public static Map<String,Object> convert(Object bean){
@@ -26,7 +29,7 @@ public class BeanToMap {
         return map;
     }
 
-    private static PropertyDescriptor[] getPropertyDescriptor(Class<?> clazz){
+    public static PropertyDescriptor[] getPropertyDescriptor(Class<?> clazz){
         try {
             return Introspector.getBeanInfo(clazz).getPropertyDescriptors();
         } catch (IntrospectionException e) {

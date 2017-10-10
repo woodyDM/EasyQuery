@@ -9,4 +9,5 @@ public interface SqlTranslator {
     Pair<String,List<Object>> getUpdateSQL(Object obj);
     Pair<String,List<Object>> getSelectSQL(Object obj);
     Pair<String,List<Object>> getDeleteSQL(Object obj);
+    EntityInfo getEntityInfo();
 }

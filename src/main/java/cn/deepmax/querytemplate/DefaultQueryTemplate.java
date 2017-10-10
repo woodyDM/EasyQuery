@@ -1,9 +1,11 @@
 package cn.deepmax.querytemplate;
 
 import cn.deepmax.entity.EntityFactory;
+import cn.deepmax.entity.SqlTranslator;
 import cn.deepmax.exception.EasyQueryException;
 import cn.deepmax.mapper.ColumnNameMapper;
 import cn.deepmax.mapper.MapColumnNameMapper;
+import cn.deepmax.model.Pair;
 import cn.deepmax.resultsethandler.ResultSetHandler;
 import cn.deepmax.resultsethandler.RowRecord;
 import cn.deepmax.transaction.Transaction;
@@ -22,14 +24,17 @@ public class DefaultQueryTemplate implements QueryTemplate {
     private Transaction transaction;
     private EntityFactory entityFactory;
     private boolean isShowSql;
+    private SqlTranslator sqlTranslator;
 
     private static final Logger logger = LoggerFactory.getLogger(DefaultQueryTemplate.class);
 
-    public DefaultQueryTemplate(Transaction transaction, EntityFactory entityFactory, boolean isShowSql) {
+    public DefaultQueryTemplate(Transaction transaction, EntityFactory entityFactory, boolean isShowSql, SqlTranslator sqlTranslator) {
         this.transaction = transaction;
         this.entityFactory = entityFactory;
         this.isShowSql = isShowSql;
+        this.sqlTranslator = sqlTranslator;
     }
+
 
     @Override
     public void setColumnNameMapper(ColumnNameMapper columnNameMapper) {
@@ -163,6 +168,53 @@ public class DefaultQueryTemplate implements QueryTemplate {
         }
     }
 
+
+    @Override
+    public Boolean save(Object obj){
+        Pair<String,List<Object>> info = sqlTranslator.getInsertSQL(obj);
+        Connection cn = transaction.getConnection();
+        PreparedStatement ps=null;
+        ResultSet rs=null;
+        try {
+            ps = cn.prepareStatement(info.first,Statement.RETURN_GENERATED_KEYS);
+            setPrepareStatementParams(ps,info.last.toArray());
+            if(isShowSql){
+                logger.debug("[insert] "+info.first);
+            }
+            int effectRow= ps.executeUpdate();
+            if(effectRow==0){
+                return false;
+            }
+            rs = ps.getGeneratedKeys();
+            return setNextId(rs,obj);
+        } catch (SQLException e) {
+            throw new EasyQueryException(e);
+        } finally {
+            closeResources(ps,rs, transaction);
+        }
+    }
+
+
+    private Boolean setNextId(ResultSet rs,Object target) throws SQLException {
+        Object nextId=null;
+        if(rs!=null){
+            if(rs.next()){
+                nextId = rs.getObject(1);
+            }
+        }
+        if(nextId!=null){
+            sqlTranslator.getEntityInfo().setPrimaryKeyFieldValue(target,nextId);
+            return true;
+        }
+        return false;
+
+    }
+
+    @Override
+    public void update(Object obj) {
+        Pair<String,List<Object>> pair = sqlTranslator.getUpdateSQL(obj);
+        executeUpdate(pair.first, pair.last.toArray());
+    }
 
     @Override
     public <T> T selectScalar(String sql, Class<T> clazz, Object... params) {
