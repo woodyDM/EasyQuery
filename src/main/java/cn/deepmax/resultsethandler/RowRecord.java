@@ -1,6 +1,6 @@
 package cn.deepmax.resultsethandler;
 
-import cn.deepmax.mapper.ColumnNameMapper;
+import cn.deepmax.mapper.NameMapper;
 
 import java.math.BigDecimal;
 import java.sql.Date;
@@ -16,17 +16,12 @@ public class RowRecord<T> implements ResultRowSet {
 
     private Map<String,Object> rowResult = new LinkedHashMap<>();
     private Class<T> clazz;
-    private Map<String,String> columnNameToFieldNameMap = new LinkedHashMap<>();     //value 可能为空，key值和rowResult一样
     public T e;
 
-    public RowRecord(Map<String, Object> rowResult, Class<T> clazz,T e,ColumnNameMapper mapper) {
+    public RowRecord(Map<String, Object> rowResult, Class<T> clazz,T e) {
         this.rowResult = rowResult;
         this.clazz = clazz;
         this.e = e;
-        for(Map.Entry<String,Object> it:rowResult.entrySet()){
-            String dbColumnName = it.getKey();
-            columnNameToFieldNameMap.put(dbColumnName,mapper.toEntityFieldName(clazz,dbColumnName));
-        }
     }
 
     @Override

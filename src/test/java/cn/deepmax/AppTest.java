@@ -2,7 +2,9 @@ package cn.deepmax;
 
 
 import cn.deepmax.querytemplate.QueryTemplateFactory;
-import cn.deepmax.querytemplate.DefaultQueryTemplateFactory;
+import cn.deepmax.querytemplate.SimpleQueryTemplateFactory;
+import cn.deepmax.transaction.DefaultTransactionFactory;
+import cn.deepmax.transaction.TransactionFactory;
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
 import org.springframework.context.annotation.Bean;
@@ -21,9 +23,11 @@ public class AppTest {
 
     @Bean
     public QueryTemplateFactory queryTemplateFactory(DataSource dataSource){
-        DefaultQueryTemplateFactory factory = new DefaultQueryTemplateFactory(dataSource);
-        factory.setShowSql(true);
-        return factory;
+        SimpleQueryTemplateFactory factory = new SimpleQueryTemplateFactory(dataSource);
+        TransactionFactory factory1 = new DefaultTransactionFactory();
+        factory.setTransactionFactory(factory1);
+        factory.isShowSql(true);
+        return factory.build();
     }
 
 }

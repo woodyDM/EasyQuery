@@ -14,28 +14,28 @@ public interface SqlTranslator {
      * @param obj
      * @return
      */
-    Pair<String,List<Object>> getInsertSQL(Object obj);
+    Pair<String,List<Object>> getInsertSQLInfo(Object obj);
 
     /**
      * get sql and sql array params for obj entity to update.
      * @param obj
      * @return
      */
-    Pair<String,List<Object>> getUpdateSQL(Object obj);
+    Pair<String,List<Object>> getUpdateSQLInfo(Object obj);
 
     /**
      * get sql and sql array params for obj entity to select by primaryKey.
-     * @param obj
+     * @param clazz
      * @return
      */
-    Pair<String,List<Object>> getSelectSQL(Object obj);
+    String getSelectSQLInfo(Class<?> clazz);
 
     /**
      * get sql and sql array params for obj entity to delete by primaryKey.
      * @param obj
      * @return
      */
-    Pair<String,List<Object>> getDeleteSQL(Object obj);
+    Pair<String,Object> getDeleteSQLInfo(Object obj);
 
     /**
      * return the EntityInfo implement.

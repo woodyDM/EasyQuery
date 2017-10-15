@@ -1,32 +1,40 @@
 package cn.deepmax.entity;
 
-import cn.deepmax.mapper.FieldNameMapper;
-import cn.deepmax.mapper.SameFieldNameMapper;
+import cn.deepmax.mapper.NameMapper;
 import java.beans.PropertyDescriptor;
 import java.util.ArrayList;
 import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
 
+/**
+ * 使用NameMapper 的实体管理器,只支持 主键为 id
+ *
+ */
 public class SimpleEntityInfo extends AbstractEntityInfo {
 
+
+    private NameMapper toTableNameMapper;
+    private NameMapper toColumnNameMapper;
+
+    public SimpleEntityInfo(NameMapper toTableNameMapper, NameMapper toColumnNameMapper) {
+        this.toTableNameMapper = toTableNameMapper;
+        this.toColumnNameMapper = toColumnNameMapper;
+    }
+
+    public void setToTableNameMapper(NameMapper toTableNameMapper) {
+        this.toTableNameMapper = toTableNameMapper;
+    }
+
+    public void setToColumnNameMapper(NameMapper toColumnNameMapper) {
+        this.toColumnNameMapper = toColumnNameMapper;
+    }
+
     /**
-     * used to convert fieldName to columnName
+     *
+     * @param clazz
+     * @return
      */
-    private FieldNameMapper fieldNameMapper;
-
-    public SimpleEntityInfo() {
-        this.fieldNameMapper = new SameFieldNameMapper();
-    }
-
-    public SimpleEntityInfo(FieldNameMapper fieldNameMapper) {
-        this.fieldNameMapper = fieldNameMapper;
-    }
-
-    public void setFieldNameMapper(FieldNameMapper fieldNameMapper) {
-        this.fieldNameMapper = fieldNameMapper;
-    }
-
     @Override
     public String getCatalogName(Class<?> clazz) {
         return null;
@@ -34,24 +42,28 @@ public class SimpleEntityInfo extends AbstractEntityInfo {
 
     @Override
     public String getTableName(Class<?> clazz) {
-        return "user";  //TODO 修改
+        return toTableNameMapper.convert(clazz,null);
     }
-
-    /**
-     * simpleEntityInfo only supports "id" ,primaryKey fieldName.
-     * @param clazz
-     * @return
-     */
     @Override
     public String getPrimaryKeyFieldName(Class<?> clazz) {
         return "id";
+    }
+
+
+    @Override
+    Map<String, String> getColumnNameToFieldNameMap(Class<?> clazz) {
+        Map<String,String> map = new LinkedHashMap<>();
+        for(Map.Entry<String,String> entry:getFieldNameToColumnNameMap(clazz).entrySet()){
+            map.put(entry.getValue(),entry.getKey());
+        }
+        return map;
     }
 
     @Override
     Map<String, String> getFieldNameToColumnNameMap(Class<?> clazz) {
         Map<String,String> map = new LinkedHashMap<>();
         for(String field:getBeanFieldNameList(clazz)){
-            String columnName = fieldNameMapper.toDatabaseColumnName(clazz,field);
+            String columnName = toColumnNameMapper.convert(clazz,field);
             map.put(field,columnName);
         }
         return map;

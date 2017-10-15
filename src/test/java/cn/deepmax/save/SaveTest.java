@@ -11,6 +11,7 @@ import org.junit.runner.RunWith;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
+import org.springframework.util.Assert;
 
 import java.math.BigDecimal;
 import java.sql.Timestamp;
@@ -33,14 +34,28 @@ public class SaveTest {
         u.setPoint4(3.4F);
         u.setUpdateDate(new Date());
         u.setBigDecimal(BigDecimal.TEN);
-        u.setId(34L);
+
+
         QueryTemplate template = factory.create();
         template.save(u);
-        System.out.println("after save  "+u);
+
         u.setPoint1(2.1D);
         u.setBigDecimal(BigDecimal.ONE);
         u.setPoint3(444.44F);
         template.save(u);
-        System.out.println("after update  "+u);
+
+        SuperUser sUser = template.get(SuperUser.class,u.getId());
+
+        Assert.notNull(sUser,"not null");
+        Assert.isTrue(template.delete(sUser),"delete");
+    }
+
+    @Test
+    public void testDelete(){
+        SuperUser user = new SuperUser();
+        user.setId(1L);
+        QueryTemplate template = factory.create();
+        System.out.println(template.delete(user));
+
     }
 }

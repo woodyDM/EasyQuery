@@ -26,7 +26,7 @@ public class DefaultSqlTranslator implements SqlTranslator{
     }
 
     @Override
-    public Pair<String,List<Object>> getInsertSQL(Object obj){
+    public Pair<String,List<Object>> getInsertSQLInfo(Object obj){
         Class<?> clazz = obj.getClass();
         Map<String,Object> values = BeanToMap.convert(obj);
         String sql = getInsertSql(clazz);
@@ -42,7 +42,7 @@ public class DefaultSqlTranslator implements SqlTranslator{
      */
     private String getInsertSql(Class<?> clazz){
         List<String> fieldNameList = entityInfo.beanFieldNameList(clazz);
-        String sql = selectCache.get(clazz.getName());
+        String sql = insertCache.get(clazz.getName());
         if(sql!=null){
             return sql;
         }
@@ -71,12 +71,12 @@ public class DefaultSqlTranslator implements SqlTranslator{
         deleteLastChar(sb,counter);
         sb.append(") ");
         sql = sb.toString();
-        selectCache.put(clazz.getName(),sql);
+        insertCache.put(clazz.getName(),sql);
         return sql;
     }
 
     @Override
-    public Pair<String,List<Object>> getUpdateSQL(Object obj){
+    public Pair<String,List<Object>> getUpdateSQLInfo(Object obj){
         Class<?> clazz = obj.getClass();
         Map<String,Object> values = BeanToMap.convert(obj);
         String sql = getUpdateSQL(clazz);
@@ -134,20 +134,6 @@ public class DefaultSqlTranslator implements SqlTranslator{
     }
 
 
-
-
-
-
-
-    @Override
-    public Pair<String,List<Object>> getSelectSQL(Object obj){
-        return null;
-    }
-    @Override
-    public Pair<String,List<Object>> getDeleteSQL(Object obj){
-        return null;
-    }
-
     /**
      * remove redundant comma at last char in stringbuilder.
      * @param sb
@@ -158,6 +144,53 @@ public class DefaultSqlTranslator implements SqlTranslator{
             sb.deleteCharAt(sb.length()-1);
         }
     }
+
+    @Override
+    public String getSelectSQLInfo(Class<?> clazz){
+        String sql = selectCache.get(clazz.getName());
+        if(sql!=null){
+            return sql;
+        }
+        StringBuilder sb = new StringBuilder();
+        String tableName = entityInfo.getFullTableName(clazz);
+        String primaryColumnName = entityInfo.fieldNameToColumnNameMap(clazz).get(entityInfo.getPrimaryKeyFieldName(clazz));
+        sb.append("select * from ")
+                .append(tableName)
+                .append( "  where ")
+                .append(primaryColumnName)
+                .append(" = ?  ");
+        sql = sb.toString();
+        selectCache.put(clazz.getName(),sql);
+        return sql;
+    }
+
+    @Override
+    public Pair<String,Object> getDeleteSQLInfo(Object obj){
+        Class<?> clazz = obj.getClass();
+        String sql = getDeleteSQL(clazz);
+        Object primaryKeyValue = entityInfo.getPrimaryKeyFieldValue(obj);
+        Objects.requireNonNull(primaryKeyValue,"Entity of type["+clazz.getName()+"] primaryKey value is null");
+        return new Pair<>(sql,primaryKeyValue);
+    }
+
+    private String getDeleteSQL(Class<?> clazz){
+        String sql = deleteCache.get(clazz.getName());
+        if(sql!=null){
+            return sql;
+        }
+        StringBuilder sb = new StringBuilder();
+        String tableName = entityInfo.getFullTableName(clazz);
+        String primaryColumnName = entityInfo.fieldNameToColumnNameMap(clazz).get(entityInfo.getPrimaryKeyFieldName(clazz));
+        sb.append("delete from ")
+                .append(tableName)
+                .append( "  where ")
+                .append(primaryColumnName)
+                .append(" = ?  ");
+        sql = sb.toString();
+        deleteCache.put(clazz.getName(),sql);
+        return sql;
+    }
+
 
 
 }

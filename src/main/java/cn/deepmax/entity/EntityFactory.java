@@ -1,6 +1,6 @@
 package cn.deepmax.entity;
 
-import cn.deepmax.mapper.ColumnNameMapper;
+import cn.deepmax.mapper.NameMapper;
 
 import java.beans.BeanInfo;
 import java.beans.IntrospectionException;
@@ -15,14 +15,14 @@ import java.util.Map;
 public class EntityFactory {
 
 
-    private ColumnNameMapper columnNameMapper;
+    private EntityInfo entityInfo;
 
-    public EntityFactory(ColumnNameMapper columnNameMapper) {
-        this.columnNameMapper = columnNameMapper;
+    public EntityFactory(EntityInfo entityInfo) {
+        this.entityInfo = entityInfo;
     }
 
-    public ColumnNameMapper getColumnNameMapper() {
-        return columnNameMapper;
+    public EntityInfo getEntityInfo() {
+        return entityInfo;
     }
 
     /**
@@ -38,13 +38,14 @@ public class EntityFactory {
         for(Map.Entry<String,Object> entry:columnNameWithFieldValueMap.entrySet()){
             String key = entry.getKey();
             Object value = entry.getValue();
-            String fieldName = columnNameMapper.toEntityFieldName(clazz,key);
+            String fieldName = entityInfo.fieldNameToColumnName(clazz,key);
 
             if(fieldName!=null && fieldName.length()!=0){
                 PropertyDescriptor propertyDescriptor = propertyDescriptorMap.get(fieldName);
                 if(propertyDescriptor!=null){
                     Method setter = propertyDescriptor.getWriteMethod();
                     Class<?> beanValueType = propertyDescriptor.getPropertyType();
+                    value = TypeAdapter.getCompatibleValue(beanValueType,value);
                     setValue(obj, value, setter, beanValueType);
                 }
             }
@@ -53,9 +54,6 @@ public class EntityFactory {
     }
 
 
-    public void setEntityPrimaryKey(Object target,Object value,String primaryKeyName){
-
-    }
 
     private void setValue(Object target,Object value,Method setter,Class<?> beanValueType){
         if(isCompatibleType(value,beanValueType)){

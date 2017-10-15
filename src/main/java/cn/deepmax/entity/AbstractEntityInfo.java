@@ -13,25 +13,38 @@ import java.util.Map;
 
 public abstract class AbstractEntityInfo implements EntityInfo {
 
+    private Map<String,PropertyDescriptor> primaryKeyPropertyDescriptorCache = new HashMap<>();
     private Map<String,List<String>> beanFieldNameCache = new HashMap<>();
     private Map<String,Map<String,String>> fieldNameToColumnNameMapCache = new HashMap<>();
-    private Map<String,PropertyDescriptor> primaryKeyPropertyDescriptorCache = new HashMap<>();
+    private Map<String,Map<String,String>> columnNameToFieldNameMapCache = new HashMap<>();
+    private Map<String,String> fullTableNameCache = new HashMap<>();
 
-    abstract Map<String, String> getFieldNameToColumnNameMap(Class<?> clazz);
     abstract List<String> getBeanFieldNameList(Class<?> clazz);
+    abstract Map<String, String> getFieldNameToColumnNameMap(Class<?> clazz);
+    abstract Map<String, String> getColumnNameToFieldNameMap(Class<?> clazz);
+
 
     @Override
     public String getFullTableName(Class<?> clazz) {
-        String catalogName = getCatalogName(clazz);
-        if(catalogName==null || catalogName.length()==0){
-            return getTableName(clazz);
-        }else{
-            String tableName = getTableName(clazz);
-            if(tableName==null||tableName.length()==0){
-                throw new EasyQueryException("Can't get table name of entity with type["+clazz.getName()+"] .");
+        String fullTableName = fullTableNameCache.get(clazz.getName());
+        if(fullTableName==null||fullTableName.length()==0){
+            String catalogName = getCatalogName(clazz);
+            if(catalogName==null || catalogName.length()==0){
+                fullTableName = doGetTableName(clazz);
+            }else{
+                fullTableName = catalogName+"."+doGetTableName(clazz);
             }
-            return catalogName+"."+getTableName(clazz);
+            fullTableNameCache.put(clazz.getName(),fullTableName);
         }
+        return fullTableName;
+    }
+
+    private String doGetTableName(Class<?> clazz){
+        String tableName = getTableName(clazz);
+        if(tableName==null||tableName.length()==0){
+            throw new EasyQueryException("Unable to get table name of type["+clazz.getName()+"] .");
+        }
+        return tableName;
     }
 
     @Override
@@ -42,6 +55,36 @@ public abstract class AbstractEntityInfo implements EntityInfo {
             fieldNameToColumnNameMapCache.put(clazz.getName(),map);
         }
         return map;
+    }
+
+    @Override
+    public Map<String, String> columnNameToFieldNameMap(Class<?> clazz) {
+        Map<String, String> map = columnNameToFieldNameMapCache.get(clazz.getName());
+        if(map==null){
+            map = getColumnNameToFieldNameMap(clazz);
+            columnNameToFieldNameMapCache.put(clazz.getName(),map);
+        }
+        return map;
+    }
+
+    @Override
+    public String columnNameToFieldName(Class<?> clazz, String columnName) {
+        Map<String,String> map = columnNameToFieldNameMap(clazz);
+        if(map==null){
+            return null;
+        }else{
+            return map.get(columnName);
+        }
+    }
+
+    @Override
+    public String fieldNameToColumnName(Class<?> clazz, String fieldName) {
+        Map<String,String> map = fieldNameToColumnNameMapCache.get(clazz.getName());
+        if(map==null){
+            return null;
+        }else{
+            return map.get(fieldName);
+        }
     }
 
     @Override
@@ -106,7 +149,7 @@ public abstract class AbstractEntityInfo implements EntityInfo {
     private void setPrimaryKeyFieldValue(Object target,Object value, Method setter){
         Class<?> targetType = getPrimaryKeyFieldType(target.getClass());
         if(!targetType.isInstance(value)){
-            value = getCompatibleValue(targetType,value);
+            value = TypeAdapter.getCompatibleValue(targetType,value);
         }
         try {
             setter.invoke(target,value);
@@ -117,25 +160,5 @@ public abstract class AbstractEntityInfo implements EntityInfo {
         }
     }
 
-    /**
-     * change primarykey value to desired javabean primarykey type.
-     * @param targetType
-     * @param value
-     * @return
-     */
-    private Object getCompatibleValue(Class<?> targetType, Object value){
-        String v = value.toString();
-        if(targetType==int.class || targetType==Integer.class){
-            return Integer.valueOf(v);
-        }else if(targetType==long.class || targetType==Long.class){
-            return Long.valueOf(v);
-        }else if(targetType==BigInteger.class){
-            return BigInteger.valueOf(Long.valueOf(v));
-        }else if(targetType==String.class){
-            return v;
-        }else{
-            throw new EasyQueryException("PrimaryKey of type["+targetType.getName()+"] is not supported.");
-        }
-    }
 
 }

@@ -29,6 +29,22 @@ public interface EntityInfo {
      */
     String getFullTableName(Class<?> clazz);
 
+
+    /**
+     *
+     * @param clazz
+     * @return
+     */
+    Map<String,String> columnNameToFieldNameMap(Class<?> clazz);
+
+    /**
+     *
+     * @param clazz
+     * @param columnName
+     * @return
+     */
+    String columnNameToFieldName(Class<?> clazz,String columnName);
+
     /**
      * entity fieldName to database columnName information,
      * fieldName including primarykey(PK) fieldName
@@ -38,12 +54,22 @@ public interface EntityInfo {
     Map<String,String> fieldNameToColumnNameMap(Class<?> clazz);
 
     /**
+     *
+     * @param clazz
+     * @param fieldName
+     * @return
+     */
+    String fieldNameToColumnName(Class<?> clazz,String fieldName);
+
+    /**
      * entity fieldNames that are desired to persist
      * include primaryKey fieldName
      * @param clazz
      * @return
      */
     List<String> beanFieldNameList(Class<?> clazz);
+
+
 
     /**
      * entity primaryKey field java type

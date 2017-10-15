@@ -10,7 +10,7 @@ public class DefaultTransaction implements Transaction {
 
     private static  final  Logger logger = LoggerFactory.getLogger(DefaultTransaction.class);
     protected DataSource dataSource;
-    protected boolean isTransationMode;
+    protected boolean isTransactionMode;
     protected Connection connection;
     protected boolean isAutoCommit;
     protected boolean oldAutoCommit;
@@ -23,7 +23,7 @@ public class DefaultTransaction implements Transaction {
 
     @Override
     public boolean isTransactionMode() {
-        return isTransationMode;
+        return isTransactionMode;
     }
 
     @Override
@@ -34,55 +34,55 @@ public class DefaultTransaction implements Transaction {
     @Override
     public void beginTransaction() {
 
-        if(!isTransationMode){
-            logger.debug("open new Transaction with connection ["+connection.toString()+"]");
-            isTransationMode = true;
+        if(!isTransactionMode){
+            logger.debug("Open new Transaction with connection [{}]",connection.toString());
+            isTransactionMode = true;
             oldAutoCommit = isAutoCommit;
             if(isAutoCommit){
                 try {
                     connection.setAutoCommit(false);
                     isAutoCommit = false;
                 } catch (SQLException e) {
-                    throw new RuntimeException("failed to set autocommit to false",e);
+                    throw new RuntimeException("Failed to set autocommit to false",e);
                 }
             }
         }else{
-            logger.debug("already in transationMode with connection ["+connection.toString()+"]");
+            logger.debug("Already in transaction mode with connection [{}]",connection.toString());
         }
     }
 
 
     @Override
     public void commit() {
-        if(isTransationMode){
-            logger.debug("commit Transaction with connection ["+connection.toString()+"]");
+        if(isTransactionMode){
+            logger.debug("Commit transaction with connection [{}]",connection.toString());
             try {
                 connection.commit();
                 connection.setAutoCommit(oldAutoCommit);
-                isTransationMode = false;
+                isTransactionMode = false;
                 isAutoCommit = oldAutoCommit;
             } catch (SQLException e) {
-                throw new RuntimeException("fail to commit.",e);
+                throw new RuntimeException("Fail to commit.",e);
             }
         }else{
-            throw new IllegalStateException("should not commit without a transaction.");
+            throw new IllegalStateException("Should not commit without a transaction.");
         }
     }
 
     @Override
     public void rollback() {
-        if(isTransationMode){
-            logger.debug("rollback Transaction with connection ["+connection.toString()+"]");
+        if(isTransactionMode){
+            logger.debug("Rollback transaction with connection [{}]",connection.toString());
             try {
                 connection.rollback();
                 connection.setAutoCommit(oldAutoCommit);
-                isTransationMode = false;
+                isTransactionMode = false;
                 isAutoCommit = oldAutoCommit;
             } catch (SQLException e) {
-                throw new RuntimeException("fail to rollback.",e);
+                throw new RuntimeException("Fail to rollback.",e);
             }
         }else{
-            throw new IllegalStateException("should not rollback without a transaction.");
+            throw new IllegalStateException("Should not rollback without a transaction.");
         }
     }
 
@@ -92,7 +92,7 @@ public class DefaultTransaction implements Transaction {
 
             try {
                 connection.close();
-                logger.debug("Close connection ["+connection.toString()+"]");
+                logger.debug("Close connection [{}]",connection.toString());
                 connection = null;
             } catch (SQLException e) {
                 e.printStackTrace();
@@ -112,8 +112,8 @@ public class DefaultTransaction implements Transaction {
         try {
             connection = dataSource.getConnection();
             isAutoCommit = connection.getAutoCommit();
-            isTransationMode = false;
-            logger.debug(" Create new connection ["+connection.toString()+"]");
+            isTransactionMode = false;
+            logger.debug("Create new connection [{}]",connection.toString());
         } catch (SQLException e) {
             e.printStackTrace();
         }
