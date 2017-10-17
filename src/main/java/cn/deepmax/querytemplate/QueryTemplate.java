@@ -1,9 +1,8 @@
 package cn.deepmax.querytemplate;
 
-import cn.deepmax.mapper.NameMapper;
+
 import cn.deepmax.resultsethandler.RowRecord;
 import cn.deepmax.transaction.Transaction;
-
 import java.util.List;
 import java.util.Map;
 

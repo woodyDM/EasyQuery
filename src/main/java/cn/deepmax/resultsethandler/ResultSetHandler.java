@@ -1,6 +1,5 @@
 package cn.deepmax.resultsethandler;
 
-import cn.deepmax.model.Pair;
 
 import java.sql.ResultSet;
 import java.sql.ResultSetMetaData;

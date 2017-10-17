@@ -1,6 +1,5 @@
 package cn.deepmax.entity;
 
-import cn.deepmax.exception.EasyQueryException;
 
 import java.util.List;
 import java.util.Map;

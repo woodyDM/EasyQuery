@@ -3,15 +3,12 @@ package cn.deepmax.querytemplate;
 import cn.deepmax.entity.EntityFactory;
 import cn.deepmax.entity.SqlTranslator;
 import cn.deepmax.exception.EasyQueryException;
-import cn.deepmax.mapper.NameMapper;
-import cn.deepmax.mapper.MappedNameMapper;
 import cn.deepmax.model.Pair;
 import cn.deepmax.resultsethandler.ResultSetHandler;
 import cn.deepmax.resultsethandler.RowRecord;
 import cn.deepmax.transaction.Transaction;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-
 import java.sql.*;
 import java.util.*;
 

@@ -1,6 +1,6 @@
 package cn.deepmax.entity;
 
-import cn.deepmax.exception.EasyQueryException;
+
 import cn.deepmax.model.Pair;
 import java.util.*;
 

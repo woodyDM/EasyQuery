@@ -1,7 +1,6 @@
 package cn.deepmax.entity;
 
 import cn.deepmax.exception.EasyQueryException;
-
 import java.lang.reflect.Field;
 import java.math.BigDecimal;
 import java.math.BigInteger;

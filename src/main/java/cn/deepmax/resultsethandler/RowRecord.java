@@ -1,6 +1,5 @@
 package cn.deepmax.resultsethandler;
 
-import cn.deepmax.mapper.NameMapper;
 
 import java.math.BigDecimal;
 import java.sql.Date;
