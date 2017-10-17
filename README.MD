@@ -4,3 +4,6 @@
 建议实体类都用包装类型
 javabean default constructor
 //TODO 还需要写一个用注解的实体管理器
+test:
+http://blog.csdn.net/hfmbook/article/details/54578137
+
