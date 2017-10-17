@@ -219,16 +219,11 @@ public class DefaultQueryTemplate implements QueryTemplate {
         }
     }
 
-
-
-
     private Boolean doUpdate(Object obj) {
         Pair<String,List<Object>> pair = sqlTranslator.getUpdateSQLInfo(obj);
         int i =executeUpdate(pair.first, pair.last.toArray());
         return (i!=0);
     }
-
-
 
     private Boolean setEntityPrimaryKeyValue(ResultSet rs, Object target) throws SQLException {
         Object nextId=null;

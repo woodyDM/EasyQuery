@@ -31,7 +31,7 @@ public interface QueryTemplate {
     <T> T get(Class<T> clazz,Object primary);
 
     /**
-     * only support autoincrement pk
+     * only support autoincrement primaryKey
      * @param obj
      * @return
      */

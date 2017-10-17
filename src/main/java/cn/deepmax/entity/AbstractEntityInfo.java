@@ -149,9 +149,7 @@ public abstract class AbstractEntityInfo implements EntityInfo {
 
     private void setPrimaryKeyFieldValue(Object target,Object value, Method setter){
         Class<?> targetType = getPrimaryKeyFieldType(target.getClass());
-        if(!targetType.isInstance(value)){
-            value = TypeAdapter.getCompatibleValue(targetType,value);
-        }
+        value = TypeAdapter.getCompatibleValue(targetType,value);
         try {
             setter.invoke(target,value);
         } catch (IllegalAccessException e) {
