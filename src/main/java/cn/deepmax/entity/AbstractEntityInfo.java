@@ -10,7 +10,11 @@ import java.math.BigInteger;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Objects;
 
+/**
+ * provide a abstract EntityInfo implementation  to support cache.
+ */
 public abstract class AbstractEntityInfo implements EntityInfo {
 
     private Map<String,PropertyDescriptor> primaryKeyPropertyDescriptorCache = new HashMap<>();
@@ -58,6 +62,16 @@ public abstract class AbstractEntityInfo implements EntityInfo {
     }
 
     @Override
+    public String fieldNameToColumnName(Class<?> clazz, String fieldName) {
+        Map<String,String> map = fieldNameToColumnNameMap(clazz);
+        if(map==null){
+            return null;
+        }else{
+            return map.get(fieldName);
+        }
+    }
+
+    @Override
     public Map<String, String> columnNameToFieldNameMap(Class<?> clazz) {
         Map<String, String> map = columnNameToFieldNameMapCache.get(clazz.getName());
         if(map==null){
@@ -77,15 +91,6 @@ public abstract class AbstractEntityInfo implements EntityInfo {
         }
     }
 
-    @Override
-    public String fieldNameToColumnName(Class<?> clazz, String fieldName) {
-        Map<String,String> map = fieldNameToColumnNameMapCache.get(clazz.getName());
-        if(map==null){
-            return null;
-        }else{
-            return map.get(fieldName);
-        }
-    }
 
     @Override
     public List<String> beanFieldNameList(Class<?> clazz) {
@@ -97,6 +102,7 @@ public abstract class AbstractEntityInfo implements EntityInfo {
         return list;
     }
 
+
     @Override
     public Class<?> getPrimaryKeyFieldType(Class<?> clazz) {
          return getPrimaryKeyFieldPropertyDescriptor(clazz).getPropertyType();
@@ -104,6 +110,7 @@ public abstract class AbstractEntityInfo implements EntityInfo {
 
     @Override
     public Object getPrimaryKeyFieldValue(Object object) {
+        Objects.requireNonNull(object,"TargetObject is null.");
         Class<?> clazz = object.getClass();
         PropertyDescriptor descriptor = getPrimaryKeyFieldPropertyDescriptor(clazz);
         return getPrimaryKeyFieldValue(object,descriptor.getReadMethod());
@@ -111,6 +118,7 @@ public abstract class AbstractEntityInfo implements EntityInfo {
 
     @Override
     public void setPrimaryKeyFieldValue(Object target, Object value) {
+        Objects.requireNonNull(target,"TargetObject is null.");
         Class<?> clazz = target.getClass();
         PropertyDescriptor descriptor = getPrimaryKeyFieldPropertyDescriptor(clazz);
         setPrimaryKeyFieldValue(target,value,descriptor.getWriteMethod());
@@ -140,12 +148,6 @@ public abstract class AbstractEntityInfo implements EntityInfo {
         }
     }
 
-    /**
-     * only support primaryKey type:Integer int Long long BigInteger String
-     * @param target    bean
-     * @param value     primaryKey value
-     * @param setter    primaryKeyField Setter
-     */
     private void setPrimaryKeyFieldValue(Object target,Object value, Method setter){
         Class<?> targetType = getPrimaryKeyFieldType(target.getClass());
         if(!targetType.isInstance(value)){

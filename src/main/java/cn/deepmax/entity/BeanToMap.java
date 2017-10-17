@@ -15,6 +15,11 @@ import java.util.Map;
  */
 public class BeanToMap {
 
+    /**
+     * convert java bean to LinkedHashMap<String,Object>
+     * @param bean
+     * @return  LinkedHashMap<String,Object>
+     */
     public static Map<String,Object> convert(Object bean){
         PropertyDescriptor[] propertyDescriptors = getPropertyDescriptor(bean.getClass());
         LinkedHashMap<String,Object> map = new LinkedHashMap<>();
@@ -36,6 +41,7 @@ public class BeanToMap {
             throw new EasyQueryException(e);
         }
     }
+
     private static Object getFieldValue(Method getter,Object target){
         try {
             Object value = getter.invoke(target);

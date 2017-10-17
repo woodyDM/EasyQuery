@@ -32,6 +32,8 @@ public class SaveTest {
         u.setPoint1(33.3D);
         u.setPoint2(32.2D);
         u.setPoint4(3.4F);
+        u.setOk1(true);
+        u.setOk2(true);
         u.setUpdateDate(new Date());
         u.setBigDecimal(BigDecimal.TEN);
 

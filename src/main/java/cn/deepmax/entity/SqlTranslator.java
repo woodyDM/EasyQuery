@@ -6,7 +6,7 @@ import java.util.List;
 /**
  * SqlTranslator supports QueryTemplates's entity operations, including
  * save,update,insert,delete
- * SqlTranslator requires an EntityInfo implement for working.
+ * SqlTranslator requires an EntityInfo implementation for working.
  */
 public interface SqlTranslator {
     /**
@@ -24,14 +24,14 @@ public interface SqlTranslator {
     Pair<String,List<Object>> getUpdateSQLInfo(Object obj);
 
     /**
-     * get sql and sql array params for obj entity to select by primaryKey.
+     * get sql for obj entity to select by primaryKey.
      * @param clazz
      * @return
      */
     String getSelectSQLInfo(Class<?> clazz);
 
     /**
-     * get sql and sql array params for obj entity to delete by primaryKey.
+     * get sql and primary key field value for obj entity to delete by primaryKey.
      * @param obj
      * @return
      */

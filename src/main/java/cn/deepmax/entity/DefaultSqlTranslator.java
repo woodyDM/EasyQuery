@@ -4,12 +4,15 @@ import cn.deepmax.exception.EasyQueryException;
 import cn.deepmax.model.Pair;
 import java.util.*;
 
+/**
+ * default SqlTranslator implementation supporting cache.
+ */
 public class DefaultSqlTranslator implements SqlTranslator{
 
     private EntityInfo entityInfo;
 
     /**
-     * sql cache Maps for entity, key is class.name  value is sql string.
+     * sql cache Maps for entity, key is class.name ,value is sql string.
      */
     private Map<String,String> insertCache = new HashMap<>();
     private Map<String,String> updateCache = new HashMap<>();
@@ -36,30 +39,28 @@ public class DefaultSqlTranslator implements SqlTranslator{
 
     /**
      * get insert sql from cache.
-     * if not, create a insert sql and put it to cache.
+     * if cache does not exist, create an insert sql and put it into cache.
      * @param clazz
      * @return
      */
     private String getInsertSql(Class<?> clazz){
-        List<String> fieldNameList = entityInfo.beanFieldNameList(clazz);
         String sql = insertCache.get(clazz.getName());
         if(sql!=null){
             return sql;
         }
+        List<String> fieldNameList = entityInfo.beanFieldNameList(clazz);
         StringBuilder sb = new StringBuilder();
         String tableName = entityInfo.getFullTableName(clazz);
         String pk = entityInfo.getPrimaryKeyFieldName(clazz);
-        Map<String,String> convertMap = entityInfo.fieldNameToColumnNameMap(clazz);
+        Map<String,String> fieldNameToColumnNameMap = entityInfo.fieldNameToColumnNameMap(clazz);
         sb.append("insert into ").append(tableName).append(" (");
         int counter = 0;
         for(String field:fieldNameList){
             if(!field.equals(pk)){
-                String columnName = convertMap.get(field);
+                String columnName = fieldNameToColumnNameMap.get(field);
                 if(columnName!=null && columnName.length()!=0){
                     sb.append(columnName).append(",");
                     counter++;
-                }else{
-                    throw new EasyQueryException("Entity["+clazz.getName()+"] filed "+field+" don't have columnName.");
                 }
             }
         }
@@ -135,7 +136,7 @@ public class DefaultSqlTranslator implements SqlTranslator{
 
 
     /**
-     * remove redundant comma at last char in stringbuilder.
+     * remove redundant comma at last char in stringBuilder.
      * @param sb
      * @param counter
      */

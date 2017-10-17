@@ -31,6 +31,11 @@ public interface QueryTemplate {
 
     <T> T get(Class<T> clazz,Object primary);
 
+    /**
+     * only support autoincrement pk
+     * @param obj
+     * @return
+     */
     Boolean save(Object obj);
 
     Boolean delete(Object obj);

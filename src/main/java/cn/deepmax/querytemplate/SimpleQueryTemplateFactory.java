@@ -38,7 +38,7 @@ public class SimpleQueryTemplateFactory implements QueryTemplateFactory {
         if(toColumnNameMapper==null){
             toColumnNameMapper = new SameNameMapper();
         }
-        EntityInfo entityInfo = new SimpleEntityInfo(toTableNameMapper,toColumnNameMapper);
+        EntityInfo entityInfo = new MappedEntityInfo(toTableNameMapper,toColumnNameMapper);
         if(this.entityFactory==null){
             entityFactory = new EntityFactory(entityInfo);
         }

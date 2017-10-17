@@ -29,16 +29,15 @@ public interface EntityInfo {
      */
     String getFullTableName(Class<?> clazz);
 
-
     /**
-     *
+     * return a Map ,key is columnName from database and value is entity fieldName.
      * @param clazz
      * @return
      */
     Map<String,String> columnNameToFieldNameMap(Class<?> clazz);
 
     /**
-     *
+     * get columnName of clazz and fieldName , possible to be null.
      * @param clazz
      * @param columnName
      * @return
@@ -47,14 +46,13 @@ public interface EntityInfo {
 
     /**
      * entity fieldName to database columnName information,
-     * fieldName including primarykey(PK) fieldName
      * @param clazz
      * @return
      */
     Map<String,String> fieldNameToColumnNameMap(Class<?> clazz);
 
     /**
-     *
+     * get fieldName of clazz and ColumnName , possible to be null.
      * @param clazz
      * @param fieldName
      * @return
@@ -69,10 +67,8 @@ public interface EntityInfo {
      */
     List<String> beanFieldNameList(Class<?> clazz);
 
-
-
     /**
-     * entity primaryKey field java type
+     * java type of entity primaryKey field .
      * @param clazz
      * @return
      */
@@ -93,8 +89,8 @@ public interface EntityInfo {
     Object getPrimaryKeyFieldValue(Object object);
 
     /**
-     * get object primaryKey value
-     * @param target
+     * get object primaryKey fieldValue
+     * @param target notnull object
      * @param value
      */
     void setPrimaryKeyFieldValue(Object target,Object value);

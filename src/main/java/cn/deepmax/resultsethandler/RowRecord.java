@@ -44,6 +44,7 @@ public class RowRecord<T> implements ResultRowSet {
     @Override
     public int getInt(String columnName) {
         String d = getString(columnName);
+
         try{
             return Integer.valueOf(d);
         }catch (NumberFormatException e){
