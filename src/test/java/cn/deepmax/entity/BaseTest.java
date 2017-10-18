@@ -15,7 +15,7 @@ import java.sql.Connection;
 import java.sql.Statement;
 
 @RunWith(SpringRunner.class)
-@ContextConfiguration(classes = BeanConfig.class)
+@ContextConfiguration(classes = SpringBeanConfig.class)
 public class BaseTest {
 
     @Autowired
@@ -25,7 +25,6 @@ public class BaseTest {
 
     @Before
     public void init() throws Exception{
-        String sql = getClass().getResource("/superuser.sql").toURI().toString().substring(6);
         Connection cn = dataSource.getConnection();
         Statement st = cn.createStatement();
         String delete = "drop table if exists SUPERUSER;";
@@ -43,7 +42,7 @@ public class BaseTest {
 
     @Test
     public void test(){
-        Assert.notNull(factory,"facotyr is null");
+        Assert.notNull(factory,"factory is null");
         QueryTemplate template = factory.create();
         Assert.notNull(template,"template is null");
     }

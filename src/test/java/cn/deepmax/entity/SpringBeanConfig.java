@@ -13,9 +13,9 @@ import org.springframework.context.annotation.Configuration;
 import javax.sql.DataSource;
 
 @Configuration
-public class BeanConfig {
+public class SpringBeanConfig {
 
-    private static final Logger logger = LoggerFactory.getLogger(BeanConfig.class);
+    private static final Logger logger = LoggerFactory.getLogger(SpringBeanConfig.class);
 
 
     @Bean("datasource")
