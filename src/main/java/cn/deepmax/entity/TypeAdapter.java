@@ -4,11 +4,16 @@ import cn.deepmax.exception.EasyQueryException;
 import java.lang.reflect.Field;
 import java.math.BigDecimal;
 import java.math.BigInteger;
+import java.sql.Date;
+import java.sql.Timestamp;
+import java.time.LocalDate;
+import java.time.LocalDateTime;
 
 public class TypeAdapter {
 
     /**
      * change value to desired java type.
+     * only support common java type from database
      * @param targetType
      * @param value
      * @return
@@ -21,6 +26,7 @@ public class TypeAdapter {
             return value;
         }
         String v = value.toString();
+        Class valueType = value.getClass();
         if(targetType==int.class || targetType==Integer.class){         //Int
             return Integer.valueOf(v);
         }else if(targetType==float.class || targetType==Float.class){  //Float
@@ -42,10 +48,33 @@ public class TypeAdapter {
             } else {
                 return Boolean.TRUE;
             }
-        }else{
-            throw new EasyQueryException("Value of type["+value.getClass().getName()+"] is not compatible with target type."+targetType.getName()+"]");
+        }else if(targetType== Timestamp.class){
+            if(valueType== Date.class){
+                Long l =( (Date)value).getTime();
+                return new Timestamp(l);
+            }
+        }else if(targetType == Date.class){
+            if(valueType == Timestamp.class){
+                Long l =((Timestamp)value).getTime();
+                return new Date(l);
+            }
+        }else if(targetType == LocalDateTime.class){
+            if(valueType == Timestamp.class){
+                return ((Timestamp)value).toLocalDateTime();
+            }
+        }else if(targetType == LocalDate.class){
+            if(valueType==Timestamp.class){
+                return ((Timestamp)value).toLocalDateTime().toLocalDate();
+            }else if(valueType ==Date.class){
+                return ((Date)value).toLocalDate();
+            }
         }
+        throw new EasyQueryException("Value of type["+value.getClass().getName()+"] is not compatible with target type."+targetType.getName()+"]");
+
+
     }
+
+
 
 
     /** Copy from apache DbUtils

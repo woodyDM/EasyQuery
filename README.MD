@@ -6,4 +6,5 @@ javabean default constructor
 //TODO 还需要写一个用注解的实体管理器
 test:
 http://blog.csdn.net/hfmbook/article/details/54578137
+typeAdapter 类型支持
 

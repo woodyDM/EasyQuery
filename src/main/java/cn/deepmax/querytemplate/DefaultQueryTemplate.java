@@ -2,6 +2,7 @@ package cn.deepmax.querytemplate;
 
 import cn.deepmax.entity.EntityFactory;
 import cn.deepmax.entity.SqlTranslator;
+import cn.deepmax.entity.TypeAdapter;
 import cn.deepmax.exception.EasyQueryException;
 import cn.deepmax.model.Pair;
 import cn.deepmax.resultsethandler.ResultSetHandler;
@@ -107,17 +108,7 @@ public class DefaultQueryTemplate implements QueryTemplate {
             key = oneKey;
         }
         Object obj = oneResult.get(key);
-        return clazz.cast(obj);
-    }
-
-    @Override
-    public <T> T selectScalar(String sql, String columnName, Class<T> clazz, Object... params){
-        Map<String,Object> oneResult = selectOne(sql,params);
-        if(oneResult==null){
-            return null;
-        }
-        Object obj = oneResult.get(columnName);
-        return clazz.cast(obj);
+        return (T)TypeAdapter.getCompatibleValue(clazz,obj);
     }
 
     /**
@@ -180,19 +171,12 @@ public class DefaultQueryTemplate implements QueryTemplate {
 
     @Override
     public Boolean save(Object obj){
-        Objects.requireNonNull(obj);
+        Objects.requireNonNull(obj,"Target is null, unable to save.");
         if(!isPrimaryKeyValueExist(obj)){
             return doSave(obj);
         }else{
             return doUpdate(obj);
         }
-    }
-
-    @Override
-    public Boolean delete(Object obj){
-        Pair<String, Object> pair = sqlTranslator.getDeleteSQLInfo(obj);
-        int i =executeUpdate(pair.first, pair.last);
-        return (i!=0);
     }
 
     private Boolean doSave(Object obj){
@@ -222,6 +206,13 @@ public class DefaultQueryTemplate implements QueryTemplate {
     private Boolean doUpdate(Object obj) {
         Pair<String,List<Object>> pair = sqlTranslator.getUpdateSQLInfo(obj);
         int i =executeUpdate(pair.first, pair.last.toArray());
+        return (i!=0);
+    }
+
+    @Override
+    public Boolean delete(Object obj){
+        Pair<String, Object> pair = sqlTranslator.getDeleteSQLInfo(obj);
+        int i =executeUpdate(pair.first, pair.last);
         return (i!=0);
     }
 

@@ -31,6 +31,9 @@ public class EntityFactory {
      * @return
      */
     public  <T> T create(Class<T> clazz, Map<String, Object> columnNameWithFieldValueMap) {
+        if(clazz==null){
+            return null;
+        }
         T targetObj = newInstance(clazz);
         Map<String,PropertyDescriptor> propertyDescriptorMap = getPropertyDescriptorMap(clazz);
         for(Map.Entry<String,Object> entry:columnNameWithFieldValueMap.entrySet()){

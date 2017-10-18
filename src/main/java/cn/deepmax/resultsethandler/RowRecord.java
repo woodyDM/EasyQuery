@@ -1,7 +1,10 @@
 package cn.deepmax.resultsethandler;
 
 
+import cn.deepmax.entity.TypeAdapter;
+
 import java.math.BigDecimal;
+import java.math.BigInteger;
 import java.sql.Date;
 import java.sql.Timestamp;
 import java.time.LocalDate;
@@ -24,130 +27,80 @@ public class RowRecord<T> implements ResultRowSet {
     }
 
     @Override
-    public String getString(String columnName) {
-        Object o = rowResult.get(columnName);
-        return (o==null)?null:o.toString();
-    }
-
-
-    @Override
-    public short getShort(String columnName) {
-        String d = getString(columnName);
-        try{
-            return Short.valueOf(d);
-        }catch (NumberFormatException e){
-            throw e;
-        }
-    }
-
-    @Override
-    public int getInt(String columnName) {
-        String d = getString(columnName);
-
-        try{
-            return Integer.valueOf(d);
-        }catch (NumberFormatException e){
-            throw e;
-        }
-    }
-
-    @Override
-    public long getLong(String columnName) {
-        String d = getString(columnName);
-        try{
-            return Long.valueOf(d);
-        }catch (NumberFormatException e){
-            throw e;
-        }
-    }
-
-    @Override
-    public float getFloat(String columnName) {
-        String d = getString(columnName);
-        try{
-            return  Float.valueOf(d);
-        }catch (NumberFormatException e){
-            throw e;
-        }
-    }
-
-    @Override
-    public double getDouble(String columnName) {
-        String s = getString(columnName);
-        try{
-            return Double.valueOf(s);
-        }catch (NumberFormatException e){
-            throw e;
-        }
-    }
-    @Override
     public Object getObject(String columnName) {
         return rowResult.get(columnName);
     }
+
+    @Override
+    public String getString(String columnName) {
+        Object o = rowResult.get(columnName);
+        return (String)TypeAdapter.getCompatibleValue(String.class,o);
+    }
+
+    @Override
+    public Integer getInt(String columnName) {
+        Object o = rowResult.get(columnName);
+        return (Integer) TypeAdapter.getCompatibleValue(Integer.class,o);
+    }
+
+    @Override
+    public Long getLong(String columnName) {
+        Object o = rowResult.get(columnName);
+        return (Long) TypeAdapter.getCompatibleValue(Long.class,o);
+    }
+
+    @Override
+    public Float getFloat(String columnName) {
+        Object o = rowResult.get(columnName);
+        return (Float) TypeAdapter.getCompatibleValue(Float.class,o);
+    }
+
+    @Override
+    public Double getDouble(String columnName) {
+        Object o = rowResult.get(columnName);
+        return (Double) TypeAdapter.getCompatibleValue(Double.class,o);
+    }
+
     @Override
     public BigDecimal getBigDecimal(String columnName ) {
-        return BigDecimal.valueOf(getDouble(columnName));
+        Object o = rowResult.get(columnName);
+        return (BigDecimal) TypeAdapter.getCompatibleValue(BigDecimal.class,o);
     }
-
 
     @Override
-    public boolean getBoolean(String columnName) {
+    public BigInteger getBigInteger(String columnName) {
         Object o = rowResult.get(columnName);
-        if (o==null){
-            return false;
-        }
-        if(o instanceof Boolean){
-            return (Boolean)o;
-        }
-        String s = getString(columnName);
-        if(s==null || s.length()==0) return false;
-        try{
-            Long i = getLong(columnName);
-            return (i!=0);
-        }catch (NumberFormatException e){
-            try{
-                Double d = getDouble(columnName);
-                double ERROR = 1e-30;
-                return (Math.abs(d)>ERROR);
-            }catch (NumberFormatException ee){
-                throw new RuntimeException("can't cast column "+columnName+" to boolean.");
-            }
-        }
+        return (BigInteger) TypeAdapter.getCompatibleValue(BigInteger.class,o);
     }
+
+    @Override
+    public Boolean getBoolean(String columnName) {
+        Object o = rowResult.get(columnName);
+        return (Boolean) TypeAdapter.getCompatibleValue(Boolean.class,o);
+    }
+
     @Override
     public LocalDateTime getLocalDateTime(String columnName) {
-        Timestamp t = getTimestamp(columnName);
-        if(t==null) return null;
-        return t.toLocalDateTime();
+        Object o = rowResult.get(columnName);
+        return (LocalDateTime) TypeAdapter.getCompatibleValue(LocalDateTime.class,o);
     }
 
     @Override
     public LocalDate getLocalDate(String columnName) {
-        Timestamp t = getTimestamp(columnName);
-        if(t==null) return null;
-        return t.toLocalDateTime().toLocalDate();
+        Object o = rowResult.get(columnName);
+        return (LocalDate) TypeAdapter.getCompatibleValue(LocalDate.class,o);
     }
 
     @Override
     public Timestamp getTimestamp(String columnName) {
         Object o = rowResult.get(columnName);
-        if(o==null) return null;
-        if(o instanceof Timestamp){
-            return (Timestamp) o;
-        }
-        Date d = getDate(columnName);
-        if(d==null) return null;
-        return new Timestamp(d.getTime());
+        return (Timestamp) TypeAdapter.getCompatibleValue(Timestamp.class,o);
     }
 
     @Override
     public Date getDate(String columnName) {
         Object o = rowResult.get(columnName);
-        if(o==null) return null;
-        if(o instanceof Date){
-            return (Date) o;
-        }
-        throw new IllegalArgumentException("column "+columnName+" is not type of Date");
+        return (Date) TypeAdapter.getCompatibleValue(Date.class,o);
     }
 
 

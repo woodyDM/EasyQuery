@@ -1,4 +1,4 @@
-package cn.deepmax.entity.entity;
+package cn.deepmax.entity.model;
 
 import java.math.BigDecimal;
 

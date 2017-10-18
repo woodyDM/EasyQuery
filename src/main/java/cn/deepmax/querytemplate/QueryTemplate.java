@@ -22,11 +22,11 @@ public interface QueryTemplate {
 
     <T> T selectScalar(String sql, Class<T> clazz, Object... params);
 
-    <T> T selectScalar(String sql, String columnName, Class<T> clazz, Object... params);
-
     int[] executeBatch(String sql, List<List<Object>> paramList);
 
     int executeUpdate(String sql,Object... params);
+
+
 
     <T> T get(Class<T> clazz,Object primary);
 
