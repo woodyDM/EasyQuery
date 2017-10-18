@@ -67,6 +67,16 @@ public class DefaultQueryTemplate implements QueryTemplate {
         return results;
     }
 
+    @Override
+    public List<RowRecord> selectRowRecord(String sql, Object... params) {
+        List<Map<String,Object>> rawResults = doSelect(sql,params);
+        List<RowRecord> results = new ArrayList<>();
+        for(Map<String,Object> it:rawResults){
+            RowRecord oneRecord = new RowRecord<>(it,null,null);
+            results.add(oneRecord);
+        }
+        return results;
+    }
 
     @Override
     public Map<String,Object> selectOne(String sql, Object... params){

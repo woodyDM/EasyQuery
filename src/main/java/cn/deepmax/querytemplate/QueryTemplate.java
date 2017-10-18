@@ -12,6 +12,8 @@ public interface QueryTemplate {
 
     <T> List<RowRecord<T>> select(String sql, Class<T> clazz, Object... params);
 
+    List<RowRecord> selectRowRecord(String sql, Object... params);
+
     <T> List<T> selectEntity(String sql, Class<T> clazz, Object... params);
 
     Map<String,Object> selectOne(String sql, Object... params);
