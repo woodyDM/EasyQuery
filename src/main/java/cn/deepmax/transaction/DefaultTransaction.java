@@ -1,5 +1,6 @@
 package cn.deepmax.transaction;
 
+import cn.deepmax.exception.EasyQueryException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import javax.sql.DataSource;
@@ -95,7 +96,7 @@ public class DefaultTransaction implements Transaction {
                 logger.debug("Close connection [{}]",connection.toString());
                 connection = null;
             } catch (SQLException e) {
-                e.printStackTrace();
+                throw new EasyQueryException(e);
             }
         }
     }

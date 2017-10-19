@@ -69,14 +69,10 @@ public class SpringTransaction extends DefaultTransaction {
 
     @Override
     public void close() {
-        if(!isInSpringTransactionMode){
-            if(connection!=null){
-                logger.debug("ReleaseSpringConnection [{}]",connection.toString());
-                DataSourceUtils.releaseConnection(connection,dataSource);
-                connection = null;
-            }
-        }else{
-            logger.debug("Already in springTransaction.");
+        if(connection!=null){
+            logger.debug("ReleaseSpringConnection [{}]",connection.toString());
+            DataSourceUtils.releaseConnection(connection,dataSource);
+            connection = null;
         }
     }
 
@@ -89,7 +85,7 @@ public class SpringTransaction extends DefaultTransaction {
             e.printStackTrace();
         }
         isInSpringTransactionMode = DataSourceUtils.isConnectionTransactional(connection,dataSource);
-        isTransactionMode = isInSpringTransactionMode;
+        isTransactionMode = false;
         logger.debug("Create connection via DataSourceUtils,transactional [{}][{}]",isInSpringTransactionMode,connection.toString());
         return connection;
     }
