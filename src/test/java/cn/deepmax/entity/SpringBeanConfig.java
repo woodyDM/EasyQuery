@@ -4,6 +4,7 @@ package cn.deepmax.entity;
 import cn.deepmax.mapper.UpperCaseColumnNameMapper;
 import cn.deepmax.querytemplate.QueryTemplateFactory;
 import cn.deepmax.querytemplate.SimpleQueryTemplateFactory;
+import cn.deepmax.transaction.DefaultTransactionFactory;
 import com.zaxxer.hikari.HikariDataSource;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -29,10 +30,19 @@ public class SpringBeanConfig {
         return dataSource ;
     }
 
-    @Bean
+    @Bean("springFactory")
     public QueryTemplateFactory factory(DataSource dataSource){
         SimpleQueryTemplateFactory factory = new SimpleQueryTemplateFactory(dataSource);
         factory.setToColumnNameMapper(new UpperCaseColumnNameMapper());
+        factory.isShowSql(true);
+        return factory.build();
+    }
+
+    @Bean("defaultFactory")
+    public QueryTemplateFactory defaultFactory(DataSource dataSource){
+        SimpleQueryTemplateFactory factory = new SimpleQueryTemplateFactory(dataSource);
+        factory.setToColumnNameMapper(new UpperCaseColumnNameMapper());
+        factory.setTransactionFactory(new DefaultTransactionFactory());
         factory.isShowSql(true);
         return factory.build();
     }

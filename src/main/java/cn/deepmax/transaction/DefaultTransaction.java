@@ -34,9 +34,9 @@ public class DefaultTransaction implements Transaction {
 
     @Override
     public void beginTransaction() {
-
+        getConnection();
         if(!isTransactionMode){
-            logger.debug("Open new Transaction with connection [{}]",connection.toString());
+            logger.debug("Begin new transaction with connection [{}]",connection.toString());
             isTransactionMode = true;
             oldAutoCommit = isAutoCommit;
             if(isAutoCommit){
@@ -44,11 +44,11 @@ public class DefaultTransaction implements Transaction {
                     connection.setAutoCommit(false);
                     isAutoCommit = false;
                 } catch (SQLException e) {
-                    throw new RuntimeException("Failed to set autocommit to false",e);
+                    throw new EasyQueryException("Failed to set autocommit to false",e);
                 }
             }
         }else{
-            logger.debug("Already in transaction mode with connection [{}]",connection.toString());
+            throw new EasyQueryException("Failed to begin new transaction. Because already in transaction mode");
         }
     }
 
@@ -63,10 +63,10 @@ public class DefaultTransaction implements Transaction {
                 isTransactionMode = false;
                 isAutoCommit = oldAutoCommit;
             } catch (SQLException e) {
-                throw new RuntimeException("Fail to commit.",e);
+                throw new EasyQueryException("Fail to commit.",e);
             }
         }else{
-            throw new IllegalStateException("Should not commit without a transaction.");
+            throw new EasyQueryException("Should not commit without a transaction.");
         }
     }
 
@@ -80,23 +80,22 @@ public class DefaultTransaction implements Transaction {
                 isTransactionMode = false;
                 isAutoCommit = oldAutoCommit;
             } catch (SQLException e) {
-                throw new RuntimeException("Fail to rollback.",e);
+                throw new EasyQueryException("Fail to rollback.",e);
             }
         }else{
-            throw new IllegalStateException("Should not rollback without a transaction.");
+            throw new EasyQueryException("Should not rollback without a transaction.");
         }
     }
 
     @Override
     public void close() {
         if(connection!=null){
-
             try {
                 connection.close();
                 logger.debug("Close connection [{}]",connection.toString());
                 connection = null;
             } catch (SQLException e) {
-                throw new EasyQueryException(e);
+                throw new EasyQueryException("Fail to close connection",e);
             }
         }
     }

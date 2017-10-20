@@ -10,6 +10,7 @@ import org.springframework.test.context.ContextConfiguration;
 import org.springframework.test.context.junit4.SpringRunner;
 import org.springframework.util.Assert;
 
+import javax.annotation.Resource;
 import javax.sql.DataSource;
 import java.sql.Connection;
 import java.sql.Statement;
@@ -18,8 +19,10 @@ import java.sql.Statement;
 @ContextConfiguration(classes = SpringBeanConfig.class)
 public class BaseTest {
 
-    @Autowired
+    @Resource(name = "springFactory")
     protected QueryTemplateFactory factory;
+    @Resource(name ="defaultFactory")
+    protected QueryTemplateFactory defaultFactory;
     @Autowired
     DataSource dataSource;
 

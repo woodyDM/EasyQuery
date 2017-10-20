@@ -1,0 +1,84 @@
+package cn.deepmax.entity.querytemplate;
+
+import cn.deepmax.entity.BaseTest;
+import cn.deepmax.entity.model.SuperUser;
+import cn.deepmax.querytemplate.QueryTemplate;
+import cn.deepmax.querytemplate.QueryTemplateFactory;
+import org.junit.Test;
+import org.springframework.util.Assert;
+
+import java.math.BigDecimal;
+
+public class DefaultTransactionTest extends BaseTest {
+
+    @Test
+    public void testDefaultTransactionNoExceptionUsingDefaultFactory(){
+        testDefaultTransactionNoException(defaultFactory);
+    }
+    @Test
+    public void testDefaultTransactionNoExceptionUsingSpringFactory(){
+        testDefaultTransactionNoException(factory);
+    }
+
+    private void testDefaultTransactionNoException(QueryTemplateFactory factory){
+        QueryTemplate template = factory.create();
+        SuperUser user = new SuperUser();
+        user.setBigDecimal(BigDecimal.ONE);
+        user.setName("wwww");
+        user.setOk1(false);
+        Long newId=null;
+        try{
+            template.transaction().beginTransaction();
+            template.save(user);
+            newId = user.getId();
+            user.setName("ww");
+            template.save(user);
+            template.transaction().commit();
+        }catch (Exception e){
+            template.transaction().rollback();
+        }finally {
+            template.transaction().close();
+        }
+        Assert.notNull(newId,"new id null");
+        SuperUser user2 = template.get(SuperUser.class,newId);
+        Assert.notNull(user2,"user2 null");
+        Assert.isTrue(user2.getName().equals("ww"),"name not match");
+
+    }
+
+    @Test
+    public void testDefaultTransactionWithExceptionUsingDefaultFactory(){
+        testDefaultTransactionException(defaultFactory);
+    }
+    @Test
+    public void testDefaultTransactionWithExceptionUsingSpringFactory(){
+        testDefaultTransactionException(factory);
+    }
+
+    private void testDefaultTransactionException(QueryTemplateFactory factory){
+        QueryTemplate template = factory.create();
+        SuperUser user = new SuperUser();
+        user.setBigDecimal(BigDecimal.ONE);
+        user.setName("wwww");
+        user.setOk1(false);
+        template.save(user);
+        Long newId=user.getId();
+        try{
+            template.transaction().beginTransaction();
+            user.setName("www2");
+            template.save(user);
+            SuperUser inUser = template.get(SuperUser.class,newId);
+            Assert.isTrue(inUser.getName().equals("www2"),"name not match in transaction");
+            Integer temp = Integer.valueOf("cause exception");    //cause exception.
+        }catch (Exception e){
+            template.transaction().rollback();
+        }finally {
+            template.transaction().close();
+        }
+        Assert.notNull(newId,"new id null");
+        SuperUser user2 = template.get(SuperUser.class,newId);
+        Assert.notNull(user2,"user2 null");
+        Assert.isTrue(user2.getName().equals("wwww"),"name not match");
+
+    }
+}

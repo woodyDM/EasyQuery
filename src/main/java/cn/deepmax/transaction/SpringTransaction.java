@@ -1,5 +1,6 @@
 package cn.deepmax.transaction;
 
+import cn.deepmax.exception.EasyQueryException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.jdbc.datasource.DataSourceUtils;
@@ -82,7 +83,7 @@ public class SpringTransaction extends DefaultTransaction {
             isAutoCommit = connection.getAutoCommit();
             oldAutoCommit = isAutoCommit;
         } catch (SQLException e) {
-            e.printStackTrace();
+            throw new EasyQueryException(e);
         }
         isInSpringTransactionMode = DataSourceUtils.isConnectionTransactional(connection,dataSource);
         isTransactionMode = false;
