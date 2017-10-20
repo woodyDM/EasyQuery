@@ -63,7 +63,6 @@ public class SpringTransaction extends DefaultTransaction {
     public Connection getConnection() {
         if(connection==null){
             doGetConnection();
-
         }
         return connection;
     }
@@ -74,6 +73,7 @@ public class SpringTransaction extends DefaultTransaction {
             logger.debug("ReleaseSpringConnection [{}]",connection.toString());
             DataSourceUtils.releaseConnection(connection,dataSource);
             connection = null;
+
         }
     }
 
@@ -87,7 +87,7 @@ public class SpringTransaction extends DefaultTransaction {
         }
         isInSpringTransactionMode = DataSourceUtils.isConnectionTransactional(connection,dataSource);
         isTransactionMode = false;
-        logger.debug("Create connection via DataSourceUtils,transactional [{}][{}]",isInSpringTransactionMode,connection.toString());
+        logger.debug("Create connection[{}] via DataSourceUtils,transactional:[{}]",connection.toString(),isInSpringTransactionMode);
         return connection;
     }
 }

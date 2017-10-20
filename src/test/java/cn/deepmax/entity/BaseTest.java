@@ -23,8 +23,10 @@ public class BaseTest {
     protected QueryTemplateFactory factory;
     @Resource(name ="defaultFactory")
     protected QueryTemplateFactory defaultFactory;
-    @Autowired
+    @Resource(name = "H2Datasource")
     DataSource dataSource;
+    @Resource(name = "localDatasource")
+    DataSource localDatasource;
 
     @Before
     public void init() throws Exception{
@@ -34,7 +36,7 @@ public class BaseTest {
         String createTalbe="CREATE TABLE  superuser  (" +
                 "  id int  PRIMARY KEY auto_increment, " +
                 "  name varchar(255)  ,createTime datetime, bigDecimal decimal(10,3),point1 DOUBLE  ,point2 double ," +
-                " point3 FLOAT ,point4 FLOAT , ok1 int ,  ok2 int,updateDate date, )   ;";
+                " point3 FLOAT ,point4 FLOAT , ok1 int ,  ok2 int,updateDate date, ) ENGINE=InnoDB   ;";
         st.execute(delete);
         st.execute(createTalbe);
         st.execute("INSERT INTO `superuser` VALUES ('1', 'name1', '2017-10-18 13:57:05', '1.300', '1.500', '1.500', '1.400', '1.200', '1', '0', '2017-10-18');");
@@ -46,7 +48,7 @@ public class BaseTest {
     @Test
     public void test(){
         Assert.notNull(factory,"factory is null");
-        QueryTemplate template = factory.create();
-        Assert.notNull(template,"template is null");
+        Assert.notNull(defaultFactory,"defaultFactory is null");
+        Assert.notNull(dataSource,"dataSource is null");
     }
 }
