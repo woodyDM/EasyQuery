@@ -8,3 +8,8 @@ test:
 http://blog.csdn.net/hfmbook/article/details/54578137
 typeAdapter 类型支持
 
+
+@Transaction
+@Bean
+DatasourceTransactionManager()
+
