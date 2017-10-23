@@ -7,6 +7,6 @@ public interface TransactionService {
 
     SuperUser get(Long id);
     SuperUser save(SuperUser user);
-    void causeException();
+    SuperUser causeExceptionSave(SuperUser user);
 
 }

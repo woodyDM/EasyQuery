@@ -3,6 +3,7 @@ package cn.deepmax.entity;
 
 import cn.deepmax.model.Pair;
 import java.util.*;
+import java.util.concurrent.ConcurrentHashMap;
 
 /**
  * default SqlTranslator implementation supporting cache.
@@ -14,10 +15,10 @@ public class DefaultSqlTranslator implements SqlTranslator{
     /**
      * sql cache Maps for entity, key is class.name ,value is sql string.
      */
-    private Map<String,String> insertCache = new HashMap<>();
-    private Map<String,String> updateCache = new HashMap<>();
-    private Map<String,String> selectCache = new HashMap<>();
-    private Map<String,String> deleteCache = new HashMap<>();
+    private Map<String,String> insertCache = new ConcurrentHashMap<>();
+    private Map<String,String> updateCache = new ConcurrentHashMap<>();
+    private Map<String,String> selectCache = new ConcurrentHashMap<>();
+    private Map<String,String> deleteCache = new ConcurrentHashMap<>();
 
     public DefaultSqlTranslator(EntityInfo entityInfo) {
         this.entityInfo = entityInfo;

@@ -1,10 +1,12 @@
 package cn.deepmax.entity.transaction;
 
 import cn.deepmax.entity.model.SuperUser;
+import cn.deepmax.querytemplate.QueryTemplate;
 import cn.deepmax.querytemplate.QueryTemplateFactory;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import javax.annotation.Resource;
+import java.math.BigDecimal;
 
 @Service
 @Transactional
@@ -25,7 +27,22 @@ public class TransactionServiceImpl implements TransactionService {
     }
 
     @Override
-    public void causeException() {
-        factory.create().select("flewjfklewf");
+    public SuperUser causeExceptionSave(SuperUser user) {
+        QueryTemplate template = factory.create();
+        user.setBigDecimal(BigDecimal.TEN);
+        template.save(user);
+        SuperUser u2 = get(user.getId());
+        //
+        if(!u2.getBigDecimal().equals(BigDecimal.TEN)){
+            throw new IllegalStateException("not equal.");
+        }
+        c();
+        return user;
+    }
+
+    private void c(){
+        QueryTemplate template = factory.create();
+        //throw exception
+        template.select("flewjfklewf");
     }
 }

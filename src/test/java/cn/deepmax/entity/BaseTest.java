@@ -35,7 +35,7 @@ public class BaseTest {
         String delete = "drop table if exists SUPERUSER;";
         String createTalbe="CREATE TABLE  superuser  (" +
                 "  id int  PRIMARY KEY auto_increment, " +
-                "  name varchar(255)  ,createTime datetime, bigDecimal decimal(10,3),point1 DOUBLE  ,point2 double ," +
+                "  name varchar(255)  ,createTime datetime, bigDecimal decimal(10,0),point1 DOUBLE  ,point2 double ," +
                 " point3 FLOAT ,point4 FLOAT , ok1 int ,  ok2 int,updateDate date, ) ENGINE=InnoDB   ;";
         st.execute(delete);
         st.execute(createTalbe);

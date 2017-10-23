@@ -10,17 +10,18 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Objects;
+import java.util.concurrent.ConcurrentHashMap;
 
 /**
  * provide a abstract EntityInfo implementation  to support cache.
  */
 public abstract class AbstractEntityInfo implements EntityInfo {
 
-    private Map<String,PropertyDescriptor> primaryKeyPropertyDescriptorCache = new HashMap<>();
-    private Map<String,List<String>> beanFieldNameCache = new HashMap<>();
-    private Map<String,Map<String,String>> fieldNameToColumnNameMapCache = new HashMap<>();
-    private Map<String,Map<String,String>> columnNameToFieldNameMapCache = new HashMap<>();
-    private Map<String,String> fullTableNameCache = new HashMap<>();
+    private Map<String,PropertyDescriptor> primaryKeyPropertyDescriptorCache = new ConcurrentHashMap<>();
+    private Map<String,List<String>> beanFieldNameCache = new ConcurrentHashMap<>();
+    private Map<String,Map<String,String>> fieldNameToColumnNameMapCache = new ConcurrentHashMap<>();
+    private Map<String,Map<String,String>> columnNameToFieldNameMapCache = new ConcurrentHashMap<>();
+    private Map<String,String> fullTableNameCache = new ConcurrentHashMap<>();
 
     abstract List<String> getBeanFieldNameList(Class<?> clazz);
     abstract Map<String, String> getFieldNameToColumnNameMap(Class<?> clazz);

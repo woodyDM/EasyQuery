@@ -16,4 +16,12 @@ public class SuperUser extends User {
     public void setBigDecimal(BigDecimal bigDecimal) {
         this.bigDecimal = bigDecimal;
     }
+
+    @Override
+    public String toString() {
+        final StringBuilder sb = new StringBuilder("SuperUser{");
+        sb.append("bigDecimal=").append(bigDecimal);
+        sb.append('}');
+        return sb.toString();
+    }
 }
