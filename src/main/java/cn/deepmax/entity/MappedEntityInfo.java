@@ -2,6 +2,9 @@ package cn.deepmax.entity;
 
 import cn.deepmax.annotation.Ignore;
 import cn.deepmax.mapper.NameMapper;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
 import java.beans.PropertyDescriptor;
 import java.lang.reflect.Field;
 import java.util.*;
@@ -15,6 +18,7 @@ public class MappedEntityInfo extends AbstractEntityInfo {
 
     private NameMapper toTableNameMapper;
     private NameMapper toColumnNameMapper;
+    private static final Logger logger = LoggerFactory.getLogger(MappedEntityInfo.class);
 
     public MappedEntityInfo(NameMapper toTableNameMapper, NameMapper toColumnNameMapper) {
         Objects.requireNonNull(toTableNameMapper,"toTableNameMapper is null");
@@ -70,23 +74,9 @@ public class MappedEntityInfo extends AbstractEntityInfo {
     @Override
     Map<String, String> getFieldNameToColumnNameMap(Class<?> clazz) {
         Map<String,String> map = new LinkedHashMap<>();
-        for(String fieldName:getBeanFieldNameList(clazz)){
+        for(String fieldName:beanFieldNameList(clazz)){
             String columnName = toColumnNameMapper.convert(clazz,fieldName);
             map.put(fieldName,columnName);
-        }
-        return map;
-    }
-
-    /**
-     * just reverse fieldNameToColumnNameMap
-     * @param clazz
-     * @return
-     */
-    @Override
-    Map<String, String> getColumnNameToFieldNameMap(Class<?> clazz) {
-        Map<String,String> map = new LinkedHashMap<>();
-        for(Map.Entry<String,String> entry:getFieldNameToColumnNameMap(clazz).entrySet()){
-            map.put(entry.getValue(),entry.getKey());
         }
         return map;
     }
@@ -121,6 +111,7 @@ public class MappedEntityInfo extends AbstractEntityInfo {
         for(Field it:fields){
             Ignore ann = it.getAnnotation(Ignore.class);
             if(ann!=null){
+                logger.trace("Find ignore field [{}] in class [{}]",it.getName(),clazz.getName());
                 result.add(it.getName());
             }
         }

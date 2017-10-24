@@ -1,15 +1,14 @@
 package cn.deepmax.entity;
 
 import cn.deepmax.exception.EasyQueryException;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import java.beans.IntrospectionException;
 import java.beans.PropertyDescriptor;
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
-import java.util.Objects;
+import java.util.*;
 import java.util.concurrent.ConcurrentHashMap;
 
 /**
@@ -25,7 +24,6 @@ public abstract class AbstractEntityInfo implements EntityInfo {
 
     abstract List<String> getBeanFieldNameList(Class<?> clazz);
     abstract Map<String, String> getFieldNameToColumnNameMap(Class<?> clazz);
-    abstract Map<String, String> getColumnNameToFieldNameMap(Class<?> clazz);
 
 
     @Override
@@ -91,6 +89,18 @@ public abstract class AbstractEntityInfo implements EntityInfo {
         }
     }
 
+    /**
+     * just reverse fieldNameToColumnNameMap
+     * @param clazz
+     * @return
+     */
+    private Map<String, String> getColumnNameToFieldNameMap(Class<?> clazz) {
+        Map<String,String> map = new LinkedHashMap<>();
+        for(Map.Entry<String,String> entry:fieldNameToColumnNameMap(clazz).entrySet()){
+            map.put(entry.getValue(),entry.getKey());
+        }
+        return map;
+    }
 
     @Override
     public List<String> beanFieldNameList(Class<?> clazz) {
