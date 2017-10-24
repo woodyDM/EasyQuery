@@ -1,7 +1,9 @@
 package cn.deepmax.entity;
 
+import cn.deepmax.annotation.Ignore;
 import cn.deepmax.mapper.NameMapper;
 import java.beans.PropertyDescriptor;
+import java.lang.reflect.Field;
 import java.util.*;
 
 /**
@@ -98,13 +100,30 @@ public class MappedEntityInfo extends AbstractEntityInfo {
     List<String> getBeanFieldNameList(Class<?> clazz) {
         PropertyDescriptor[] propertyDescriptors = BeanToMap.getPropertyDescriptor(clazz);
         List<String> filedNames = new ArrayList<>();
+        Set<String> ignoredFieldSet = new HashSet<>();
+        getIgnoredFieldNames(clazz,ignoredFieldSet);
         for(PropertyDescriptor propertyDescriptor:propertyDescriptors){
+
             String filedName = propertyDescriptor.getName();
-            if(!"class".equals(filedName)){
+            if(!"class".equals(filedName) && !ignoredFieldSet.contains(filedName)){
                 filedNames.add(filedName);
             }
         }
         return filedNames;
+    }
+
+    private void getIgnoredFieldNames(Class<?> clazz,Set<String> result){
+        Class<?> superClass = clazz.getSuperclass();
+        if(superClass!=null){
+            getIgnoredFieldNames(superClass,result);
+        }
+        Field[] fields = clazz.getDeclaredFields();
+        for(Field it:fields){
+            Ignore ann = it.getAnnotation(Ignore.class);
+            if(ann!=null){
+                result.add(it.getName());
+            }
+        }
     }
 
 }

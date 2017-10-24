@@ -1,5 +1,7 @@
 package cn.deepmax.entity.model;
 
+import cn.deepmax.annotation.Ignore;
+
 import java.math.BigDecimal;
 import java.math.BigInteger;
 import java.sql.Timestamp;
@@ -12,6 +14,7 @@ public class User {
     private Date updateDate;
     private Boolean ok1;
     private boolean ok2;
+    @Ignore
     private double point1;
     private Double point2;
     private Float point3;
