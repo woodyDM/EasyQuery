@@ -19,7 +19,7 @@ public class MappedEntityInfo extends AbstractEntityInfo {
     private NameMapper toTableNameMapper;
     private NameMapper toColumnNameMapper;
     private static final Logger logger = LoggerFactory.getLogger(MappedEntityInfo.class);
-
+    private String primaryKeyFieldName = "id";
     public MappedEntityInfo(NameMapper toTableNameMapper, NameMapper toColumnNameMapper) {
         Objects.requireNonNull(toTableNameMapper,"toTableNameMapper is null");
         Objects.requireNonNull(toColumnNameMapper,"toColumnNameMapper is null");
@@ -33,6 +33,10 @@ public class MappedEntityInfo extends AbstractEntityInfo {
 
     public void setToColumnNameMapper(NameMapper toColumnNameMapper) {
         this.toColumnNameMapper = toColumnNameMapper;
+    }
+
+    public void setPrimaryKeyFieldName(String primaryKeyFieldName) {
+        this.primaryKeyFieldName = primaryKeyFieldName;
     }
 
     /**
@@ -63,8 +67,9 @@ public class MappedEntityInfo extends AbstractEntityInfo {
      */
     @Override
     public String getPrimaryKeyFieldName(Class<?> clazz) {
-        return "id";
+        return this.primaryKeyFieldName;
     }
+
 
     /**
      * using NameMapper to convert fieldName to columnName

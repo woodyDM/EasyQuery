@@ -12,6 +12,9 @@ public class SpringTransactionTest extends BaseTest{
     @Autowired
     TransactionService service;
 
+    /**
+     * !! this test need a local mysql database with engine innoDB to support transaction.
+     */
     @Test
     public void testWithException(){
         SuperUser user = new SuperUser();

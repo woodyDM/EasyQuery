@@ -6,6 +6,7 @@ import cn.deepmax.exception.EasyQueryException;
 import cn.deepmax.mapper.LowerCaseTableNameMapper;
 import cn.deepmax.mapper.NameMapper;
 import cn.deepmax.mapper.SameNameMapper;
+import cn.deepmax.transaction.DefaultTransactionFactory;
 import cn.deepmax.transaction.SpringTransactionFactory;
 import cn.deepmax.transaction.Transaction;
 import cn.deepmax.transaction.TransactionFactory;
@@ -46,7 +47,7 @@ public class SimpleQueryTemplateFactory implements QueryTemplateFactory {
             sqlTranslator = new DefaultSqlTranslator(entityInfo);
         }
         if(transactionFactory==null){
-            transactionFactory = new SpringTransactionFactory();
+            transactionFactory = new DefaultTransactionFactory();
         }
         if(isShowSql==null){
             isShowSql = false;
