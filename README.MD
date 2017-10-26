@@ -10,7 +10,7 @@ typeAdapter 类型支持
 
 实体操作只支持自增，
 @Column只支持在getter & field上
-写成Service后还是有问题，需要一个currentTemplate...
+默认的mapper要改
 
 @Transactional
 @Bean

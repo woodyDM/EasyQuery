@@ -66,6 +66,9 @@ public class SpringBeanConfig {
     public QueryTemplateFactory localSpringFactory(){
         SimpleQueryTemplateFactory factory = new SimpleQueryTemplateFactory(localDatasource());
         factory.setTransactionFactory(new SpringTransactionFactory());
+        MappedEntityInfo entityInfo = new MappedEntityInfo();
+        entityInfo.setToColumnNameMapper(new SameNameMapper());
+        factory.setEntityInfo(entityInfo);
         factory.isShowSql(true);
         return factory.build();
     }

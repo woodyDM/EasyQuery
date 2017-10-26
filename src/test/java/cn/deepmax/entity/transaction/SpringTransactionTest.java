@@ -31,5 +31,10 @@ public class SpringTransactionTest extends BaseTest{
         SuperUser user1 = service.get(user.getId());
         Assert.isTrue(user1.getBigDecimal().equals(BigDecimal.ONE),"After rollback");
     }
+    @Test
+    public void testSelect(){
+        SuperUser user = service.get(100L);
+        Assert.notNull(user,"user null");
+    }
 
 }

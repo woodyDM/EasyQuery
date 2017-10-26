@@ -31,7 +31,8 @@ public class TransactionServiceImpl implements TransactionService {
         QueryTemplate template = factory.create();
         user.setBigDecimal(BigDecimal.TEN);
         template.save(user);
-        SuperUser u2 = get(user.getId());
+        SuperUser u2 = template.get(SuperUser.class, user.getId());
+        //SuperUser u2 = get(user.getId());
         //
         if(!u2.getBigDecimal().equals(BigDecimal.TEN)){
             throw new IllegalStateException("not equal.");
