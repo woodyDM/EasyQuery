@@ -50,7 +50,6 @@ public class SimpleQueryTemplateFactory implements QueryTemplateFactory {
         return this;
     }
 
-
     @Override
     public void isShowSql(Boolean isShowSql) {
         this.isShowSql = isShowSql;
@@ -65,15 +64,14 @@ public class SimpleQueryTemplateFactory implements QueryTemplateFactory {
         return new DefaultQueryTemplate(transaction,entityFactory,isShowSql,sqlTranslator);
     }
 
-
     public void setTransactionFactory(TransactionFactory transactionFactory) {
         this.transactionFactory = transactionFactory;
     }
 
-
     public void setEntityInfo(EntityInfo entityInfo) {
         this.entityInfo = entityInfo;
     }
+
 
     public void setSqlTranslator(SqlTranslator sqlTranslator) {
         this.sqlTranslator = sqlTranslator;

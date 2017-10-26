@@ -28,7 +28,7 @@ public class SpringTransactionTest extends BaseTest{
         }catch (Exception e){
 
         }
-        SuperUser user1 = service.get( user.getId());
+        SuperUser user1 = service.get(user.getId());
         Assert.isTrue(user1.getBigDecimal().equals(BigDecimal.ONE),"After rollback");
     }
 

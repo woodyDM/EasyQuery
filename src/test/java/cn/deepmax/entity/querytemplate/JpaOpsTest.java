@@ -19,5 +19,13 @@ public class JpaOpsTest extends BaseTest{
         SuperUser user = new SuperUser();
         user.setBigDecimal(BigDecimal.TEN);
         template.save(user);
+        Long id = user.getId();
+        Assert.notNull(id,"id null");
+        SuperUser u = template.get(SuperUser.class,id);
+        Assert.isTrue(u.getBigDecimal().equals(user.getBigDecimal()),"eq");
+        user.setBigDecimal(BigDecimal.ONE);
+        template.save(user);
+        u = template.get(SuperUser.class,id);
+        Assert.isTrue(u.getBigDecimal().equals(user.getBigDecimal()),"eq");
     }
 }
