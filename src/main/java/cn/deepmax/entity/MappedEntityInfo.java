@@ -1,7 +1,9 @@
 package cn.deepmax.entity;
 
 import cn.deepmax.annotation.Ignore;
+import cn.deepmax.mapper.LowerCaseTableNameMapper;
 import cn.deepmax.mapper.NameMapper;
+import cn.deepmax.mapper.UpperCaseColumnNameMapper;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -20,11 +22,17 @@ public class MappedEntityInfo extends AbstractEntityInfo {
     private NameMapper toColumnNameMapper;
     private static final Logger logger = LoggerFactory.getLogger(MappedEntityInfo.class);
     private String primaryKeyFieldName = "id";
+
     public MappedEntityInfo(NameMapper toTableNameMapper, NameMapper toColumnNameMapper) {
         Objects.requireNonNull(toTableNameMapper,"toTableNameMapper is null");
         Objects.requireNonNull(toColumnNameMapper,"toColumnNameMapper is null");
         this.toTableNameMapper = toTableNameMapper;
         this.toColumnNameMapper = toColumnNameMapper;
+    }
+
+    public MappedEntityInfo() {
+        this.toTableNameMapper = new LowerCaseTableNameMapper();
+        this.toColumnNameMapper = new UpperCaseColumnNameMapper();
     }
 
     public void setToTableNameMapper(NameMapper toTableNameMapper) {
@@ -108,10 +116,6 @@ public class MappedEntityInfo extends AbstractEntityInfo {
     }
 
     private void getIgnoredFieldNames(Class<?> clazz,Set<String> result){
-        Class<?> superClass = clazz.getSuperclass();
-        if(superClass!=null){
-            getIgnoredFieldNames(superClass,result);
-        }
         Field[] fields = clazz.getDeclaredFields();
         for(Field it:fields){
             Ignore ann = it.getAnnotation(Ignore.class);
@@ -119,6 +123,10 @@ public class MappedEntityInfo extends AbstractEntityInfo {
                 logger.trace("Find ignore field [{}] in class [{}]",it.getName(),clazz.getName());
                 result.add(it.getName());
             }
+        }
+        Class<?> superClass = clazz.getSuperclass();
+        if(superClass!=null){
+            getIgnoredFieldNames(superClass,result);
         }
     }
 

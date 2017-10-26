@@ -2,20 +2,27 @@ package cn.deepmax.entity.model;
 
 import cn.deepmax.annotation.Ignore;
 
+import javax.persistence.Column;
+import javax.persistence.Id;
 import java.math.BigDecimal;
 import java.math.BigInteger;
 import java.sql.Timestamp;
 import java.util.Date;
 
 public class User {
+    @Id
+    @Column(name = "ID")
     private Long id;
+    @Column(name = "NAME")
     private String name;
     private Timestamp createTime;
     private Date updateDate;
+    @Column(name = "OK1")
     private Boolean ok1;
     private boolean ok2;
     @Ignore
     private double point1;
+    @Column(name = "POINT2")
     private Double point2;
     private Float point3;
     private float point4;

@@ -21,6 +21,8 @@ public class BaseTest {
 
     @Resource(name = "springFactory")
     protected QueryTemplateFactory factory;
+    @Resource(name = "jpaFactory")
+    protected QueryTemplateFactory jpaFactory;
     @Resource(name ="defaultFactory")
     protected QueryTemplateFactory defaultFactory;
     @Resource(name = "H2Datasource")

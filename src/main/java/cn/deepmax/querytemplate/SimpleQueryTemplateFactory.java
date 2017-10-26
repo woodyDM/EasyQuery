@@ -17,12 +17,12 @@ import java.util.Objects;
 public class SimpleQueryTemplateFactory implements QueryTemplateFactory {
 
     private DataSource dataSource;
-    private TransactionFactory transactionFactory;
+    private EntityInfo entityInfo;
     private EntityFactory entityFactory;
     private SqlTranslator sqlTranslator;
+    private TransactionFactory transactionFactory;
     private Boolean isShowSql;
-    private NameMapper toTableNameMapper;
-    private NameMapper toColumnNameMapper;
+
     private boolean init = false;
 
     public SimpleQueryTemplateFactory(DataSource dataSource) {
@@ -33,16 +33,10 @@ public class SimpleQueryTemplateFactory implements QueryTemplateFactory {
 
     public SimpleQueryTemplateFactory build(){
 
-        if(toTableNameMapper==null){
-            toTableNameMapper = new LowerCaseTableNameMapper();
+        if(entityInfo==null){
+            entityInfo = new MappedEntityInfo();
         }
-        if(toColumnNameMapper==null){
-            toColumnNameMapper = new SameNameMapper();
-        }
-        EntityInfo entityInfo = new MappedEntityInfo(toTableNameMapper,toColumnNameMapper);
-        if(this.entityFactory==null){
-            entityFactory = new EntityFactory(entityInfo);
-        }
+        entityFactory = new EntityFactory(entityInfo);
         if(this.sqlTranslator ==null){
             sqlTranslator = new DefaultSqlTranslator(entityInfo);
         }
@@ -71,20 +65,14 @@ public class SimpleQueryTemplateFactory implements QueryTemplateFactory {
         return new DefaultQueryTemplate(transaction,entityFactory,isShowSql,sqlTranslator);
     }
 
-    public void setToTableNameMapper(NameMapper toTableNameMapper) {
-        this.toTableNameMapper = toTableNameMapper;
-    }
-
-    public void setToColumnNameMapper(NameMapper toColumnNameMapper) {
-        this.toColumnNameMapper = toColumnNameMapper;
-    }
 
     public void setTransactionFactory(TransactionFactory transactionFactory) {
         this.transactionFactory = transactionFactory;
     }
 
-    public void setEntityFactory(EntityFactory entityFactory) {
-        this.entityFactory = entityFactory;
+
+    public void setEntityInfo(EntityInfo entityInfo) {
+        this.entityInfo = entityInfo;
     }
 
     public void setSqlTranslator(SqlTranslator sqlTranslator) {

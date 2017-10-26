@@ -1,6 +1,7 @@
 package cn.deepmax.entity;
 
 import cn.deepmax.exception.EasyQueryException;
+import sun.security.util.Cache;
 
 import javax.persistence.Column;
 import javax.persistence.Id;
@@ -25,15 +26,17 @@ public class JpaEntityInfo extends AbstractEntityInfo {
         Map<String,String> fieldNameToColumnNameMap = new LinkedHashMap<>();
         PropertyDescriptor[] propertyDescriptors = BeanToMap.getPropertyDescriptor(clazz);
         for(PropertyDescriptor propertyDescriptor:propertyDescriptors){
-            Field tempField = null;
             String fieldName = propertyDescriptor.getName();
-            getField(clazz,fieldName,tempField);
-            Method getter = propertyDescriptor.getReadMethod();
-            Column columnOnField =tempField.getAnnotation(Column.class);
-            Column columnOnGetter =getter.getAnnotation(Column.class);
-            String columnName = getColumnName(clazz,columnOnField,columnOnGetter);
-            if(columnName!=null && columnName.length()!=0){
-                fieldNameToColumnNameMap.put(fieldName,columnName);
+            if(!"class".equals(fieldName)){
+                //if one field has propertyDescriptor, field is not null.
+                Field field = getField(clazz,fieldName);
+                Method getter = propertyDescriptor.getReadMethod();
+                Column columnOnField =field.getAnnotation(Column.class);
+                Column columnOnGetter =getter.getAnnotation(Column.class);
+                String columnName = getColumnName(clazz,columnOnField,columnOnGetter);
+                if(columnName!=null && columnName.length()!=0){
+                    fieldNameToColumnNameMap.put(fieldName,columnName);
+                }
             }
         }
         return fieldNameToColumnNameMap;
@@ -48,10 +51,10 @@ public class JpaEntityInfo extends AbstractEntityInfo {
                 throw new EasyQueryException("Column name is not unique on field and getter in class["+clazz.getName()+"]");
             }
         }
-        if(columnOnField!=null && columnOnGetter==null){
+        if(columnOnField!=null ){
             return columnOnField.name();
         }
-        if(columnOnField==null && columnOnGetter!=null){
+        if(columnOnGetter!=null){
             return columnOnGetter.name();
         }
         return null;
@@ -84,21 +87,33 @@ public class JpaEntityInfo extends AbstractEntityInfo {
 
     @Override
     public String getPrimaryKeyFieldName(Class<?> clazz) {
-        boolean found = false;
-//        String pk =
-//        PropertyDescriptor[] propertyDescriptors = BeanToMap.getPropertyDescriptor(clazz);
-//        for(PropertyDescriptor propertyDescriptor:propertyDescriptors){
-//            Field tempField = null;
-//            String fieldName = propertyDescriptor.getName();
-//            getField(clazz,fieldName,tempField);
-//            Method getter = propertyDescriptor.getReadMethod();
-//            Id IdOnField =tempField.getAnnotation(Id.class);
-//            Id IdOnGetter =getter.getAnnotation(Id.class);
-//
-//            if(IdOnField!=null || IdOnGetter!=null){
-//                found = true;
-//            }
-//        }
+
+        String pk = null;
+        PropertyDescriptor[] propertyDescriptors = BeanToMap.getPropertyDescriptor(clazz);
+        for(PropertyDescriptor propertyDescriptor:propertyDescriptors){
+            String fieldName = propertyDescriptor.getName();
+            if(!"class".equals(fieldName)){
+                Field tempField =  getField(clazz,fieldName);
+                Method getter = propertyDescriptor.getReadMethod();
+                Id idOnField =tempField.getAnnotation(Id.class);
+                Id idOnGetter =getter.getAnnotation(Id.class);
+
+                if(idOnField!=null || idOnGetter!=null){
+                    if(pk==null){
+                        pk = fieldName;
+                    }else{
+                        throw new EasyQueryException("Duplicate @Id found in class["+clazz.getName()+"],check it and its superclass.");
+                    }
+
+                }
+
+            }
+
+        }
+        if(pk==null){
+            throw new EasyQueryException("@Id not found in class["+clazz.getName()+"],check it and its superclass.");
+        }
+        return pk;
 
     }
 
@@ -108,16 +123,25 @@ public class JpaEntityInfo extends AbstractEntityInfo {
 
 
 
-    private void getField(Class<?> clazz, String fieldName,Field field){
-        Class<?> superClass = clazz.getSuperclass();
-        if(superClass!=null){
-            getField(superClass,fieldName,field);
-        }
+    private Field getField(Class<?> clazz, String fieldName){
+        Field field=null;
         try {
             field = clazz.getDeclaredField(fieldName);
+
         } catch (NoSuchFieldException e) {
-            e.printStackTrace();
+            //not found
         }
+        if(field!=null){
+            return field;
+        }else{
+            Class<?> superClass = clazz.getSuperclass();
+            if(superClass==null){
+                return null;
+            }else{
+                return getField(superClass,fieldName);
+            }
+        }
+
     }
 
 }

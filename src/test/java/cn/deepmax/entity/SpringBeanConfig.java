@@ -6,6 +6,7 @@ import cn.deepmax.mapper.UpperCaseColumnNameMapper;
 import cn.deepmax.querytemplate.QueryTemplateFactory;
 import cn.deepmax.querytemplate.SimpleQueryTemplateFactory;
 import cn.deepmax.transaction.DefaultTransactionFactory;
+import cn.deepmax.transaction.SpringTransactionFactory;
 import com.zaxxer.hikari.HikariDataSource;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -56,7 +57,7 @@ public class SpringBeanConfig {
     @Bean("springFactory")
     public QueryTemplateFactory factory(){
         SimpleQueryTemplateFactory factory = new SimpleQueryTemplateFactory(h2Datasource());
-        factory.setToColumnNameMapper(new UpperCaseColumnNameMapper());
+        factory.setTransactionFactory(new SpringTransactionFactory());
         factory.isShowSql(true);
         return factory.build();
     }
@@ -64,7 +65,7 @@ public class SpringBeanConfig {
     @Bean("localSpringFactory")
     public QueryTemplateFactory localSpringFactory(){
         SimpleQueryTemplateFactory factory = new SimpleQueryTemplateFactory(localDatasource());
-        factory.setToColumnNameMapper(new SameNameMapper());
+        factory.setTransactionFactory(new SpringTransactionFactory());
         factory.isShowSql(true);
         return factory.build();
     }
@@ -72,8 +73,15 @@ public class SpringBeanConfig {
     @Bean("defaultFactory")
     public QueryTemplateFactory defaultFactory(){
         SimpleQueryTemplateFactory factory = new SimpleQueryTemplateFactory(h2Datasource());
-        factory.setToColumnNameMapper(new UpperCaseColumnNameMapper());
-        factory.setTransactionFactory(new DefaultTransactionFactory());
+
+        factory.isShowSql(true);
+        return factory.build();
+    }
+
+    @Bean("jpaFactory")
+    public QueryTemplateFactory jpaFactory(){
+        SimpleQueryTemplateFactory factory = new SimpleQueryTemplateFactory(h2Datasource());
+        factory.setEntityInfo(new JpaEntityInfo());
         factory.isShowSql(true);
         return factory.build();
     }
