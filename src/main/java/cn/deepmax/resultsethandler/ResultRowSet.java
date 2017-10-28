@@ -7,16 +7,18 @@ public interface ResultRowSet {
     Object getObject(String columnName);
     String getString(String columnName);
 
-
+    /**
+     * supports Integer to Boolean  0 for false , others for true
+     * @param columnName
+     * @return
+     */
     Boolean getBoolean(String columnName);
-
     Integer getInt(String columnName);
     Long getLong(String columnName);
     Float getFloat(String columnName);
     Double getDouble(String columnName);
     java.math.BigDecimal getBigDecimal(String columnName);
     BigInteger getBigInteger(String columnName);
-
     java.sql.Date getDate(String columnName);
     java.sql.Timestamp getTimestamp(String columnName);
     java.time.LocalDateTime getLocalDateTime (String columnName);

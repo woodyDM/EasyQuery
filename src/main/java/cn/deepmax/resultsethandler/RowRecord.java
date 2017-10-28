@@ -2,7 +2,6 @@ package cn.deepmax.resultsethandler;
 
 
 import cn.deepmax.entity.TypeAdapter;
-
 import java.math.BigDecimal;
 import java.math.BigInteger;
 import java.sql.Date;

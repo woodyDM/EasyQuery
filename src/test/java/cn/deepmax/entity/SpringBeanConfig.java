@@ -2,10 +2,8 @@ package cn.deepmax.entity;
 
 
 import cn.deepmax.mapper.SameNameMapper;
-import cn.deepmax.mapper.UpperCaseColumnNameMapper;
 import cn.deepmax.querytemplate.QueryTemplateFactory;
-import cn.deepmax.querytemplate.SimpleQueryTemplateFactory;
-import cn.deepmax.transaction.DefaultTransactionFactory;
+import cn.deepmax.querytemplate.DefaultQueryTemplateFactory;
 import cn.deepmax.transaction.SpringTransactionFactory;
 import com.zaxxer.hikari.HikariDataSource;
 import org.slf4j.Logger;
@@ -56,7 +54,7 @@ public class SpringBeanConfig {
 
     @Bean("springFactory")
     public QueryTemplateFactory factory(){
-        SimpleQueryTemplateFactory factory = new SimpleQueryTemplateFactory(h2Datasource());
+        DefaultQueryTemplateFactory factory = new DefaultQueryTemplateFactory(h2Datasource());
         factory.setTransactionFactory(new SpringTransactionFactory());
         factory.isShowSql(true);
         return factory.build();
@@ -64,7 +62,7 @@ public class SpringBeanConfig {
 
     @Bean("localSpringFactory")
     public QueryTemplateFactory localSpringFactory(){
-        SimpleQueryTemplateFactory factory = new SimpleQueryTemplateFactory(localDatasource());
+        DefaultQueryTemplateFactory factory = new DefaultQueryTemplateFactory(localDatasource());
         factory.setTransactionFactory(new SpringTransactionFactory());
         MappedEntityInfo entityInfo = new MappedEntityInfo();
         entityInfo.setToColumnNameMapper(new SameNameMapper());
@@ -75,15 +73,14 @@ public class SpringBeanConfig {
 
     @Bean("defaultFactory")
     public QueryTemplateFactory defaultFactory(){
-        SimpleQueryTemplateFactory factory = new SimpleQueryTemplateFactory(h2Datasource());
-
+        DefaultQueryTemplateFactory factory = new DefaultQueryTemplateFactory(h2Datasource());
         factory.isShowSql(true);
         return factory.build();
     }
 
     @Bean("jpaFactory")
     public QueryTemplateFactory jpaFactory(){
-        SimpleQueryTemplateFactory factory = new SimpleQueryTemplateFactory(h2Datasource());
+        DefaultQueryTemplateFactory factory = new DefaultQueryTemplateFactory(h2Datasource());
         factory.setEntityInfo(new JpaEntityInfo());
         factory.isShowSql(true);
         return factory.build();

@@ -1,9 +1,6 @@
 package cn.deepmax.entity;
 
 import cn.deepmax.exception.EasyQueryException;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-
 import java.beans.IntrospectionException;
 import java.beans.PropertyDescriptor;
 import java.lang.reflect.InvocationTargetException;

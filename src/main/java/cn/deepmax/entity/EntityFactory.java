@@ -1,6 +1,8 @@
 package cn.deepmax.entity;
 
 
+import cn.deepmax.mapper.NameMapper;
+
 import java.beans.PropertyDescriptor;
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
@@ -50,6 +52,7 @@ public class EntityFactory {
                     setValue(targetObj, value, setterMethod);
                 }
             }
+
         }
         return targetObj;
     }

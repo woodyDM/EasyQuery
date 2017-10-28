@@ -1,9 +1,7 @@
 package cn.deepmax.entity.model;
 
 import cn.deepmax.annotation.Ignore;
-
 import javax.persistence.Column;
-import javax.persistence.Id;
 import javax.persistence.Table;
 import java.math.BigDecimal;
 @Table(name = "superuser" )
