@@ -50,8 +50,11 @@ public class DefaultQueryTemplate implements QueryTemplate {
         List<RowRecord<T>> results = new ArrayList<>();
         for(Map<String,Object> it:rawResults){
             T obj = entityFactory.create(clazz,it);
-            RowRecord<T> oneRecord = new RowRecord<>(it,clazz,obj);
-            results.add(oneRecord);
+            if(it!=null) {
+                RowRecord<T> oneRecord = new RowRecord<>(it,clazz,obj);
+                results.add(oneRecord);
+            }
+
         }
         return results;
     }
@@ -72,8 +75,11 @@ public class DefaultQueryTemplate implements QueryTemplate {
         List<Map<String,Object>> rawResults = doSelect(sql,params);
         List<RowRecord> results = new ArrayList<>();
         for(Map<String,Object> it:rawResults){
-            RowRecord oneRecord = new RowRecord<>(it,null,null);
-            results.add(oneRecord);
+            if(it!=null){
+                RowRecord oneRecord = new RowRecord<>(it,null,null);
+                results.add(oneRecord);
+            }
+
         }
         return results;
     }
