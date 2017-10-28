@@ -1,8 +1,6 @@
 package cn.deepmax.entity;
 
 import cn.deepmax.exception.EasyQueryException;
-import sun.security.util.Cache;
-
 import javax.persistence.Column;
 import javax.persistence.Id;
 import javax.persistence.Table;

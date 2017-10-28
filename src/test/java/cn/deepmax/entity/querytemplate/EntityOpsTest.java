@@ -50,7 +50,7 @@ public class EntityOpsTest extends BaseTest {
         Assert.notNull(userId,"save incre id");
         queryTemplate.delete(user);
         SuperUser newUser = queryTemplate.get(SuperUser.class,userId);
-        Assert.isNull(newUser,"select new user");
+        Assert.isNull(newUser,"selectList new user");
     }
 
 }

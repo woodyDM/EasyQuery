@@ -44,6 +44,6 @@ public class TransactionServiceImpl implements TransactionService {
     private void c(){
         QueryTemplate template = factory.create();
         //throw exception
-        template.select("flewjfklewf");
+        template.selectList("flewjfklewf");
     }
 }

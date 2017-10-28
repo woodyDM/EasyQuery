@@ -32,14 +32,14 @@ public class ExecuteTest extends BaseTest {
     public void testSelectList(){
         QueryTemplate template = factory.create();
         String sql = "select * from superuser";
-        List<SuperUser> list = template.selectEntity(sql,SuperUser.class);
+        List<SuperUser> list = template.selectList(sql,SuperUser.class);
         Assert.notNull(list,"list not null");
         Assert.isTrue(list.size()>0,"size check");
-        List<Map<String,Object>> list2 = template.select(sql);
+        List<Map<String,Object>> list2 = template.selectList(sql);
         Assert.isTrue(list2.size()>0,"size check2");
-        List<RowRecord<SuperUser>> list3 = template.select(sql,SuperUser.class);
+        List<RowRecord<SuperUser>> list3 = template.selectListEx(sql,SuperUser.class);
         Assert.isTrue(list3.get(0).e.getId()!=null,"id test");
-        List<RowRecord> list4 = template.selectRowRecord(sql);
+        List<RowRecord> list4 = template.selectListEx(sql);
         Assert.isTrue(list4.size()>0,"size check4");
     }
 

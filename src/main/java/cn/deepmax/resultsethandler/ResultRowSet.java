@@ -3,14 +3,11 @@ package cn.deepmax.resultsethandler;
 import java.math.BigInteger;
 
 public interface ResultRowSet {
+
     Object getObject(String columnName);
     String getString(String columnName);
 
-    /**
-     * only support integer to Boolean
-     * @param columnName
-     * @return
-     */
+
     Boolean getBoolean(String columnName);
 
     Integer getInt(String columnName);

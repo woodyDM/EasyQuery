@@ -24,7 +24,7 @@ public interface SqlTranslator {
     Pair<String,List<Object>> getUpdateSQLInfo(Object obj);
 
     /**
-     * get sql for obj entity to select by primaryKey.
+     * get sql for obj entity to selectList by primaryKey.
      * @param clazz
      * @return
      */

@@ -40,12 +40,12 @@ public class DefaultQueryTemplate implements QueryTemplate {
     }
 
     @Override
-    public List<Map<String,Object>> select(String sql, Object... params){
+    public List<Map<String,Object>> selectList(String sql, Object... params){
         return doSelect(sql,params);
     }
 
     @Override
-    public   <T> List<RowRecord<T>> select(String sql, Class<T> clazz, Object... params) {
+    public <T> List<RowRecord<T>> selectListEx(String sql, Class<T> clazz, Object... params) {
         List<Map<String,Object>> rawResults = doSelect(sql,params);
         List<RowRecord<T>> results = new ArrayList<>();
         for(Map<String,Object> it:rawResults){
@@ -57,7 +57,7 @@ public class DefaultQueryTemplate implements QueryTemplate {
     }
 
     @Override
-    public  <T> List<T> selectEntity(String sql, Class<T> clazz, Object... params) {
+    public  <T> List<T> selectList(String sql, Class<T> clazz, Object... params) {
         List<Map<String,Object>> rawResults = doSelect(sql,params);
         List<T> results = new ArrayList<>();
         for(Map<String,Object> it:rawResults){
@@ -68,7 +68,7 @@ public class DefaultQueryTemplate implements QueryTemplate {
     }
 
     @Override
-    public List<RowRecord> selectRowRecord(String sql, Object... params) {
+    public List<RowRecord> selectListEx(String sql, Object... params) {
         List<Map<String,Object>> rawResults = doSelect(sql,params);
         List<RowRecord> results = new ArrayList<>();
         for(Map<String,Object> it:rawResults){
@@ -79,15 +79,15 @@ public class DefaultQueryTemplate implements QueryTemplate {
     }
 
     @Override
-    public Map<String,Object> selectOne(String sql, Object... params){
-        List<Map<String,Object>> results = select(sql, params);
+    public Map<String,Object> select(String sql, Object... params){
+        List<Map<String,Object>> results = selectList(sql, params);
         return handleUnique(results);
     }
 
 
     @Override
-    public  <T> RowRecord<T> selectOne(String sql, Class<T> clazz, Object... params) {
-        Map<String,Object> rawResult = selectOne(sql,params);
+    public  <T> RowRecord<T> selectEx(String sql, Class<T> clazz, Object... params) {
+        Map<String,Object> rawResult = select(sql,params);
         if(rawResult==null){
             return null;
         }
@@ -96,8 +96,8 @@ public class DefaultQueryTemplate implements QueryTemplate {
     }
 
     @Override
-    public  <T> T selectOneEntity(String sql, Class<T> clazz, Object... params) {
-        Map<String,Object> rawResult = selectOne(sql,params);
+    public  <T> T select(String sql, Class<T> clazz, Object... params) {
+        Map<String,Object> rawResult = select(sql,params);
         if(rawResult==null){
             return null;
         }
@@ -105,8 +105,17 @@ public class DefaultQueryTemplate implements QueryTemplate {
     }
 
     @Override
+    public RowRecord selectEx(String sql, Object... params) {
+        Map<String,Object> rawResult = select(sql,params);
+        if(rawResult==null){
+            return null;
+        }
+        return new RowRecord<>(rawResult,null, null );
+    }
+
+    @Override
     public <T> T selectScalar(String sql, Class<T> clazz, Object... params) {
-        Map<String,Object> oneResult = selectOne(sql,params);
+        Map<String,Object> oneResult = select(sql,params);
         if(oneResult==null){
             return null;
         }
@@ -176,7 +185,7 @@ public class DefaultQueryTemplate implements QueryTemplate {
     public <T> T get(Class<T> clazz,Object primary){
         Objects.requireNonNull(primary,"PrimaryKey value is null, unable to get entity of type["+clazz.getName()+"]");
         String sql = sqlTranslator.getSelectSQLInfo(clazz);
-        return selectOneEntity (sql,clazz,primary);
+        return select (sql,clazz,primary);
     }
 
     @Override

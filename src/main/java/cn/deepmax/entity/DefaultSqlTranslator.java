@@ -156,7 +156,7 @@ public class DefaultSqlTranslator implements SqlTranslator{
         StringBuilder sb = new StringBuilder();
         String tableName = entityInfo.getFullTableName(clazz);
         String primaryColumnName = entityInfo.fieldNameToColumnNameMap(clazz).get(entityInfo.getPrimaryKeyFieldName(clazz));
-        sb.append("select * from ")
+        sb.append("select  * from ")
                 .append(tableName)
                 .append( "  where ")
                 .append(primaryColumnName)

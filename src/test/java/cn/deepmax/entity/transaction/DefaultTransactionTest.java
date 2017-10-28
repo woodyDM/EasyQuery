@@ -27,7 +27,7 @@ public class DefaultTransactionTest extends BaseTest {
         user.setName("wwww");
         user.setOk1(false);
         Long newId=null;
-        template.select("select 1 as one");
+        template.selectList("select  1 as one");
         try{
             template.transaction().beginTransaction();
             template.save(user);
@@ -58,7 +58,7 @@ public class DefaultTransactionTest extends BaseTest {
 
     private void testDefaultTransactionException(QueryTemplateFactory factory){
         QueryTemplate template = factory.create();
-        template.select("select 1 as one");
+        template.selectList("select 1 as one");
         SuperUser user = new SuperUser();
         user.setBigDecimal(BigDecimal.ONE);
         user.setName("wwww");
