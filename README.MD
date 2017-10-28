@@ -78,11 +78,11 @@ Tips Before:<br>
 2,It is highly recommended that the entity class is a standard javabean with default
  constructor ,getter and setter, the field type is not primitive data type.<br>
 3,When using `save` method,if the primary key field is null, a new row will insert into table,
-else an `update` SQL will be executed to update all field. If this causes 
+else an `update` SQL will be executed to update all fields. If this causes 
 performance problem, use `executeUpdate` and provide your own SQL.<br>
 
 All entity operations are related to an `EntityInfo` implementation.
-`EntityInfo` defines the relationship between the POJO field and database
+`EntityInfo` defines the relationship between the POJO field name and database
 column lable name, and also the relationship between the POJO class and database
 tables.
 <br>
@@ -92,7 +92,7 @@ EasyQuery provide two `EntityInfo` implementation:`MappedEntityInfo` and `JpaEnt
 `MappedEntityInfo` uses two `NameMapper` to set those rules.
 'toTableNameMapper' in 'MappedEntityInfo' defines the table name according to entity
 class name and 'toColumnNameMapper' defines the column name that corresponding 
-the field name in POJO field name.You can define your own `NameMapper` to match your entity class field 
+the field name in POJO. You can define your own `NameMapper` to match your entity class field 
 and the database column name.For example:<br>
 ```java
 new NameMapper(){
@@ -105,7 +105,7 @@ new NameMapper(){
         }
 };
 ```
-Defines an upper case column name.If your field name is "userId" ,the database column
+Defines an upper case column namemapper.If your field name is "userId" ,the database column
  name should be USERID.<br>
 Additionally: If any field that is not desired to persist in database,
 put `@Ignore` on the field.
@@ -118,7 +118,7 @@ mentioned above.
 ---
 EasyQuery supports two kind of transaction with class `DefaultTransaction` and 
 `SpringTransaction`.<br>
-When using `DefaultTransaction` from `DefaultTransactionFactory`,the template gets jdbc connection directly from database.you manage transaction yourself like this:
+When using `DefaultTransaction` from `DefaultTransactionFactory`,the template gets jdbc connection directly from datasource.you manage transaction yourself like this:
 ```java
 try{
     template.transaction().beginTransaction();
@@ -151,9 +151,10 @@ and finally call `build` method to complete.<br>
 6 Log
 ---
 EasyQuery uses logback for logging. If SQLs are desired to be logged, set `DefaultQueryTemplateFactory`
-isShowSql to true , and logging level of `DefaultQueryTemplate` to DEBUG.
+isShowSql to true , and logging level of `cn.deepmax.querytemplate.DefaultQueryTemplate` class to DEBUG.
 
 
 <br>
-EasyQuery is now only tested on win10 (x64) with mysql 5.7.15, java 1.8.<br>
-Any question or problem: woody@alumni.sjtu.edu.cn.
+EasyQuery is now only tested on win10 (x64) with mysql 5.7.15, java 1.8. <br>
+Any question or problem: woody@alumni.sjtu.edu.cn. <br>
+2017.09~2017.10
