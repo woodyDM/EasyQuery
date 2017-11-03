@@ -15,22 +15,22 @@ public class SpringTransactionTest extends BaseTest{
     /**
      * !! this test need a local mysql database with engine innoDB to support transaction.
      */
-    @Test
-    public void testWithException(){
-        SuperUser user = new SuperUser();
-        user.setBigDecimal(BigDecimal.ONE);
-        service.save(user);
-        Assert.notNull(user.getId(),"id null");
-        try{
-            //this service set bigDecimal to BigDecimal.TEN,
-            //rollback after exception.
-            service.causeExceptionSave(user);
-        }catch (Exception e){
-
-        }
-        SuperUser user1 = service.get(user.getId());
-        Assert.isTrue(user1.getBigDecimal().equals(BigDecimal.ONE),"After rollback");
-    }
+//    @Test
+//    public void testWithException(){
+//        SuperUser user = new SuperUser();
+//        user.setBigDecimal(BigDecimal.ONE);
+//        service.save(user);
+//        Assert.notNull(user.getId(),"id null");
+//        try{
+//            //this service set bigDecimal to BigDecimal.TEN,
+//            //rollback after exception.
+//            service.causeExceptionSave(user);
+//        }catch (Exception e){
+//
+//        }
+//        SuperUser user1 = service.get(user.getId());
+//        Assert.isTrue(user1.getBigDecimal().equals(BigDecimal.ONE),"After rollback");
+//    }
 
 
 }
