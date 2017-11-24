@@ -1,6 +1,8 @@
-package cn.deepmax.mapper;
+package cn.deepmax.mapper.column;
 
-public class SameNameMapper implements NameMapper {
+import cn.deepmax.mapper.NameMapper;
+
+public class SameColumnNameMapper implements NameMapper {
 
     /**
      *

@@ -41,12 +41,12 @@ public class DefaultQueryTemplate implements QueryTemplate {
 
     @Override
     public List<Map<String,Object>> selectList(String sql, Object... params){
-        return doSelect(sql,params);
+        return doSelect(sql,params).last;
     }
 
     @Override
     public <T> List<RowRecord<T>> selectListEx(String sql, Class<T> clazz, Object... params) {
-        List<Map<String,Object>> rawResults = doSelect(sql,params);
+        List<Map<String,Object>> rawResults = doSelect(sql,params).last;
         List<RowRecord<T>> results = new ArrayList<>();
         for(Map<String,Object> it:rawResults){
             T obj = entityFactory.create(clazz,it);
@@ -61,7 +61,7 @@ public class DefaultQueryTemplate implements QueryTemplate {
 
     @Override
     public  <T> List<T> selectList(String sql, Class<T> clazz, Object... params) {
-        List<Map<String,Object>> rawResults = doSelect(sql,params);
+        List<Map<String,Object>> rawResults = doSelect(sql,params).last;
         List<T> results = new ArrayList<>();
         for(Map<String,Object> it:rawResults){
             T obj = entityFactory.create(clazz,it);
@@ -72,7 +72,7 @@ public class DefaultQueryTemplate implements QueryTemplate {
 
     @Override
     public List<RowRecord> selectListEx(String sql, Object... params) {
-        List<Map<String,Object>> rawResults = doSelect(sql,params);
+        List<Map<String,Object>> rawResults = doSelect(sql,params).last;
         List<RowRecord> results = new ArrayList<>();
         for(Map<String,Object> it:rawResults){
             if(it!=null){
@@ -277,7 +277,7 @@ public class DefaultQueryTemplate implements QueryTemplate {
      * @param params
      * @return
      */
-    private List<Map<String,Object>> doSelect(String sql, Object... params){
+    private Pair<String,List<Map<String,Object>>> doSelect(String sql, Object... params){
         Connection cn = transaction.getConnection();
         PreparedStatement ps=null;
         ResultSet rs=null;

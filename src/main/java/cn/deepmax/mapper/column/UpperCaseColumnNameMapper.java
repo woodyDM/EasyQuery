@@ -1,4 +1,6 @@
-package cn.deepmax.mapper;
+package cn.deepmax.mapper.column;
+
+import cn.deepmax.mapper.NameMapper;
 
 public class UpperCaseColumnNameMapper implements NameMapper {
 

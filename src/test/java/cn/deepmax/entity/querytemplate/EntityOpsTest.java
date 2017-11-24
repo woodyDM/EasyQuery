@@ -18,7 +18,7 @@ public class EntityOpsTest extends BaseTest {
         QueryTemplate template = factory.create();
         template.save(user);
         Assert.notNull(user.getId(),"id null");
-        Assert.isTrue(user.getId().equals(3L),"id equals");
+
     }
 
     @Test

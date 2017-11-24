@@ -1,6 +1,8 @@
 package cn.deepmax.resultsethandler;
 
 
+import cn.deepmax.model.Pair;
+
 import java.sql.ResultSet;
 import java.sql.ResultSetMetaData;
 import java.sql.SQLException;
@@ -8,27 +10,29 @@ import java.util.*;
 
 public class ResultSetHandler {
 
-    public static List<Map<String,Object>> handle(ResultSet rs) {
+    public static Pair<String,List<Map<String,Object>>> handle(ResultSet rs) {
+
         List<Map<String,Object>> resultsList = new ArrayList<>();
+        Pair<String,List<Map<String,Object>>> pair = new Pair<>("",resultsList);
         if(rs==null){
-            return resultsList;
+            return pair;
         }
         try {
             while (rs.next()){
-                Map<String,Object> row = new LinkedHashMap<>();
                 int totalColumnCount = rs.getMetaData().getColumnCount();
+                Map<String,Object> row = new LinkedHashMap<>();
                 for (int i = 1; i <= totalColumnCount; i++) {
-                    addToMap(row,rs,i);
+                    addToMap(pair,row,rs,i);
                 }
-                resultsList.add(row);
+                pair.last.add(row);
             }
         } catch (SQLException e) {
             throw new RuntimeException(e);
         }
-        return resultsList;
+        return pair;
     }
 
-    private static void addToMap(Map<String,Object> oneResult,ResultSet rs,int pos){
+    private static void addToMap(Pair<String,List<Map<String,Object>>> pair,Map<String,Object> row,ResultSet rs,int pos){
         try {
             ResultSetMetaData metaData = rs.getMetaData();
             String labelName = metaData.getColumnLabel(pos);
@@ -36,13 +40,25 @@ public class ResultSetHandler {
                 labelName = metaData.getColumnName(pos);
             }
             String oldLableName = labelName;
-            Object result =rs.getObject(pos);
+            Object value =rs.getObject(pos);
             int start = 0;
-            while (oneResult.containsKey(labelName)){
+            while (row.containsKey(labelName)){
                 start++;
                 labelName = oldLableName+start;
             }
-            oneResult.put(labelName,result);
+            row.put(labelName,value);   //add values
+            //handle tableName only unique tableName is allowed.
+            if(pair.first==null){   //if more than one table.
+                return;
+            }
+            String nowTableName = metaData.getTableName(pos);
+            if(pair.first.length()==0||(nowTableName!=null && nowTableName.length()!=0)){ //no table found before.
+                pair.first = nowTableName;
+            }else{
+                if(!pair.first.equals(nowTableName)){
+                    pair.first = null;      //other tables found.
+                }
+            }
         } catch (SQLException e) {
             throw new RuntimeException(e);
         }

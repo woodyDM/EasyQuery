@@ -1,9 +1,9 @@
 package cn.deepmax.entity;
 
 import cn.deepmax.annotation.Ignore;
-import cn.deepmax.mapper.LowerCaseTableNameMapper;
+import cn.deepmax.mapper.table.LowerCaseTableNameMapper;
 import cn.deepmax.mapper.NameMapper;
-import cn.deepmax.mapper.UpperCaseColumnNameMapper;
+import cn.deepmax.mapper.column.UpperCaseColumnNameMapper;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import java.beans.PropertyDescriptor;

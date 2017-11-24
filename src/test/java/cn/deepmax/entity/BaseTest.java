@@ -27,8 +27,8 @@ public class BaseTest {
     protected QueryTemplateFactory defaultFactory;
     @Resource(name = "H2Datasource")
     DataSource dataSource;
-    @Resource(name = "localDatasource")
-    DataSource localDatasource;
+//    @Resource(name = "localDatasource")
+//    DataSource localDatasource;
 
     @Before
     public void init() throws Exception{

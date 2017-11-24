@@ -12,7 +12,7 @@ import java.math.BigDecimal;
 @Transactional
 public class TransactionServiceImpl implements TransactionService {
 
-    @Resource(name = "localSpringFactory")
+    //@Resource(name = "localSpringFactory")
     QueryTemplateFactory factory;
 
     @Override

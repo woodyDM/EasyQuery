@@ -1,7 +1,7 @@
 package cn.deepmax.entity;
 
 
-import cn.deepmax.mapper.SameNameMapper;
+import cn.deepmax.mapper.column.SameColumnNameMapper;
 import cn.deepmax.querytemplate.QueryTemplateFactory;
 import cn.deepmax.querytemplate.DefaultQueryTemplateFactory;
 import cn.deepmax.transaction.SpringTransactionFactory;
@@ -36,21 +36,21 @@ public class SpringBeanConfig {
         return dataSource ;
     }
 
-    @Bean
-    public PlatformTransactionManager platformTransactionManager(){
-        DataSourceTransactionManager manager = new DataSourceTransactionManager(localDatasource());
-        return manager;
-    }
-
-    @Bean("localDatasource")
-    public DataSource localDatasource(){
-        HikariDataSource dataSource = new HikariDataSource();
-        dataSource.setJdbcUrl("jdbc:mysql://localhost:3306/test?useUnicode=true&characterEncoding=utf8&autoReconnect=true&useSSL=false");
-        dataSource.setDriverClassName("com.mysql.jdbc.Driver");
-        dataSource.setUsername("root");
-        dataSource.setPassword("123456");
-        return dataSource ;
-    }
+//    @Bean
+//    public PlatformTransactionManager platformTransactionManager(){
+//        DataSourceTransactionManager manager = new DataSourceTransactionManager(localDatasource());
+//        return manager;
+//    }
+//
+//    @Bean("localDatasource")
+//    public DataSource localDatasource(){
+//        HikariDataSource dataSource = new HikariDataSource();
+//        dataSource.setJdbcUrl("jdbc:mysql://localhost:3306/test?useUnicode=true&characterEncoding=utf8&autoReconnect=true&useSSL=false");
+//        dataSource.setDriverClassName("com.mysql.jdbc.Driver");
+//        dataSource.setUsername("root");
+//        dataSource.setPassword("123456");
+//        return dataSource ;
+//    }
 
     @Bean("springFactory")
     public QueryTemplateFactory factory(){
@@ -59,17 +59,17 @@ public class SpringBeanConfig {
         factory.isShowSql(true);
         return factory.build();
     }
-
-    @Bean("localSpringFactory")
-    public QueryTemplateFactory localSpringFactory(){
-        DefaultQueryTemplateFactory factory = new DefaultQueryTemplateFactory(localDatasource());
-        factory.setTransactionFactory(new SpringTransactionFactory());
-        MappedEntityInfo entityInfo = new MappedEntityInfo();
-        entityInfo.setToColumnNameMapper(new SameNameMapper());
-        factory.setEntityInfo(entityInfo);
-        factory.isShowSql(true);
-        return factory.build();
-    }
+//
+//    @Bean("localSpringFactory")
+//    public QueryTemplateFactory localSpringFactory(){
+//        DefaultQueryTemplateFactory factory = new DefaultQueryTemplateFactory(localDatasource());
+//        factory.setTransactionFactory(new SpringTransactionFactory());
+//        MappedEntityInfo entityInfo = new MappedEntityInfo();
+//        entityInfo.setToColumnNameMapper(new SameColumnNameMapper());
+//        factory.setEntityInfo(entityInfo);
+//        factory.isShowSql(true);
+//        return factory.build();
+//    }
 
     @Bean("defaultFactory")
     public QueryTemplateFactory defaultFactory(){
