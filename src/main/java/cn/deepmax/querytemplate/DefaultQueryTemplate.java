@@ -4,6 +4,9 @@ import cn.deepmax.entity.EntityFactory;
 import cn.deepmax.entity.SqlTranslator;
 import cn.deepmax.entity.TypeAdapter;
 import cn.deepmax.exception.EasyQueryException;
+import cn.deepmax.generator.Generator;
+import cn.deepmax.model.Config;
+import cn.deepmax.model.DbMetaData;
 import cn.deepmax.model.Pair;
 import cn.deepmax.resultsethandler.ResultSetHandler;
 import cn.deepmax.resultsethandler.RowRecord;
@@ -22,15 +25,18 @@ public class DefaultQueryTemplate implements QueryTemplate {
     private Transaction transaction;
     private EntityFactory entityFactory;
     private SqlTranslator sqlTranslator;
-    private boolean isShowSql;
+    private Config config;
+    private Generator generator;
     private static final Logger logger = LoggerFactory.getLogger(DefaultQueryTemplate.class);
 
 
-    public DefaultQueryTemplate(Transaction transaction, EntityFactory entityFactory, boolean isShowSql, SqlTranslator sqlTranslator) {
+    public DefaultQueryTemplate(Transaction transaction, EntityFactory entityFactory, Config config, SqlTranslator sqlTranslator) {
+        Objects.requireNonNull(config);
         this.transaction = transaction;
         this.entityFactory = entityFactory;
-        this.isShowSql = isShowSql;
+        this.config = config;
         this.sqlTranslator = sqlTranslator;
+        this.generator = new Generator(config);
     }
 
 
@@ -44,9 +50,11 @@ public class DefaultQueryTemplate implements QueryTemplate {
         return doSelect(sql,params).last;
     }
 
+
     @Override
     public <T> List<RowRecord<T>> selectListEx(String sql, Class<T> clazz, Object... params) {
-        List<Map<String,Object>> rawResults = doSelect(sql,params).last;
+        Pair<DbMetaData,List<Map<String,Object>>> pair = doSelect(sql,params);
+        List<Map<String,Object>> rawResults = pair.last;
         List<RowRecord<T>> results = new ArrayList<>();
         for(Map<String,Object> it:rawResults){
             T obj = entityFactory.create(clazz,it);
@@ -54,18 +62,25 @@ public class DefaultQueryTemplate implements QueryTemplate {
                 RowRecord<T> oneRecord = new RowRecord<>(it,clazz,obj);
                 results.add(oneRecord);
             }
-
+        }
+        if(config.isGenerateClass()){
+            generator.generateIfNecessary(pair.first, clazz);
         }
         return results;
     }
 
+
     @Override
     public  <T> List<T> selectList(String sql, Class<T> clazz, Object... params) {
-        List<Map<String,Object>> rawResults = doSelect(sql,params).last;
+        Pair<DbMetaData,List<Map<String,Object>>> pair = doSelect(sql,params);
+        List<Map<String,Object>> rawResults = pair.last;
         List<T> results = new ArrayList<>();
         for(Map<String,Object> it:rawResults){
             T obj = entityFactory.create(clazz,it);
             results.add(obj);
+        }
+        if(config.isGenerateClass()){
+            generator.generateIfNecessary(pair.first, clazz);
         }
         return results;
     }
@@ -79,7 +94,6 @@ public class DefaultQueryTemplate implements QueryTemplate {
                 RowRecord oneRecord = new RowRecord<>(it,null,null);
                 results.add(oneRecord);
             }
-
         }
         return results;
     }
@@ -93,21 +107,15 @@ public class DefaultQueryTemplate implements QueryTemplate {
 
     @Override
     public  <T> RowRecord<T> selectEx(String sql, Class<T> clazz, Object... params) {
-        Map<String,Object> rawResult = select(sql,params);
-        if(rawResult==null){
-            return null;
-        }
-        T obj = entityFactory.create(clazz,rawResult);
-        return new RowRecord<>(rawResult,clazz, obj );
+        List<RowRecord<T>> result = selectListEx(sql, clazz, params);
+        return handleUnique(result);
     }
+
 
     @Override
     public  <T> T select(String sql, Class<T> clazz, Object... params) {
-        Map<String,Object> rawResult = select(sql,params);
-        if(rawResult==null){
-            return null;
-        }
-        return entityFactory.create(clazz,rawResult);
+        List<T> results = selectList(sql,clazz,params);
+        return handleUnique(results);
     }
 
     @Override
@@ -152,7 +160,7 @@ public class DefaultQueryTemplate implements QueryTemplate {
                 setPrepareStatementParams(ps,params.toArray());
                 ps.addBatch();
             }
-            if(isShowSql){
+            if(config.isShowSql()){
                 logger.debug("[executeBatch] {}",sql);
             }
             return ps.executeBatch();
@@ -176,7 +184,7 @@ public class DefaultQueryTemplate implements QueryTemplate {
         try {
             ps = cn.prepareStatement(sql);
             setPrepareStatementParams(ps,params);
-            if(isShowSql){
+            if(config.isShowSql()){
                 logger.debug("[executeUpdate] {}",sql);
             }
             return ps.executeUpdate();
@@ -212,7 +220,7 @@ public class DefaultQueryTemplate implements QueryTemplate {
         try {
             ps = cn.prepareStatement(info.first,Statement.RETURN_GENERATED_KEYS);
             setPrepareStatementParams(ps,info.last.toArray());
-            if(isShowSql){
+            if(config.isShowSql()){
                 logger.debug("[insert] {}",info.first);
             }
             int effectRow= ps.executeUpdate();
@@ -261,11 +269,11 @@ public class DefaultQueryTemplate implements QueryTemplate {
         return (sqlTranslator.getEntityInfo().getPrimaryKeyFieldValue(obj)!=null);
     }
 
-    private Map<String,Object> handleUnique(List<Map<String,Object>> list){
+    private <T> T handleUnique(List<T> list){
         if(list.size()==0){
             return null;
         }else if(list.size()>1){
-            throw new EasyQueryException("ResultSet is not unique.");
+            throw new EasyQueryException("ResultSet is not unique, try using selectList method.");
         }else{
             return list.get(0);
         }
@@ -277,18 +285,18 @@ public class DefaultQueryTemplate implements QueryTemplate {
      * @param params
      * @return
      */
-    private Pair<String,List<Map<String,Object>>> doSelect(String sql, Object... params){
+    private Pair<DbMetaData,List<Map<String,Object>>> doSelect(String sql, Object... params){
         Connection cn = transaction.getConnection();
         PreparedStatement ps=null;
         ResultSet rs=null;
         try {
             ps = cn.prepareStatement(sql);
             setPrepareStatementParams(ps,params);
-            if(isShowSql){
+            if(config.isShowSql()){
                 logger.debug("[select] {}",sql);
             }
             rs = ps.executeQuery();
-            return ResultSetHandler.handle(rs);
+            return ResultSetHandler.handle(rs,config.isGenerateClass());
 
         } catch (SQLException e) {
             throw new EasyQueryException(e);

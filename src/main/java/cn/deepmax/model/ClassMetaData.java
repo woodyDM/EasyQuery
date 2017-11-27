@@ -1,4 +1,4 @@
-package cn.deepmax.util;
+package cn.deepmax.model;
 
 public class ClassMetaData {
     private String propertyName;

@@ -1,7 +1,9 @@
 package cn.deepmax.resultsethandler;
 
 
+import cn.deepmax.model.DbMetaData;
 import cn.deepmax.model.Pair;
+import cn.deepmax.util.StringUtils;
 
 import java.sql.ResultSet;
 import java.sql.ResultSetMetaData;
@@ -10,29 +12,40 @@ import java.util.*;
 
 public class ResultSetHandler {
 
-    public static Pair<String,List<Map<String,Object>>> handle(ResultSet rs) {
+    public static Pair<DbMetaData,List<Map<String,Object>>> handle(ResultSet rs,boolean needMetaData) {
 
         List<Map<String,Object>> resultsList = new ArrayList<>();
-        Pair<String,List<Map<String,Object>>> pair = new Pair<>("",resultsList);
+        DbMetaData metaData = (needMetaData)?new DbMetaData():null;
+        Pair<DbMetaData,List<Map<String,Object>>> pair = new Pair<>(metaData,resultsList);
         if(rs==null){
             return pair;
         }
         try {
+            boolean isFirstLoop = true;
             while (rs.next()){
                 int totalColumnCount = rs.getMetaData().getColumnCount();
                 Map<String,Object> row = new LinkedHashMap<>();
                 for (int i = 1; i <= totalColumnCount; i++) {
-                    addToMap(pair,row,rs,i);
+                    addToMap(metaData,row,rs,i,isFirstLoop);
                 }
-                pair.last.add(row);
+                resultsList.add(row);
+                isFirstLoop = false;        //no need to repeat getting dbMetaData
             }
         } catch (SQLException e) {
             throw new RuntimeException(e);
         }
+
         return pair;
     }
 
-    private static void addToMap(Pair<String,List<Map<String,Object>>> pair,Map<String,Object> row,ResultSet rs,int pos){
+    /**
+     * add result value to map and analysis metaData in firstLoop.
+     * @param row
+     * @param rs
+     * @param pos
+     * @param isFirstLoop
+     */
+    private static void addToMap(DbMetaData dbMetaData, Map<String,Object> row,ResultSet rs,int pos,boolean isFirstLoop){
         try {
             ResultSetMetaData metaData = rs.getMetaData();
             String labelName = metaData.getColumnLabel(pos);
@@ -46,21 +59,48 @@ public class ResultSetHandler {
                 start++;
                 labelName = oldLableName+start;
             }
+
             row.put(labelName,value);   //add values
-            //handle tableName only unique tableName is allowed.
-            if(pair.first==null){   //if more than one table.
+
+            if(!isFirstLoop){
                 return;
             }
-            String nowTableName = metaData.getTableName(pos);
-            if(pair.first.length()==0||(nowTableName!=null && nowTableName.length()!=0)){ //no table found before.
-                pair.first = nowTableName;
-            }else{
-                if(!pair.first.equals(nowTableName)){
-                    pair.first = null;      //other tables found.
-                }
+            if(dbMetaData==null){
+                return;
             }
+
+            //handle tableName and catalogName .only unique allowed.
+            dbMetaData.getColumnClassTypeName().put(labelName,metaData.getColumnClassName(pos));
+            handleTableName(dbMetaData, metaData.getTableName(pos));
+            handleCatalogName(dbMetaData, metaData.getCatalogName(pos));
         } catch (SQLException e) {
             throw new RuntimeException(e);
         }
     }
+
+    private static void handleTableName(DbMetaData metaData,String comingTableName){
+        if(metaData.getTableName()==null){   //if more than one table.
+            return;
+        }
+        if(metaData.getTableName().length()==0 && StringUtils.isNotEmpty(comingTableName)){ //no table found before.
+            metaData.setTableName(comingTableName);
+        }else{
+            if(!metaData.getTableName().equals(comingTableName)){
+                metaData.setTableName(null);      //other tables found.
+            }
+        }
+    }
+    private static void handleCatalogName(DbMetaData metaData,String comingCatalogName){
+        if(metaData.getCatalogName()==null){   //if more than one catalog.
+            return;
+        }
+        if(metaData.getCatalogName().length()==0 && StringUtils.isNotEmpty(comingCatalogName)){ //no catalog found before.
+            metaData.setCatalogName(comingCatalogName);
+        }else{
+            if(!metaData.getCatalogName().equals(comingCatalogName)){
+                metaData.setCatalogName(null);      //other catalog found.
+            }
+        }
+    }
+
 }

@@ -2,6 +2,8 @@ package cn.deepmax.entity;
 
 
 import cn.deepmax.mapper.column.CamelToUpperUnderLineColumnNameMapper;
+import cn.deepmax.mapper.column.LowerUnderlineToCamelColumnNameMapper;
+import cn.deepmax.mapper.column.SameColumnNameMapper;
 import cn.deepmax.mapper.table.CamelToLowerUnderLineTableNameMapper;
 import cn.deepmax.querytemplate.QueryTemplateFactory;
 import cn.deepmax.querytemplate.DefaultQueryTemplateFactory;
@@ -55,16 +57,14 @@ public class SpringBeanConfig {
         entityInfo.setToColumnNameMapper(new CamelToUpperUnderLineColumnNameMapper());
         entityInfo.setToTableNameMapper(new CamelToLowerUnderLineTableNameMapper());
         factory.setEntityInfo(entityInfo);
+        factory.isGenerateClass(true);
+        factory.setToFieldNameMapper(new LowerUnderlineToCamelColumnNameMapper());
+        factory.setValueObjectPath("D:/test/entity");
+        factory.setEntityPath("D:/test/vo");
         return factory.build();
     }
 
-    @Bean("jpaFactory")
-    public QueryTemplateFactory jpaFactory(){
-        DefaultQueryTemplateFactory factory = new DefaultQueryTemplateFactory(h2Datasource());
-        factory.setEntityInfo(new JpaEntityInfo());
-        factory.isShowSql(true);
-        return factory.build();
-    }
+
 
 
 //    @Bean
@@ -97,5 +97,16 @@ public class SpringBeanConfig {
 //    }
 
 
+    @Bean("jpaFactory")
+    public QueryTemplateFactory jpaFactory(){
+        DefaultQueryTemplateFactory factory = new DefaultQueryTemplateFactory(h2Datasource());
+        factory.setEntityInfo(new JpaEntityInfo());
+        factory.isShowSql(true);
+        factory.isGenerateClass(true);
+        factory.setToFieldNameMapper(new SameColumnNameMapper());
+        factory.setEntityPath("D:\\gitProject\\EasyQuery\\src\\test\\java");
+        factory.setValueObjectPath("D:\\gitProject\\EasyQuery\\src\\test\\java");
+        return factory.build();
+    }
 
 }
