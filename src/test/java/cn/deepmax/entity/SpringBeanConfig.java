@@ -1,7 +1,8 @@
 package cn.deepmax.entity;
 
 
-import cn.deepmax.mapper.column.SameColumnNameMapper;
+import cn.deepmax.mapper.column.CamelToUpperUnderLineColumnNameMapper;
+import cn.deepmax.mapper.table.CamelToLowerUnderLineTableNameMapper;
 import cn.deepmax.querytemplate.QueryTemplateFactory;
 import cn.deepmax.querytemplate.DefaultQueryTemplateFactory;
 import cn.deepmax.transaction.SpringTransactionFactory;
@@ -11,8 +12,6 @@ import org.slf4j.LoggerFactory;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.ComponentScan;
 import org.springframework.context.annotation.Configuration;
-import org.springframework.jdbc.datasource.DataSourceTransactionManager;
-import org.springframework.transaction.PlatformTransactionManager;
 import org.springframework.transaction.annotation.EnableTransactionManagement;
 
 import javax.sql.DataSource;
@@ -41,6 +40,10 @@ public class SpringBeanConfig {
         DefaultQueryTemplateFactory factory = new DefaultQueryTemplateFactory(h2Datasource());
         factory.setTransactionFactory(new SpringTransactionFactory());
         factory.isShowSql(true);
+        MappedEntityInfo entityInfo = new MappedEntityInfo();
+        entityInfo.setToColumnNameMapper(new CamelToUpperUnderLineColumnNameMapper());
+        entityInfo.setToTableNameMapper(new CamelToLowerUnderLineTableNameMapper());
+        factory.setEntityInfo(entityInfo);
         return factory.build();
     }
 
@@ -48,7 +51,10 @@ public class SpringBeanConfig {
     public QueryTemplateFactory defaultFactory(){
         DefaultQueryTemplateFactory factory = new DefaultQueryTemplateFactory(h2Datasource());
         factory.isShowSql(true);
-
+        MappedEntityInfo entityInfo = new MappedEntityInfo();
+        entityInfo.setToColumnNameMapper(new CamelToUpperUnderLineColumnNameMapper());
+        entityInfo.setToTableNameMapper(new CamelToLowerUnderLineTableNameMapper());
+        factory.setEntityInfo(entityInfo);
         return factory.build();
     }
 

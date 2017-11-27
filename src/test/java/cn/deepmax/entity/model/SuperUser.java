@@ -4,10 +4,10 @@ import cn.deepmax.annotation.Ignore;
 import javax.persistence.Column;
 import javax.persistence.Table;
 import java.math.BigDecimal;
-@Table(name = "superuser" )
+@Table(name = "super_user" )
 public class SuperUser extends User {
 
-    @Column(name = "big_decimal")
+    @Column(name = "BIG_DECIMAL")
     private BigDecimal bigDecimal;
 
     public SuperUser() {

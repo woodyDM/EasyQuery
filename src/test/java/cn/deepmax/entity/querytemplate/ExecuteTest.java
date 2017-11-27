@@ -20,7 +20,7 @@ public class ExecuteTest extends BaseTest {
         user.setBigDecimal(BigDecimal.ONE);
         template.save(user);
         Long id = user.getId();
-        String sql = "update superuser set name ='ko' ,is_hide = ? where id  = ? ";
+        String sql = "update super_user set user_name ='ko' ,hide = ? where id  = ? ";
         int i = template.executeUpdate(sql,1,id);
         Assert.isTrue(i==1,"execute 1 row");
         SuperUser sUser = template.get(SuperUser.class,id);
@@ -31,7 +31,7 @@ public class ExecuteTest extends BaseTest {
     @Test
     public void testSelectList(){
         QueryTemplate template = factory.create();
-        String sql = "select * from superuser";
+        String sql = "select * from super_user";
         List<SuperUser> list = template.selectList(sql,SuperUser.class);
         Assert.notNull(list,"list not null");
         Assert.isTrue(list.size()>0,"size check");

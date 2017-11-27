@@ -12,22 +12,22 @@ import java.util.Date;
 public class User {
 
     @Id
-    @Column(name = "id")
+    @Column(name = "ID")
     private Long id;
-    @Column(name = "user_name")
+    @Column(name = "USER_NAME")
     private String userName;
-    @Column(name = "create_time")
+    @Column(name = "CREATE_TIME")
     private Timestamp createTime;
 
     private Date updateDate;
 
-    @Column(name = "is_show")
+    @Column(name = "SHOW")
     private Boolean show;
-    @Column(name = "is_hide")
+    @Column(name = "HIDE")
     private boolean hide;
     @Ignore
     private double transientProperty;
-    @Column(name = "a_big_point")
+    @Column(name = "A_BIG_POINT")
     private Double aBigPoint;
 
     public Long getId() {
@@ -53,7 +53,7 @@ public class User {
     public void setCreateTime(Timestamp createTime) {
         this.createTime = createTime;
     }
-    @Column(name = "update_date")
+    @Column(name = "UPDATE_DATE")
     public Date getUpdateDate() {
         return updateDate;
     }
