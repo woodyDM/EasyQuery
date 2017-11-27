@@ -36,6 +36,31 @@ public class SpringBeanConfig {
         return dataSource ;
     }
 
+    @Bean("springFactory")
+    public QueryTemplateFactory factory(){
+        DefaultQueryTemplateFactory factory = new DefaultQueryTemplateFactory(h2Datasource());
+        factory.setTransactionFactory(new SpringTransactionFactory());
+        factory.isShowSql(true);
+        return factory.build();
+    }
+
+    @Bean("defaultFactory")
+    public QueryTemplateFactory defaultFactory(){
+        DefaultQueryTemplateFactory factory = new DefaultQueryTemplateFactory(h2Datasource());
+        factory.isShowSql(true);
+
+        return factory.build();
+    }
+
+    @Bean("jpaFactory")
+    public QueryTemplateFactory jpaFactory(){
+        DefaultQueryTemplateFactory factory = new DefaultQueryTemplateFactory(h2Datasource());
+        factory.setEntityInfo(new JpaEntityInfo());
+        factory.isShowSql(true);
+        return factory.build();
+    }
+
+
 //    @Bean
 //    public PlatformTransactionManager platformTransactionManager(){
 //        DataSourceTransactionManager manager = new DataSourceTransactionManager(localDatasource());
@@ -52,13 +77,7 @@ public class SpringBeanConfig {
 //        return dataSource ;
 //    }
 
-    @Bean("springFactory")
-    public QueryTemplateFactory factory(){
-        DefaultQueryTemplateFactory factory = new DefaultQueryTemplateFactory(h2Datasource());
-        factory.setTransactionFactory(new SpringTransactionFactory());
-        factory.isShowSql(true);
-        return factory.build();
-    }
+
 //
 //    @Bean("localSpringFactory")
 //    public QueryTemplateFactory localSpringFactory(){
@@ -71,19 +90,6 @@ public class SpringBeanConfig {
 //        return factory.build();
 //    }
 
-    @Bean("defaultFactory")
-    public QueryTemplateFactory defaultFactory(){
-        DefaultQueryTemplateFactory factory = new DefaultQueryTemplateFactory(h2Datasource());
-        factory.isShowSql(true);
-        return factory.build();
-    }
 
-    @Bean("jpaFactory")
-    public QueryTemplateFactory jpaFactory(){
-        DefaultQueryTemplateFactory factory = new DefaultQueryTemplateFactory(h2Datasource());
-        factory.setEntityInfo(new JpaEntityInfo());
-        factory.isShowSql(true);
-        return factory.build();
-    }
 
 }

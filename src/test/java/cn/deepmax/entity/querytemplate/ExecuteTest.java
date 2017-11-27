@@ -16,16 +16,16 @@ public class ExecuteTest extends BaseTest {
     public void testExecuteUpdate(){
         QueryTemplate template = factory.create();
         SuperUser user = new SuperUser();
-        user.setName("kitty");
+        user.setUserName("kitty");
         user.setBigDecimal(BigDecimal.ONE);
         template.save(user);
         Long id = user.getId();
-        String sql = "update superuser set name ='ko' ,ok1 = '2' where id  = ? ";
-        int i = template.executeUpdate(sql,id);
+        String sql = "update superuser set name ='ko' ,is_hide = ? where id  = ? ";
+        int i = template.executeUpdate(sql,1,id);
         Assert.isTrue(i==1,"execute 1 row");
         SuperUser sUser = template.get(SuperUser.class,id);
-        Assert.isTrue(sUser.getName().equals("ko"),"udpated name check");
-        Assert.isTrue(sUser.getOk1(),"decimal  check");
+        Assert.isTrue(sUser.getUserName().equals("ko"),"udpated name check");
+        Assert.isTrue(sUser.isHide(),"boolean  check");
     }
 
     @Test

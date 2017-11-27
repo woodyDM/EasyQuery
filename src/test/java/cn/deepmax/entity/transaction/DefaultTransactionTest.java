@@ -24,15 +24,15 @@ public class DefaultTransactionTest extends BaseTest {
         QueryTemplate template = factory.create();
         SuperUser user = new SuperUser();
         user.setBigDecimal(BigDecimal.ONE);
-        user.setName("wwww");
-        user.setOk1(false);
+        user.setUserName("wwww");
+
         Long newId=null;
         template.selectList("select  1 as one");
         try{
             template.transaction().beginTransaction();
             template.save(user);
             newId = user.getId();
-            user.setName("ww");
+            user.setUserName("ww");
             template.save(user);
             template.transaction().commit();
         }catch (Exception e){
@@ -43,7 +43,7 @@ public class DefaultTransactionTest extends BaseTest {
         Assert.notNull(newId,"new id null");
         SuperUser user2 = template.get(SuperUser.class,newId);
         Assert.notNull(user2,"user2 null");
-        Assert.isTrue(user2.getName().equals("ww"),"name not match");
+        Assert.isTrue(user2.getUserName().equals("ww"),"name not match");
 
     }
 
@@ -61,16 +61,16 @@ public class DefaultTransactionTest extends BaseTest {
         template.selectList("select 1 as one");
         SuperUser user = new SuperUser();
         user.setBigDecimal(BigDecimal.ONE);
-        user.setName("wwww");
-        user.setOk1(false);
+        user.setUserName("wwww");
+
         template.save(user);
         Long newId=user.getId();
         try{
             template.transaction().beginTransaction();
-            user.setName("www2");
+            user.setUserName("www2");
             template.save(user);
             SuperUser inUser = template.get(SuperUser.class,newId);
-            Assert.isTrue(inUser.getName().equals("www2"),"name not match in transaction");
+            Assert.isTrue(inUser.getUserName().equals("www2"),"name not match in transaction");
             Integer temp = Integer.valueOf("cause exception");    //cause exception.
         }catch (Exception e){
             template.transaction().rollback();
@@ -80,7 +80,7 @@ public class DefaultTransactionTest extends BaseTest {
         Assert.notNull(newId,"new id null");
         SuperUser user2 = template.get(SuperUser.class,newId);
         Assert.notNull(user2,"user2 null");
-        Assert.isTrue(user2.getName().equals("wwww"),"name not match");
+        Assert.isTrue(user2.getUserName().equals("wwww"),"name not match");
 
     }
 }

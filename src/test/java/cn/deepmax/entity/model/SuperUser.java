@@ -7,11 +7,12 @@ import java.math.BigDecimal;
 @Table(name = "superuser" )
 public class SuperUser extends User {
 
-    @Column(name = "BIGDECIMAL")
+    @Column(name = "big_decimal")
     private BigDecimal bigDecimal;
 
     public SuperUser() {
     }
+
     @Ignore
     private String auth;
 

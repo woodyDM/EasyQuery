@@ -14,10 +14,10 @@ public class EntityOpsTest extends BaseTest {
     public void testSave(){
         SuperUser user = new SuperUser();
         user.setBigDecimal(BigDecimal.TEN);
-        user.setName("woody");
+        user.setUserName("woody");
         QueryTemplate template = factory.create();
         template.save(user);
-        Assert.notNull(user.getId(),"id null");
+        Assert.notNull(user.getId(),"Id null");
 
     }
 
@@ -27,7 +27,7 @@ public class EntityOpsTest extends BaseTest {
         SuperUser user = queryTemplate.get(SuperUser.class,2);
         Assert.notNull(user,"user null");
         Assert.notNull(user.getBigDecimal(),"bigdecimal null");
-        Assert.isTrue(user.getName().equals("name2"),"namecheck");
+        Assert.isTrue(user.getUserName().equals("name2"),"name2 check");
     }
 
     @Test
@@ -35,10 +35,11 @@ public class EntityOpsTest extends BaseTest {
         QueryTemplate queryTemplate = factory.create();
         SuperUser user = queryTemplate.get(SuperUser.class,1);
         Assert.notNull(user,"user null");
-        user.setName("name1order");
+        Assert.isTrue(user.getUserName().equals("name1"),"name1 check.");
+        user.setUserName("name1order");
         queryTemplate.save(user);
         SuperUser newUser = queryTemplate.get(SuperUser.class,1);
-        Assert.isTrue(newUser.getName().equals("name1order"),"update name check");
+        Assert.isTrue(newUser.getUserName().equals("name1order"),"update name check");
     }
 
     @Test

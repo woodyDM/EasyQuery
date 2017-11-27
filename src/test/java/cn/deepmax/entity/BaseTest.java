@@ -34,15 +34,15 @@ public class BaseTest {
     public void init() throws Exception{
         Connection cn = dataSource.getConnection();
         Statement st = cn.createStatement();
-        String delete = "drop table if exists SUPERUSER;";
+        String delete = "drop table if exists superuser;";
         String createTalbe="CREATE TABLE  superuser  (" +
                 "  id int  PRIMARY KEY auto_increment, " +
-                "  name varchar(255)  ,createTime datetime, bigDecimal decimal(10,0),point1 DOUBLE  ,point2 double ," +
-                " point3 FLOAT ,point4 FLOAT , ok1 int ,  ok2 int,updateDate date, ) ENGINE=InnoDB   ;";
+                "  user_name varchar(255)  ,create_time datetime, big_decimal decimal(10,0), a_big_point DOUBLE   ," +
+                "  ,update_date date,is_show bit(1),is_hide bit(1) ) ENGINE=InnoDB   ;";
         st.execute(delete);
         st.execute(createTalbe);
-        st.execute("INSERT INTO `superuser` VALUES ('1', 'name1', '2017-10-18 13:57:05', '1.300', '1.500', '1.500', '1.400', '1.200', '1', '0', '2017-10-18');");
-        st.execute("INSERT INTO `superuser` VALUES ('2', 'name2', '2017-10-18 13:57:05', '1.400', '1.500', '1.500', '1.400', '1.200', '1', '0', '2017-10-18');");
+        st.execute("INSERT INTO `superuser` VALUES ('1', 'name1', '2017-10-18 13:57:05', '1', '1.500', '1.500', '2017-10-18', '0', '1');");
+        st.execute("INSERT INTO `superuser` VALUES ('2', 'name2', '2017-10-18 13:57:05', '2', '2.500', '1.500', '2017-10-18',, '1', '0');");
         st.close();
         cn.close();
     }

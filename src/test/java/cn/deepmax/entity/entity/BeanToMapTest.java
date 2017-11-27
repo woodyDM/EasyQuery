@@ -15,14 +15,14 @@ public class BeanToMapTest {
         SuperUser user = new SuperUser();
         user.setId(10L);
         user.setBigDecimal(BigDecimal.ONE);
-        user.setName("woo");
+        user.setUserName("userName");
 
         Map<String,Object> beanMap = BeanToMap.convert(user);
         Assert.notNull(beanMap.get("id"),"id null test");
-        Assert.isNull(beanMap.get("ok1"),"1 null test");
+        Assert.isNull(beanMap.get("isShow"),"1 null test");
         // primitive fields have default value
         //so ok2 is not null
-        Assert.notNull(beanMap.get("ok2"),"2 null test");
+        Assert.notNull(beanMap.get("hide"),"hide null test");
         //userUser has 11 fields
         Assert.isTrue(beanMap.size()!=0,"size test");
     }
