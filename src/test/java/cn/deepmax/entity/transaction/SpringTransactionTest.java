@@ -13,7 +13,7 @@ public class SpringTransactionTest extends BaseTest{
     TransactionService service;
 
     /**
-     * !! this test need a local mysql database with engine innoDB to support transaction.
+     * !! this test need a local mysql database with engine innoDB .
      */
 //    @Test
 //    public void testWithException(){

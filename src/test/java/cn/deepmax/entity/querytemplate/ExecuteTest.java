@@ -7,6 +7,7 @@ import cn.deepmax.resultsethandler.RowRecord;
 import org.junit.Test;
 import org.springframework.util.Assert;
 import java.math.BigDecimal;
+import java.math.BigInteger;
 import java.util.List;
 import java.util.Map;
 
@@ -41,6 +42,15 @@ public class ExecuteTest extends BaseTest {
         Assert.isTrue(list3.get(0).e.getId()!=null,"id test");
         List<RowRecord> list4 = template.selectListEx(sql);
         Assert.isTrue(list4.size()>0,"size check4");
+    }
+
+    @Test
+    public void testSelectScalar(){
+        QueryTemplate template = factory.create();
+        String sql = "select count(*) awe from super_user";
+        Integer l = template.selectScalar(sql,Integer.class);
+        Assert.isTrue(l>0,"L>0");
+
     }
 
 }

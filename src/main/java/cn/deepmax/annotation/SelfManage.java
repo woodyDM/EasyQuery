@@ -9,7 +9,7 @@ import java.lang.annotation.Target;
 
 /**
  * for generateClass to use.
- *
+ * The class .java file will not be overwrite.
  */
 @Retention(RetentionPolicy.RUNTIME)
 @Target(ElementType.TYPE)
