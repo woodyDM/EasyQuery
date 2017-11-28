@@ -27,15 +27,11 @@ public class ${className} {
     public void ${column.writeMethodName} (${column.propertyType} ${column.propertyName}){
         this.${column.propertyName} = ${column.propertyName} ;
     }
-    <#if entity == true>
-        <#if column.propertyName !="id">
-    @Column(name = "${column.columnName}")
-        <#else >
+    <#if entity ==true>
     @Id
-    @Column(name = "id")
     @GeneratedValue
-        </#if>
     </#if>
+    @Column(name = "${column.columnName}")
     public ${column.propertyType} ${column.readMethodName} (){
         return this.${column.propertyName} ;
     }

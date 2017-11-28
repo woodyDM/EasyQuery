@@ -11,6 +11,7 @@ public class SimpleJavaTypeTranslator implements TypeTranslator {
 
     @Override
     public String translate(ColumnMetaData columnMetaData) {
-        return columnMetaData.getClassTypeName();
+        String fullJavaType = columnMetaData.getClassTypeName();
+        return fullJavaType.replaceAll("java\\.lang\\.","");
     }
 }

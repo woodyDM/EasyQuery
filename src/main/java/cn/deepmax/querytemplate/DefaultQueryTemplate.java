@@ -244,6 +244,7 @@ public class DefaultQueryTemplate implements QueryTemplate {
 
     @Override
     public Boolean delete(Object obj){
+        Objects.requireNonNull(obj, "Deleted object should not be null");
         Pair<String, Object> pair = sqlTranslator.getDeleteSQLInfo(obj);
         int i =executeUpdate(pair.first, pair.last);
         return (i!=0);

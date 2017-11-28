@@ -1,10 +1,7 @@
 package cn.deepmax.entity;
 
 
-import cn.deepmax.mapper.column.CamelToUpperUnderLineColumnNameMapper;
-import cn.deepmax.mapper.column.LowerUnderlineToCamelColumnNameMapper;
-import cn.deepmax.mapper.column.SameColumnNameMapper;
-import cn.deepmax.mapper.column.UpperUnderlineToCamelColumnNameMapper;
+import cn.deepmax.mapper.column.*;
 import cn.deepmax.mapper.table.PascalToLowerUnderLineTableNameMapper;
 import cn.deepmax.querytemplate.QueryTemplateFactory;
 import cn.deepmax.querytemplate.DefaultQueryTemplateFactory;
@@ -15,6 +12,8 @@ import org.slf4j.LoggerFactory;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.ComponentScan;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.jdbc.datasource.DataSourceTransactionManager;
+import org.springframework.transaction.PlatformTransactionManager;
 import org.springframework.transaction.annotation.EnableTransactionManagement;
 
 import javax.sql.DataSource;
@@ -93,17 +92,20 @@ public class SpringBeanConfig {
 //        dataSource.setPassword("123456");
 //        return dataSource ;
 //    }
-
-
+//
+//
 //
 //    @Bean("localSpringFactory")
 //    public QueryTemplateFactory localSpringFactory(){
 //        DefaultQueryTemplateFactory factory = new DefaultQueryTemplateFactory(localDatasource());
 //        factory.setTransactionFactory(new SpringTransactionFactory());
-//        MappedEntityInfo entityInfo = new MappedEntityInfo();
-//        entityInfo.setToColumnNameMapper(new SameColumnNameMapper());
-//        factory.setEntityInfo(entityInfo);
+//
+//        factory.setEntityInfo(new JpaEntityInfo());
 //        factory.isShowSql(true);
+//        factory.getConfig().setGenerateClass(true);
+//        factory.getConfig().setToFieldNameMapper(new LowerUnderlineToCamelColumnNameMapper());
+//        factory.getConfig().setValueObjectPath("D:\\Projects\\EasyQuery\\src\\test\\java\\");
+//        factory.getConfig().setEntityPath("D:\\Projects\\EasyQuery\\src\\test\\java\\");
 //        return factory.build();
 //    }
 
