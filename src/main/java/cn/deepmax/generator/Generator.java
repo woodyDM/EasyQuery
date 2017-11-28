@@ -120,10 +120,9 @@ public class Generator {
 
     public static void doGenerate(String outputFileName, TemplateData data)  {
         Configuration cfg = new Configuration(Configuration.VERSION_2_3_23);
-        String path= Generator.class.getResource("/template").getPath();
         OutputStream out = null;
         try  {
-            cfg.setDirectoryForTemplateLoading(new File(path)) ;
+            cfg.setClassForTemplateLoading(Generator.class,"/template");
             cfg.setDefaultEncoding("UTF-8");
             cfg.setTemplateExceptionHandler(TemplateExceptionHandler.RETHROW_HANDLER);
             Template template = cfg.getTemplate("Class.ftl");

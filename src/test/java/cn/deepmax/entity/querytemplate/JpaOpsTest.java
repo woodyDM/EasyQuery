@@ -9,6 +9,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.util.Assert;
 
 import java.math.BigDecimal;
+import java.util.concurrent.TimeUnit;
 
 public class JpaOpsTest extends BaseTest{
 
@@ -27,5 +28,7 @@ public class JpaOpsTest extends BaseTest{
         template.save(user);
         u = template.get(SuperUser.class,id);
         Assert.isTrue(u.getBigDecimal().equals(user.getBigDecimal()),"eq");
+
+
     }
 }

@@ -6,6 +6,7 @@ import org.slf4j.LoggerFactory;
 import javax.sql.DataSource;
 import java.sql.Connection;
 import java.sql.SQLException;
+import java.util.concurrent.TimeUnit;
 
 public class DefaultTransaction implements Transaction {
 
@@ -88,6 +89,7 @@ public class DefaultTransaction implements Transaction {
 
     @Override
     public void close() {
+
         if(connection!=null){
             try {
                 connection.close();

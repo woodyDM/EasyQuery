@@ -73,7 +73,6 @@ public class SpringTransaction extends DefaultTransaction {
             logger.debug("<<<<<<ReleaseSpringConnection [{}]",connection.toString());
             DataSourceUtils.releaseConnection(connection,dataSource);
             connection = null;
-
         }
     }
 

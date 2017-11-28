@@ -27,7 +27,7 @@ public class ${className} {
     public void ${column.writeMethodName} (${column.propertyType} ${column.propertyName}){
         this.${column.propertyName} = ${column.propertyName} ;
     }
-    <#if entity ==true>
+    <#if entity ==true && column.propertyName=='id'>
     @Id
     @GeneratedValue
     </#if>
