@@ -8,6 +8,9 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 
+/**
+ * class for Freemarker template.
+ */
 public class TemplateData {
     private boolean entity = false;
     private String className;
@@ -18,9 +21,9 @@ public class TemplateData {
     private List<ClassMetaData> columns = new ArrayList<>();
 
     private TemplateData(){}
-    public static TemplateData instance(DbMetaData dbMetaData, Class<?> clazz, NameMapper toFieldNameMapper){
+    public static TemplateData instance(DbMetaData dbMetaData, Class<?> clazz, Config config){
         TemplateData data = new TemplateData();
-        if(StringUtils.isEmpty(dbMetaData.getTableName())){
+        if(StringUtils.isEmpty(dbMetaData.getTableName()) || StringUtils.isEmpty(dbMetaData.getCatalogName())){
             data.entity = false;
         }else{
             data.entity = true;
@@ -31,10 +34,10 @@ public class TemplateData {
         data.className = clazz.getSimpleName();
         data.packageName = clazz.getPackage().getName();
 
-        for(Map.Entry<String,String> entry:dbMetaData.getColumnClassTypeName().entrySet()){
-            String columnName = entry.getKey();
-            String javaTypeName = entry.getValue();
-            String propertyName = toFieldNameMapper.convert(clazz,columnName);
+        for(ColumnMetaData it:dbMetaData.getColumnMetaDataList()){
+            String columnName = it.getColumnName();
+            String javaTypeName = config.getTypeTranslator().translate(it);
+            String propertyName = config.getToFieldNameMapper().convert(clazz,columnName);
             String writeMethodName = BeanUtils.getWriteMethodName(propertyName, javaTypeName);
             String readMethodName = BeanUtils.getReadMethodName(propertyName, javaTypeName);
             ClassMetaData metaData = new ClassMetaData(propertyName,javaTypeName,writeMethodName,readMethodName,columnName);

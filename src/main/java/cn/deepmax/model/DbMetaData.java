@@ -1,29 +1,31 @@
 package cn.deepmax.model;
 
+import java.util.ArrayList;
 import java.util.LinkedHashMap;
+import java.util.List;
 import java.util.Map;
 
+/**
+ * database info ,including tableName and catalogName.
+ */
 public class DbMetaData {
 
     public static final String INIT_VALUE= "";
 
     private String tableName = INIT_VALUE;
     private String catalogName = INIT_VALUE;
-    private Map<String,String> columnClassTypeName = new LinkedHashMap<>(); //columnName, TypeName
-
-
+    private List<ColumnMetaData> columnMetaDataList = new ArrayList<>();
 
     public int getHash(){
-        if(columnClassTypeName.size()==0){
+        if(columnMetaDataList.size()==0){
             return 0;
         }
         StringBuilder sb = new StringBuilder();
-        for(Map.Entry<String,String> entry:columnClassTypeName.entrySet()){
-            sb.append(entry.getKey()).append("_").append(entry.getValue());
+        for(ColumnMetaData it:columnMetaDataList){
+            sb.append(it.hashCode()+"_");
         }
         return sb.toString().hashCode();
     }
-
 
     public String getTableName() {
         return tableName;
@@ -41,11 +43,11 @@ public class DbMetaData {
         this.catalogName = catalogName;
     }
 
-    public Map<String, String> getColumnClassTypeName() {
-        return columnClassTypeName;
+    public List<ColumnMetaData> getColumnMetaDataList() {
+        return columnMetaDataList;
     }
 
-    public void setColumnClassTypeName(Map<String, String> columnClassTypeName) {
-        this.columnClassTypeName = columnClassTypeName;
+    public void setColumnMetaDataList(List<ColumnMetaData> columnMetaDataList) {
+        this.columnMetaDataList = columnMetaDataList;
     }
 }

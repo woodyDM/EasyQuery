@@ -5,8 +5,7 @@ import cn.deepmax.mapper.NameMapper;
 public class UpperCaseColumnNameMapper implements NameMapper {
 
     /**
-     * convert name
-     *
+     * create_time -> CREATE_TIME
      * @param clazz
      * @param name
      * @return

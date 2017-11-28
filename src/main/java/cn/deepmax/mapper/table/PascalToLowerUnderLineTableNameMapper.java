@@ -4,10 +4,10 @@ import cn.deepmax.mapper.NameMapper;
 import cn.deepmax.util.StringUtils;
 
 
-public class CamelToLowerUnderLineTableNameMapper implements NameMapper {
+public class PascalToLowerUnderLineTableNameMapper implements NameMapper {
     /**
-     * convert name
      *
+     * SuperUser -> super_user
      * @param clazz
      * @param name
      * @return

@@ -1,6 +1,7 @@
 package cn.deepmax.resultsethandler;
 
 
+import cn.deepmax.model.ColumnMetaData;
 import cn.deepmax.model.DbMetaData;
 import cn.deepmax.model.Pair;
 import cn.deepmax.util.StringUtils;
@@ -70,9 +71,13 @@ public class ResultSetHandler {
             }
 
             //handle tableName and catalogName .only unique allowed.
-            dbMetaData.getColumnClassTypeName().put(labelName,metaData.getColumnClassName(pos));
             handleTableName(dbMetaData, metaData.getTableName(pos));
             handleCatalogName(dbMetaData, metaData.getCatalogName(pos));
+            String className = metaData.getColumnClassName(pos);
+            String dbtypeName = metaData.getColumnTypeName(pos);
+            int precision = metaData.getPrecision(pos);
+            ColumnMetaData columnMetaData = new ColumnMetaData(labelName,className,dbtypeName,precision);
+            dbMetaData.getColumnMetaDataList().add(columnMetaData);
         } catch (SQLException e) {
             throw new RuntimeException(e);
         }

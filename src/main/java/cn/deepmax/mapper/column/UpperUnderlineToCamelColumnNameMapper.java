@@ -3,10 +3,10 @@ package cn.deepmax.mapper.column;
 import cn.deepmax.mapper.NameMapper;
 import cn.deepmax.util.StringUtils;
 
-public class CamelToUpperUnderLineColumnNameMapper implements NameMapper {
+public class UpperUnderlineToCamelColumnNameMapper implements NameMapper {
 
     /**
-     * convertName-> CONVERT_NAME
+     * create_time -> createTime
      *
      * @param clazz
      * @param name
@@ -14,11 +14,10 @@ public class CamelToUpperUnderLineColumnNameMapper implements NameMapper {
      */
     @Override
     public String convert(Class<?> clazz, String name) {
-        name = StringUtils.camelCaseToLowerCaseUnderLine(name);
-        if(StringUtils.isNotEmpty(name)){
-            return name.toUpperCase();
-        }else{
+        if(StringUtils.isEmpty(name)){
             return name;
         }
+        name = name.toLowerCase();
+        return StringUtils.lowerCaseUnderlineToCamelCase(name);
     }
 }

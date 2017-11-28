@@ -4,7 +4,8 @@ package cn.deepmax.entity;
 import cn.deepmax.mapper.column.CamelToUpperUnderLineColumnNameMapper;
 import cn.deepmax.mapper.column.LowerUnderlineToCamelColumnNameMapper;
 import cn.deepmax.mapper.column.SameColumnNameMapper;
-import cn.deepmax.mapper.table.CamelToLowerUnderLineTableNameMapper;
+import cn.deepmax.mapper.column.UpperUnderlineToCamelColumnNameMapper;
+import cn.deepmax.mapper.table.PascalToLowerUnderLineTableNameMapper;
 import cn.deepmax.querytemplate.QueryTemplateFactory;
 import cn.deepmax.querytemplate.DefaultQueryTemplateFactory;
 import cn.deepmax.transaction.SpringTransactionFactory;
@@ -44,7 +45,7 @@ public class SpringBeanConfig {
         factory.isShowSql(true);
         MappedEntityInfo entityInfo = new MappedEntityInfo();
         entityInfo.setToColumnNameMapper(new CamelToUpperUnderLineColumnNameMapper());
-        entityInfo.setToTableNameMapper(new CamelToLowerUnderLineTableNameMapper());
+        entityInfo.setToTableNameMapper(new PascalToLowerUnderLineTableNameMapper());
         factory.setEntityInfo(entityInfo);
         return factory.build();
     }
@@ -55,16 +56,26 @@ public class SpringBeanConfig {
         factory.isShowSql(true);
         MappedEntityInfo entityInfo = new MappedEntityInfo();
         entityInfo.setToColumnNameMapper(new CamelToUpperUnderLineColumnNameMapper());
-        entityInfo.setToTableNameMapper(new CamelToLowerUnderLineTableNameMapper());
+        entityInfo.setToTableNameMapper(new PascalToLowerUnderLineTableNameMapper());
         factory.setEntityInfo(entityInfo);
-        factory.isGenerateClass(true);
-        factory.setToFieldNameMapper(new LowerUnderlineToCamelColumnNameMapper());
-        factory.setValueObjectPath("D:/test/entity");
-        factory.setEntityPath("D:/test/vo");
+        factory.getConfig().setGenerateClass(true);
+        factory.getConfig().setToFieldNameMapper(new UpperUnderlineToCamelColumnNameMapper());
+        factory.getConfig().setValueObjectPath("D:/test/vo");
+        factory.getConfig().setEntityPath("D:/test/entity");
         return factory.build();
     }
 
-
+    @Bean("jpaFactory")
+    public QueryTemplateFactory jpaFactory(){
+        DefaultQueryTemplateFactory factory = new DefaultQueryTemplateFactory(h2Datasource());
+        factory.setEntityInfo(new JpaEntityInfo());
+        factory.isShowSql(true);
+        factory.getConfig().setGenerateClass(true);
+        factory.getConfig().setToFieldNameMapper(new UpperUnderlineToCamelColumnNameMapper());
+        factory.getConfig().setValueObjectPath("D:/test/vo");
+        factory.getConfig().setEntityPath("D:/test/entity");
+        return factory.build();
+    }
 
 
 //    @Bean
@@ -97,16 +108,6 @@ public class SpringBeanConfig {
 //    }
 
 
-    @Bean("jpaFactory")
-    public QueryTemplateFactory jpaFactory(){
-        DefaultQueryTemplateFactory factory = new DefaultQueryTemplateFactory(h2Datasource());
-        factory.setEntityInfo(new JpaEntityInfo());
-        factory.isShowSql(true);
-        factory.isGenerateClass(true);
-        factory.setToFieldNameMapper(new SameColumnNameMapper());
-        factory.setEntityPath("D:\\gitProject\\EasyQuery\\src\\test\\java");
-        factory.setValueObjectPath("D:\\gitProject\\EasyQuery\\src\\test\\java");
-        return factory.build();
-    }
+
 
 }

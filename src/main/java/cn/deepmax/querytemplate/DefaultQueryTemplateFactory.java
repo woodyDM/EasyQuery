@@ -3,7 +3,7 @@ package cn.deepmax.querytemplate;
 
 import cn.deepmax.entity.*;
 import cn.deepmax.exception.EasyQueryException;
-import cn.deepmax.mapper.NameMapper;
+import cn.deepmax.generator.SimpleJavaTypeTranslator;
 import cn.deepmax.model.Config;
 import cn.deepmax.transaction.DefaultTransactionFactory;
 import cn.deepmax.transaction.Transaction;
@@ -22,7 +22,6 @@ public class DefaultQueryTemplateFactory implements QueryTemplateFactory {
     private SqlTranslator sqlTranslator;
     private TransactionFactory transactionFactory;
     private Config config = new Config();
-
     private boolean init = false;
 
     public DefaultQueryTemplateFactory(DataSource dataSource) {
@@ -52,6 +51,9 @@ public class DefaultQueryTemplateFactory implements QueryTemplateFactory {
             if(StringUtils.isEmpty(config.getEntityPath())){
                 throw new IllegalArgumentException("When isGenerateClass is true, entityPath should be set.");
             }
+            if(config.getTypeTranslator()==null){
+                config.setTypeTranslator(new SimpleJavaTypeTranslator());
+            }
             config.normalizePath();
         }
 
@@ -64,22 +66,13 @@ public class DefaultQueryTemplateFactory implements QueryTemplateFactory {
         this.config.setShowSql(isShowSql);
     }
 
-    public void isGenerateClass(Boolean isGenerateClass) {
-        this.config.setGenerateClass(isGenerateClass);
+    public void setConfig(Config config) {
+        this.config = config;
     }
 
-    public void setToFieldNameMapper(NameMapper toFieldNameMapper) {
-        this.config.setToFieldNameMapper(toFieldNameMapper);
+    public Config getConfig() {
+        return config;
     }
-
-    public void setValueObjectPath(String valueObjectPath) {
-        this.config.setValueObjectPath(valueObjectPath);
-    }
-
-    public void setEntityPath(String entityPath) {
-        this.config.setEntityPath(entityPath);
-    }
-
 
     @Override
     public QueryTemplate create(){

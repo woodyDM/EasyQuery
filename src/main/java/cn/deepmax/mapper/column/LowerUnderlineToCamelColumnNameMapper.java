@@ -6,7 +6,7 @@ import cn.deepmax.util.StringUtils;
 public class LowerUnderlineToCamelColumnNameMapper implements NameMapper {
 
     /**
-     * convert name
+     * create_time -> createTime
      *
      * @param clazz
      * @param name

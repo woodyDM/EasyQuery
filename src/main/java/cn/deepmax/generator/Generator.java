@@ -40,7 +40,7 @@ public class Generator {
         boolean isSelfManage = isSelfManaged(clazz);
         boolean needUpdate = needUpdate(targetFileName, newHash);
         if(!isSelfManage && needUpdate){
-            TemplateData data = TemplateData.instance(dbMetaData,clazz,config.getToFieldNameMapper());
+            TemplateData data = TemplateData.instance(dbMetaData,clazz,config);
             doGenerate(targetFileName, data);
         }
     }

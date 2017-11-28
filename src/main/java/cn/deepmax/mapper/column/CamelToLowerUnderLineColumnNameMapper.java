@@ -6,8 +6,8 @@ import cn.deepmax.util.StringUtils;
 public class CamelToLowerUnderLineColumnNameMapper implements NameMapper {
 
     /**
-     * convert name
-     *
+     * userName -> user_name
+     * userEmail -> user_email
      * @param clazz
      * @param name
      * @return

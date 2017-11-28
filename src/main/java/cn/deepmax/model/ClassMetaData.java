@@ -1,11 +1,15 @@
 package cn.deepmax.model;
 
+
+/**
+ * define classInformation in Freemarker template.
+ */
 public class ClassMetaData {
     private String propertyName;
-    private String propertyType;
-    private String writeMethodName;
+    private String propertyType;        //property javaType
+    private String writeMethodName;     //property
     private String readMethodName;
-    private String columnName;
+    private String columnName;          //property database columnName
 
     public ClassMetaData(String propertyName, String propertyType, String writeMethodName, String readMethodName, String columnName) {
         this.propertyName = propertyName;

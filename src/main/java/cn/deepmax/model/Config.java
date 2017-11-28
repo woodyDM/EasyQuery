@@ -1,9 +1,13 @@
 package cn.deepmax.model;
 
+import cn.deepmax.generator.TypeTranslator;
 import cn.deepmax.mapper.NameMapper;
 
 import java.io.File;
 
+/**
+ * EasyQuery config file
+ */
 public class Config {
 
     private boolean isShowSql = false;      //whether show sql in log
@@ -11,6 +15,7 @@ public class Config {
     private NameMapper toFieldNameMapper;       //using to define columnName to fieldName rules.
     private String valueObjectPath ;            //generated VO java file root path,(not include package path)
     private String entityPath;                  //generated entity java file root path,(not include package path)
+    private TypeTranslator typeTranslator;      //translate ColumnMetaData to javaType.
 
     public String getValueObjectPath() {
         return valueObjectPath;
@@ -52,6 +57,13 @@ public class Config {
         this.toFieldNameMapper = toFieldNameMapper;
     }
 
+    public TypeTranslator getTypeTranslator() {
+        return typeTranslator;
+    }
+
+    public void setTypeTranslator(TypeTranslator typeTranslator) {
+        this.typeTranslator = typeTranslator;
+    }
 
     public void normalizePath(){
         this.valueObjectPath = normalizedPath(valueObjectPath);

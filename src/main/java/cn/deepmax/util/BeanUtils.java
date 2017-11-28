@@ -10,12 +10,8 @@ public class BeanUtils {
     public static String getReadMethodName(String propertyName,String javaType){
         checkParam(propertyName, javaType);
         String deCap = normalize(propertyName);
-        if((javaType.contains("boolean")||javaType.contains("Boolean"))){
-            if(propertyName.startsWith(IS_PREFIX)){
-                return propertyName;
-            }else{
-                return IS_PREFIX+deCap;
-            }
+        if(propertyName.startsWith(IS_PREFIX)&&(javaType.contains("boolean")||javaType.contains("Boolean"))){
+            return propertyName;
         }else{
             return GET_PREFIX+deCap;
         }
@@ -41,6 +37,14 @@ public class BeanUtils {
         }
     }
 
+
+    /**
+     * userName -> UserName
+     * URL -> URL
+     * aBig -> aBig
+     * @param name
+     * @return
+     */
     private static String normalize(String name){
         if(StringUtils.isEmpty(name)){
             return name;
