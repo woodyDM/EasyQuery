@@ -1,8 +1,8 @@
-//#EasyQueryGeneratorV1Hash-12356
+
 package cn.deepmax.generator;
+
 import cn.deepmax.annotation.SelfManage;
 import cn.deepmax.exception.EasyQueryException;
-import cn.deepmax.model.ClassMetaData;
 import cn.deepmax.model.Config;
 import cn.deepmax.model.DbMetaData;
 import cn.deepmax.model.TemplateData;
@@ -12,10 +12,8 @@ import freemarker.template.Template;
 import freemarker.template.TemplateException;
 import freemarker.template.TemplateExceptionHandler;
 import java.io.*;
-import java.util.ArrayList;
-import java.util.HashMap;
 import java.util.List;
-import java.util.Map;
+
 
 
 /**

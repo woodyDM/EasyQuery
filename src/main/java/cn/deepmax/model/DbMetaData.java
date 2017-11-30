@@ -1,5 +1,7 @@
 package cn.deepmax.model;
 
+import cn.deepmax.util.StringUtils;
+
 import java.util.ArrayList;
 import java.util.LinkedHashMap;
 import java.util.List;
@@ -21,8 +23,14 @@ public class DbMetaData {
             return 0;
         }
         StringBuilder sb = new StringBuilder();
+        if(StringUtils.isNotEmpty(tableName)){
+            sb.append(tableName).append("_");
+        }
+        if(StringUtils.isNotEmpty(catalogName)){
+            sb.append(catalogName).append("_");
+        }
         for(ColumnMetaData it:columnMetaDataList){
-            sb.append(it.hashCode()+"_");
+            sb.append(it.hashCode()).append("_");
         }
         return sb.toString().hashCode();
     }

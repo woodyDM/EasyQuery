@@ -1,12 +1,11 @@
 package cn.deepmax.model;
 
 import cn.deepmax.generator.Generator;
-import cn.deepmax.mapper.NameMapper;
 import cn.deepmax.util.BeanUtils;
 import cn.deepmax.util.StringUtils;
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Map;
+
 
 /**
  * class for Freemarker template.
