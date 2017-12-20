@@ -8,6 +8,8 @@ import cn.deepmax.generator.Generator;
 import cn.deepmax.model.Config;
 import cn.deepmax.model.DbMetaData;
 import cn.deepmax.model.Pair;
+import cn.deepmax.pagehelper.PageInfo;
+import cn.deepmax.pagehelper.PagePlugin;
 import cn.deepmax.resultsethandler.ResultSetHandler;
 import cn.deepmax.resultsethandler.RowRecord;
 import cn.deepmax.transaction.Transaction;
@@ -27,16 +29,18 @@ public class DefaultQueryTemplate implements QueryTemplate {
     private SqlTranslator sqlTranslator;
     private Config config;
     private Generator generator;
+    private PagePlugin pagePlugin;
     private static final Logger logger = LoggerFactory.getLogger(DefaultQueryTemplate.class);
 
 
-    public DefaultQueryTemplate(Transaction transaction, EntityFactory entityFactory, Config config, SqlTranslator sqlTranslator) {
+    public DefaultQueryTemplate(Transaction transaction, EntityFactory entityFactory, Config config, SqlTranslator sqlTranslator,PagePlugin pagePlugin) {
         Objects.requireNonNull(config);
         this.transaction = transaction;
         this.entityFactory = entityFactory;
         this.config = config;
         this.sqlTranslator = sqlTranslator;
         this.generator = new Generator(config);
+        this.pagePlugin = pagePlugin;
     }
 
 
@@ -96,6 +100,39 @@ public class DefaultQueryTemplate implements QueryTemplate {
             }
         }
         return results;
+    }
+
+    @Override
+    public PageInfo<Map<String, Object>> selectPage(String sql, Integer pageNumber, Integer pageSize, Object... params) {
+        String totalSql = pagePlugin.getSqlForTotalRow(sql);
+        Long totalRow = selectScalar(totalSql,Long.class);
+        PageInfo<Map<String, Object>> pageInfo = new PageInfo<>(pageNumber, pageSize, totalRow);
+        String dataSql = pagePlugin.getSqlForPagingData(sql,pageInfo.getStartRow(),pageSize);
+        List<Map<String,Object>> data = selectList(dataSql,params);
+        pageInfo.setData(data);
+        return pageInfo;
+    }
+
+    @Override
+    public PageInfo<RowRecord> selectPageEx(String sql, Integer pageNumber, Integer pageSize, Object... params) {
+        String totalSql = pagePlugin.getSqlForTotalRow(sql);
+        Long totalRow = selectScalar(totalSql,Long.class);
+        PageInfo<RowRecord> pageInfo = new PageInfo<>(pageNumber, pageSize, totalRow);
+        String dataSql = pagePlugin.getSqlForPagingData(sql,pageInfo.getStartRow(),pageSize);
+        List<RowRecord> data = selectListEx(dataSql,params);
+        pageInfo.setData(data);
+        return pageInfo;
+    }
+
+    @Override
+    public <T> PageInfo<RowRecord<T>> selectPageEx(String sql, Class<T> clazz, Integer pageNumber, Integer pageSize, Object... params) {
+        String totalSql = pagePlugin.getSqlForTotalRow(sql);
+        Long totalRow = selectScalar(totalSql,Long.class);
+        PageInfo<RowRecord<T>> pageInfo = new PageInfo<>(pageNumber, pageSize, totalRow);
+        String dataSql = pagePlugin.getSqlForPagingData(sql,pageInfo.getStartRow(),pageSize);
+        List<RowRecord<T>> data = selectListEx(dataSql,clazz,params);
+        pageInfo.setData(data);
+        return pageInfo;
     }
 
     @Override
@@ -287,6 +324,7 @@ public class DefaultQueryTemplate implements QueryTemplate {
      * @return
      */
     private Pair<DbMetaData,List<Map<String,Object>>> doSelect(String sql, Object... params){
+        Objects.requireNonNull(sql,"Sql should not be null");
         Connection cn = transaction.getConnection();
         PreparedStatement ps=null;
         ResultSet rs=null;

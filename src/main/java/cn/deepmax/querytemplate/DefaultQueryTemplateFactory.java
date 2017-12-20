@@ -5,6 +5,8 @@ import cn.deepmax.entity.*;
 import cn.deepmax.exception.EasyQueryException;
 import cn.deepmax.generator.SimpleJavaTypeTranslator;
 import cn.deepmax.model.Config;
+import cn.deepmax.pagehelper.MySqlPagePlugin;
+import cn.deepmax.pagehelper.PagePlugin;
 import cn.deepmax.transaction.DefaultTransactionFactory;
 import cn.deepmax.transaction.Transaction;
 import cn.deepmax.transaction.TransactionFactory;
@@ -21,6 +23,7 @@ public class DefaultQueryTemplateFactory implements QueryTemplateFactory {
     private EntityFactory entityFactory;
     private SqlTranslator sqlTranslator;
     private TransactionFactory transactionFactory;
+    private PagePlugin pagePlugin;
     private Config config = new Config();
     private boolean init = false;
 
@@ -40,6 +43,9 @@ public class DefaultQueryTemplateFactory implements QueryTemplateFactory {
         }
         if(transactionFactory==null){
             transactionFactory = new DefaultTransactionFactory();
+        }
+        if(pagePlugin==null){
+            pagePlugin = new MySqlPagePlugin();
         }
         if(config.isGenerateClass()){
             if(config.getToFieldNameMapper()==null){
@@ -80,7 +86,7 @@ public class DefaultQueryTemplateFactory implements QueryTemplateFactory {
             throw new EasyQueryException("QueryTemplateFactory init failed, build() should be called.");
         }
         Transaction transaction = transactionFactory.newTransaction(dataSource);
-        return new DefaultQueryTemplate(transaction,entityFactory,this.config,sqlTranslator);
+        return new DefaultQueryTemplate(transaction,entityFactory,this.config,sqlTranslator,pagePlugin);
     }
 
     public void setTransactionFactory(TransactionFactory transactionFactory) {
@@ -91,6 +97,9 @@ public class DefaultQueryTemplateFactory implements QueryTemplateFactory {
         this.entityInfo = entityInfo;
     }
 
+    public void setPagePlugin(PagePlugin pagePlugin) {
+        this.pagePlugin = pagePlugin;
+    }
 
     public void setSqlTranslator(SqlTranslator sqlTranslator) {
         this.sqlTranslator = sqlTranslator;

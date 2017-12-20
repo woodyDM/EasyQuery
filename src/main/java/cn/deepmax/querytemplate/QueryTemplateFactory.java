@@ -5,5 +5,4 @@ public interface QueryTemplateFactory {
 
     QueryTemplate create();
 
-
 }

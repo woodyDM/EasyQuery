@@ -43,6 +43,14 @@ public class BaseTest {
         st.execute(createTalbe);
         st.execute("INSERT INTO `super_user` VALUES ('1', 'name1', '2017-10-18 13:57:05', '1', '1.500',   '2017-10-18', '0', '1');");
         st.execute("INSERT INTO `super_user` VALUES ('2', 'name2', '2017-10-18 13:57:05', '2', '2.500',   '2017-10-18', '1', '0');");
+        st.execute("INSERT INTO `super_user` VALUES ('3', 'name3', '2017-10-18 13:57:05', '2', '2.500',   '2017-10-18', '1', '0');");
+        st.execute("INSERT INTO `super_user` VALUES ('4', 'name4', '2017-10-18 13:57:05', '2', '2.500',   '2017-10-18', '1', '0');");
+        st.execute("INSERT INTO `super_user` VALUES ('5', 'name5', '2017-10-18 13:57:05', '2', '2.500',   '2017-10-18', '1', '0');");
+        st.execute("INSERT INTO `super_user` VALUES ('6', 'name6', '2017-10-18 13:57:05', '2', '2.500',   '2017-10-18', '1', '0');");
+        st.execute("INSERT INTO `super_user` VALUES ('7', 'name7', '2017-10-18 13:57:05', '2', '2.500',   '2017-10-18', '1', '0');");
+        st.execute("INSERT INTO `super_user` VALUES ('8', 'name8', '2017-10-18 13:57:05', '2', '2.500',   '2017-10-18', '1', '0');");
+
+
         st.close();
         cn.close();
     }
