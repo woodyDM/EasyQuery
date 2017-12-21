@@ -2,7 +2,7 @@ package cn.deepmax.querytemplate;
 
 import cn.deepmax.entity.EntityFactory;
 import cn.deepmax.entity.SqlTranslator;
-import cn.deepmax.entity.TypeAdapter;
+import cn.deepmax.util.TypeAdapter;
 import cn.deepmax.exception.EasyQueryException;
 import cn.deepmax.generator.Generator;
 import cn.deepmax.model.Config;
@@ -30,8 +30,8 @@ public class DefaultQueryTemplate implements QueryTemplate {
     private Config config;
     private Generator generator;
     private PagePlugin pagePlugin;
-    private static final Logger logger = LoggerFactory.getLogger(DefaultQueryTemplate.class);
 
+    private static final Logger logger = LoggerFactory.getLogger(DefaultQueryTemplate.class);
 
     public DefaultQueryTemplate(Transaction transaction, EntityFactory entityFactory, Config config, SqlTranslator sqlTranslator,PagePlugin pagePlugin) {
         Objects.requireNonNull(config);

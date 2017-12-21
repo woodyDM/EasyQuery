@@ -1,4 +1,4 @@
-package cn.deepmax.model;
+package cn.deepmax.generator;
 
 
 /**

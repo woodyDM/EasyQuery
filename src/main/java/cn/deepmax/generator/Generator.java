@@ -5,15 +5,12 @@ import cn.deepmax.annotation.SelfManage;
 import cn.deepmax.exception.EasyQueryException;
 import cn.deepmax.model.Config;
 import cn.deepmax.model.DbMetaData;
-import cn.deepmax.model.TemplateData;
 import cn.deepmax.util.StringUtils;
 import freemarker.template.Configuration;
 import freemarker.template.Template;
 import freemarker.template.TemplateException;
 import freemarker.template.TemplateExceptionHandler;
 import java.io.*;
-import java.util.List;
-
 
 
 /**
@@ -28,9 +25,7 @@ public class Generator {
         this.config = config;
     }
 
-    public void generateIfNecessaryAsyn(DbMetaData dbMetaData,Class<?> clazz){
-        new Thread(()->generateIfNecessary(dbMetaData, clazz));
-    }
+
 
     public void generateIfNecessary(DbMetaData dbMetaData, Class<?> clazz){
         int newHash = dbMetaData.getHash();
@@ -110,11 +105,6 @@ public class Generator {
     }
 
 
-    public static void main(String[] args) throws Exception {
-        String name = "D:\\test\\vo\\model\\cn\\deepmax\\a.txt";
-        File f = new File(name);
-        if(!f.exists()) f.createNewFile();
-    }
 
     public static void doGenerate(String outputFileName, TemplateData data)  {
         Configuration cfg = new Configuration(Configuration.VERSION_2_3_23);
@@ -146,8 +136,5 @@ public class Generator {
     }
 
 
-    private static void createNewFile(File file,List<File> folders){
-
-    }
 
 }

@@ -1,7 +1,8 @@
 package cn.deepmax.entity;
 
 
-import cn.deepmax.mapper.NameMapper;
+import cn.deepmax.util.BeanToMap;
+import cn.deepmax.util.TypeAdapter;
 
 import java.beans.PropertyDescriptor;
 import java.lang.reflect.InvocationTargetException;

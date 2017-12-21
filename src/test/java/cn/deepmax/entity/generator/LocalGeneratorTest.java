@@ -1,17 +1,6 @@
 package cn.deepmax.entity.generator;
 
 import cn.deepmax.entity.BaseTest;
-import cn.deepmax.entity.BeanToMap;
-
-import cn.deepmax.querytemplate.QueryTemplate;
-import cn.deepmax.querytemplate.QueryTemplateFactory;
-import cn.deepmax.resultsethandler.RowRecord;
-import org.junit.Test;
-import org.springframework.util.Assert;
-
-import javax.annotation.Resource;
-import java.sql.Timestamp;
-import java.util.List;
 
 public class LocalGeneratorTest extends BaseTest{
 //

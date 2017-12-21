@@ -4,7 +4,7 @@ import cn.deepmax.model.ColumnMetaData;
 
 
 /**
- * used to rule generator javatype.
+ * used to rule generator javaType.
  */
 public interface TypeTranslator {
 

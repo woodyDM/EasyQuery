@@ -4,12 +4,16 @@ import java.util.ArrayList;
 import java.util.List;
 
 
+/**
+ * page information object.
+ * @param <T>
+ */
 public class PageInfo<T> {
 
     private Integer nowPage;
     private Integer pageSize;
     private Long totalRow;
-    private List<T> data = new ArrayList<>();
+    private List<T> data = new ArrayList<>();       //data from database.
     private Long startRow;
     private Long endRow;
     private Integer totalPage;

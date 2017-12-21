@@ -2,6 +2,8 @@ package cn.deepmax.entity;
 
 
 import cn.deepmax.model.Pair;
+import cn.deepmax.util.BeanToMap;
+
 import java.util.*;
 import java.util.concurrent.ConcurrentHashMap;
 

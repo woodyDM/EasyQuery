@@ -1,6 +1,8 @@
-package cn.deepmax.model;
+package cn.deepmax.generator;
 
-import cn.deepmax.generator.Generator;
+import cn.deepmax.model.ColumnMetaData;
+import cn.deepmax.model.Config;
+import cn.deepmax.model.DbMetaData;
 import cn.deepmax.util.BeanUtils;
 import cn.deepmax.util.StringUtils;
 import java.util.ArrayList;

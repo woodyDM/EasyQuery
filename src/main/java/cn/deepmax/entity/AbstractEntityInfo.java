@@ -1,6 +1,8 @@
 package cn.deepmax.entity;
 
 import cn.deepmax.exception.EasyQueryException;
+import cn.deepmax.util.TypeAdapter;
+
 import java.beans.IntrospectionException;
 import java.beans.PropertyDescriptor;
 import java.lang.reflect.InvocationTargetException;

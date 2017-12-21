@@ -1,6 +1,6 @@
 package cn.deepmax.pagehelper;
 
-import java.util.Objects;
+
 
 public class MySqlPagePlugin implements PagePlugin {
 

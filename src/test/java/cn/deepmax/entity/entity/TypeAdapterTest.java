@@ -1,6 +1,6 @@
 package cn.deepmax.entity.entity;
 
-import cn.deepmax.entity.TypeAdapter;
+import cn.deepmax.util.TypeAdapter;
 import org.junit.Test;
 
 import org.slf4j.Logger;

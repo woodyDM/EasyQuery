@@ -6,7 +6,7 @@ import cn.deepmax.mapper.NameMapper;
 import java.io.File;
 
 /**
- * EasyQuery config file
+ * EasyQuery config object.
  */
 public class Config {
 

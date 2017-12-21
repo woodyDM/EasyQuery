@@ -5,7 +5,7 @@ import cn.deepmax.model.ColumnMetaData;
 
 
 /**
- *
+ * using javaType from database.
  */
 public class SimpleJavaTypeTranslator implements TypeTranslator {
 
