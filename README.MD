@@ -1,5 +1,8 @@
 EasyQuery
 =
+----
+[![](https://www.jitpack.io/v/woodyDM/EasyQuery.svg)](https://www.jitpack.io/#woodyDM/EasyQuery)
+----
 EasyQuery is a simple database result mapping tool for java.
 EasyQuery using `QueryTemplate` resolves query result from `ResultSet` to unique 
 `Map<String,Object>` / POJO / `RowRecord` or a list result.
