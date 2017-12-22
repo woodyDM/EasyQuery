@@ -35,13 +35,6 @@ public interface EntityInfo {
      */
     Map<String,String> columnNameToFieldNameMap(Class<?> clazz);
 
-    /**
-     * get columnName of clazz and fieldName , possible to be null.
-     * @param clazz
-     * @param columnName
-     * @return
-     */
-    String columnNameToFieldName(Class<?> clazz,String columnName);
 
     /**
      * entity fieldName to database columnName information,
@@ -49,15 +42,6 @@ public interface EntityInfo {
      * @return
      */
     Map<String,String> fieldNameToColumnNameMap(Class<?> clazz);
-
-    /**
-     * get fieldName of clazz and ColumnName , possible to be null.
-     * @param clazz
-     * @param fieldName
-     * @return
-     */
-    String fieldNameToColumnName(Class<?> clazz,String fieldName);
-
     /**
      * entity fieldNames that are desired to persist
      * include primaryKey fieldName
@@ -65,6 +49,8 @@ public interface EntityInfo {
      * @return
      */
     List<String> beanFieldNameList(Class<?> clazz);
+
+
 
     /**
      * java type of entity primaryKey field .

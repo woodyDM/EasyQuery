@@ -2,6 +2,7 @@ package cn.deepmax.entity;
 
 
 import cn.deepmax.util.BeanToMap;
+import cn.deepmax.util.StringUtils;
 import cn.deepmax.util.TypeAdapter;
 
 import java.beans.PropertyDescriptor;
@@ -39,12 +40,13 @@ public class EntityFactory {
         }
         T targetObj = newInstance(clazz);
         Map<String,PropertyDescriptor> propertyDescriptorMap = getPropertyDescriptorMap(clazz);
+        Map<String,String> columnNameToFieldMap = entityInfo.columnNameToFieldNameMap(clazz);
         for(Map.Entry<String,Object> entry:columnNameWithFieldValueMap.entrySet()){
             String key = entry.getKey();
             Object value = entry.getValue();
-            String fieldName = entityInfo.columnNameToFieldName(clazz,key);
+            String fieldName = columnNameToFieldMap.get(key);
 
-            if(fieldName!=null && fieldName.length()!=0){
+            if(StringUtils.isNotEmpty(fieldName)){
                 PropertyDescriptor propertyDescriptor = propertyDescriptorMap.get(fieldName);
                 if(propertyDescriptor!=null){
                     Method setterMethod = propertyDescriptor.getWriteMethod();

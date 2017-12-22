@@ -1,6 +1,7 @@
 package cn.deepmax.entity;
 
 import cn.deepmax.exception.EasyQueryException;
+import cn.deepmax.util.StringUtils;
 import cn.deepmax.util.TypeAdapter;
 
 import java.beans.IntrospectionException;
@@ -28,9 +29,9 @@ public abstract class AbstractEntityInfo implements EntityInfo {
     @Override
     public String getFullTableName(Class<?> clazz) {
         String fullTableName = fullTableNameCache.get(clazz.getName());
-        if(fullTableName==null||fullTableName.length()==0){
+        if(StringUtils.isEmpty(fullTableName)){
             String catalogName = getCatalogName(clazz);
-            if(catalogName==null || catalogName.length()==0){
+            if(StringUtils.isEmpty(catalogName)){
                 fullTableName = doGetTableName(clazz);
             }else{
                 fullTableName = catalogName+"."+doGetTableName(clazz);
@@ -42,7 +43,7 @@ public abstract class AbstractEntityInfo implements EntityInfo {
 
     private String doGetTableName(Class<?> clazz){
         String tableName = getTableName(clazz);
-        if(tableName==null||tableName.length()==0){
+        if(StringUtils.isEmpty(tableName)){
             throw new EasyQueryException("Unable to get table name of type["+clazz.getName()+"] .");
         }
         return tableName;
@@ -58,15 +59,7 @@ public abstract class AbstractEntityInfo implements EntityInfo {
         return map;
     }
 
-    @Override
-    public String fieldNameToColumnName(Class<?> clazz, String fieldName) {
-        Map<String,String> map = fieldNameToColumnNameMap(clazz);
-        if(map==null){
-            return null;
-        }else{
-            return map.get(fieldName);
-        }
-    }
+
 
     @Override
     public Map<String, String> columnNameToFieldNameMap(Class<?> clazz) {
@@ -78,15 +71,7 @@ public abstract class AbstractEntityInfo implements EntityInfo {
         return map;
     }
 
-    @Override
-    public String columnNameToFieldName(Class<?> clazz, String columnName) {
-        Map<String,String> map = columnNameToFieldNameMap(clazz);
-        if(map==null){
-            return null;
-        }else{
-            return map.get(columnName);
-        }
-    }
+
 
     /**
      * just reverse fieldNameToColumnNameMap
