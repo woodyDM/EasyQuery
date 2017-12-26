@@ -10,6 +10,9 @@ import freemarker.template.Configuration;
 import freemarker.template.Template;
 import freemarker.template.TemplateException;
 import freemarker.template.TemplateExceptionHandler;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
 import java.io.*;
 
 
@@ -25,6 +28,7 @@ public class Generator {
         this.config = config;
     }
 
+    private static final Logger logger = LoggerFactory.getLogger(Generator.class);
 
 
     public void generateIfNecessary(DbMetaData dbMetaData, Class<?> clazz){
@@ -33,8 +37,12 @@ public class Generator {
         boolean isSelfManage = isSelfManaged(clazz);
         boolean needUpdate = needUpdate(targetFileName, newHash);
         if(!isSelfManage && needUpdate){
+            logger.debug("[EasyQueryGenerator]Try generating java file for class "+clazz.getName());
             TemplateData data = TemplateData.instance(dbMetaData,clazz,config);
             doGenerate(targetFileName, data);
+            logger.debug("[EasyQueryGenerator]End generating java file for class "+clazz.getName());
+        }else{
+            logger.debug("[EasyQueryGenerator]Skip generating class "+clazz.getName());
         }
     }
 
@@ -122,6 +130,7 @@ public class Generator {
             Writer outW = new OutputStreamWriter(out);
             template.process(data,outW);
             out.flush();
+
         } catch (IOException e) {
             throw new EasyQueryException("File not found in code generator",e);
         } catch (TemplateException e) {
