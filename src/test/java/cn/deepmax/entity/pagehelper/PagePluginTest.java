@@ -28,5 +28,8 @@ public class PagePluginTest extends BaseTest {
         Assert.notNull(info3,"info3 notnull");
         Assert.isTrue(info3.isNotEmpty(),"not empty");
 
+        PageInfo< SuperUser> info4 = template.selectPage(sql,SuperUser.class,3,3,1);
+        Assert.notNull(info4,"info4 notnull");
+
     }
 }
