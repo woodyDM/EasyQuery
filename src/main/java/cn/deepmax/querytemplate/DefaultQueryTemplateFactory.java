@@ -68,14 +68,26 @@ public class DefaultQueryTemplateFactory implements QueryTemplateFactory {
     }
 
 
+    /**
+     *
+     * @param isShowSql
+     */
     public void isShowSql(Boolean isShowSql) {
         this.config.setShowSql(isShowSql);
     }
 
+    /**
+     *
+     * @param config
+     */
     public void setConfig(Config config) {
         this.config = config;
     }
 
+    /**
+     *
+     * @return
+     */
     public Config getConfig() {
         return config;
     }
@@ -89,18 +101,34 @@ public class DefaultQueryTemplateFactory implements QueryTemplateFactory {
         return new DefaultQueryTemplate(transaction,entityFactory,this.config,sqlTranslator,pagePlugin);
     }
 
+    /**
+     *
+     * @param transactionFactory
+     */
     public void setTransactionFactory(TransactionFactory transactionFactory) {
         this.transactionFactory = transactionFactory;
     }
 
+    /**
+     *
+     * @param entityInfo
+     */
     public void setEntityInfo(EntityInfo entityInfo) {
         this.entityInfo = entityInfo;
     }
 
+    /**
+     *
+     * @param pagePlugin
+     */
     public void setPagePlugin(PagePlugin pagePlugin) {
         this.pagePlugin = pagePlugin;
     }
 
+    /**
+     *
+     * @param sqlTranslator
+     */
     public void setSqlTranslator(SqlTranslator sqlTranslator) {
         this.sqlTranslator = sqlTranslator;
     }

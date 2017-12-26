@@ -44,17 +44,35 @@ public class DefaultQueryTemplate implements QueryTemplate {
     }
 
 
+    /**
+     *
+     * @return
+     */
     @Override
     public Transaction transaction() {
         return transaction;
     }
 
+    /**
+     *
+     * @param sql
+     * @param params
+     * @return
+     */
     @Override
     public List<Map<String,Object>> selectList(String sql, Object... params){
         return doSelect(sql,params).last;
     }
 
 
+    /**
+     *
+     * @param sql
+     * @param clazz
+     * @param params
+     * @param <T>
+     * @return
+     */
     @Override
     public <T> List<RowRecord<T>> selectListEx(String sql, Class<T> clazz, Object... params) {
         Pair<DbMetaData,List<Map<String,Object>>> pair = doSelect(sql,params);
@@ -74,6 +92,14 @@ public class DefaultQueryTemplate implements QueryTemplate {
     }
 
 
+    /**
+     *
+     * @param sql
+     * @param clazz
+     * @param params
+     * @param <T>
+     * @return
+     */
     @Override
     public  <T> List<T> selectList(String sql, Class<T> clazz, Object... params) {
         Pair<DbMetaData,List<Map<String,Object>>> pair = doSelect(sql,params);
@@ -89,6 +115,12 @@ public class DefaultQueryTemplate implements QueryTemplate {
         return results;
     }
 
+    /**
+     *
+     * @param sql
+     * @param params
+     * @return
+     */
     @Override
     public List<RowRecord> selectListEx(String sql, Object... params) {
         List<Map<String,Object>> rawResults = doSelect(sql,params).last;
@@ -102,6 +134,14 @@ public class DefaultQueryTemplate implements QueryTemplate {
         return results;
     }
 
+    /**
+     *
+     * @param sql
+     * @param pageNumber
+     * @param pageSize
+     * @param params
+     * @return
+     */
     @Override
     public PageInfo<Map<String, Object>> selectPage(String sql, Integer pageNumber, Integer pageSize, Object... params) {
         String totalSql = pagePlugin.getSqlForTotalRow(sql);
@@ -113,6 +153,14 @@ public class DefaultQueryTemplate implements QueryTemplate {
         return pageInfo;
     }
 
+    /**
+     *
+     * @param sql
+     * @param pageNumber
+     * @param pageSize
+     * @param params
+     * @return
+     */
     @Override
     public PageInfo<RowRecord> selectPageEx(String sql, Integer pageNumber, Integer pageSize, Object... params) {
         String totalSql = pagePlugin.getSqlForTotalRow(sql);
@@ -124,6 +172,16 @@ public class DefaultQueryTemplate implements QueryTemplate {
         return pageInfo;
     }
 
+    /**
+     *
+     * @param sql
+     * @param pageNumber
+     * @param pageSize
+     * @param clazz
+     * @param params
+     * @param <T>
+     * @return
+     */
     @Override
     public <T> PageInfo<T> selectPage(String sql, Integer pageNumber, Integer pageSize, Class<T> clazz, Object... params) {
         String totalSql = pagePlugin.getSqlForTotalRow(sql);
@@ -135,6 +193,16 @@ public class DefaultQueryTemplate implements QueryTemplate {
         return pageInfo;
     }
 
+    /**
+     *
+     * @param sql
+     * @param clazz
+     * @param pageNumber
+     * @param pageSize
+     * @param params
+     * @param <T>
+     * @return
+     */
     @Override
     public <T> PageInfo<RowRecord<T>> selectPageEx(String sql, Class<T> clazz, Integer pageNumber, Integer pageSize, Object... params) {
         String totalSql = pagePlugin.getSqlForTotalRow(sql);
@@ -146,6 +214,12 @@ public class DefaultQueryTemplate implements QueryTemplate {
         return pageInfo;
     }
 
+    /**
+     *
+     * @param sql
+     * @param params
+     * @return
+     */
     @Override
     public Map<String,Object> select(String sql, Object... params){
         List<Map<String,Object>> results = selectList(sql, params);
@@ -153,6 +227,14 @@ public class DefaultQueryTemplate implements QueryTemplate {
     }
 
 
+    /**
+     *
+     * @param sql
+     * @param clazz
+     * @param params
+     * @param <T>
+     * @return
+     */
     @Override
     public  <T> RowRecord<T> selectEx(String sql, Class<T> clazz, Object... params) {
         List<RowRecord<T>> result = selectListEx(sql, clazz, params);
@@ -160,12 +242,26 @@ public class DefaultQueryTemplate implements QueryTemplate {
     }
 
 
+    /**
+     *
+     * @param sql
+     * @param clazz
+     * @param params
+     * @param <T>
+     * @return
+     */
     @Override
     public  <T> T select(String sql, Class<T> clazz, Object... params) {
         List<T> results = selectList(sql,clazz,params);
         return handleUnique(results);
     }
 
+    /**
+     *
+     * @param sql
+     * @param params
+     * @return
+     */
     @Override
     public RowRecord selectEx(String sql, Object... params) {
         Map<String,Object> rawResult = select(sql,params);
@@ -175,6 +271,14 @@ public class DefaultQueryTemplate implements QueryTemplate {
         return new RowRecord<>(rawResult,null, null );
     }
 
+    /**
+     *
+     * @param sql
+     * @param clazz
+     * @param params
+     * @param <T>
+     * @return
+     */
     @Override
     public <T> T selectScalar(String sql, Class<T> clazz, Object... params) {
         Map<String,Object> oneResult = select(sql,params);
@@ -243,6 +347,13 @@ public class DefaultQueryTemplate implements QueryTemplate {
         }
     }
 
+    /**
+     *
+     * @param clazz
+     * @param primary
+     * @param <T>
+     * @return
+     */
     @Override
     public <T> T get(Class<T> clazz,Object primary){
         Objects.requireNonNull(primary,"PrimaryKey value is null, unable to get entity of type["+clazz.getName()+"]");
@@ -250,6 +361,11 @@ public class DefaultQueryTemplate implements QueryTemplate {
         return select (sql,clazz,primary);
     }
 
+    /**
+     *
+     * @param obj
+     * @return
+     */
     @Override
     public Boolean save(Object obj){
         Objects.requireNonNull(obj,"Target is null, unable to save.");
@@ -290,6 +406,11 @@ public class DefaultQueryTemplate implements QueryTemplate {
         return (i!=0);
     }
 
+    /**
+     *
+     * @param obj
+     * @return
+     */
     @Override
     public Boolean delete(Object obj){
         Objects.requireNonNull(obj, "Deleted object should not be null");
