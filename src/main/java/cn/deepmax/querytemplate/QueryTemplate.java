@@ -19,6 +19,8 @@ public interface QueryTemplate {
 
     PageInfo<Map<String,Object>> selectPage(String sql,Integer pageNumber,Integer pageSize,Object... params);
 
+    <T> PageInfo<T>  selectPage(String sql,Integer pageNumber,Integer pageSize,Class<T> clazz,Object... params);
+
     PageInfo<RowRecord> selectPageEx(String sql,Integer pageNumber,Integer pageSize,Object... params);
 
     <T> PageInfo<RowRecord<T>> selectPageEx(String sql,Class<T> clazz,Integer pageNumber,Integer pageSize,Object... params);

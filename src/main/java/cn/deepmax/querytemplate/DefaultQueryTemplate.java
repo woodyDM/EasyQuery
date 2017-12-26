@@ -105,7 +105,7 @@ public class DefaultQueryTemplate implements QueryTemplate {
     @Override
     public PageInfo<Map<String, Object>> selectPage(String sql, Integer pageNumber, Integer pageSize, Object... params) {
         String totalSql = pagePlugin.getSqlForTotalRow(sql);
-        Long totalRow = selectScalar(totalSql,Long.class);
+        Long totalRow = selectScalar(totalSql,Long.class,params);
         PageInfo<Map<String, Object>> pageInfo = new PageInfo<>(pageNumber, pageSize, totalRow);
         String dataSql = pagePlugin.getSqlForPagingData(sql,pageInfo.getStartRow(),pageSize);
         List<Map<String,Object>> data = selectList(dataSql,params);
@@ -116,7 +116,7 @@ public class DefaultQueryTemplate implements QueryTemplate {
     @Override
     public PageInfo<RowRecord> selectPageEx(String sql, Integer pageNumber, Integer pageSize, Object... params) {
         String totalSql = pagePlugin.getSqlForTotalRow(sql);
-        Long totalRow = selectScalar(totalSql,Long.class);
+        Long totalRow = selectScalar(totalSql,Long.class,params);
         PageInfo<RowRecord> pageInfo = new PageInfo<>(pageNumber, pageSize, totalRow);
         String dataSql = pagePlugin.getSqlForPagingData(sql,pageInfo.getStartRow(),pageSize);
         List<RowRecord> data = selectListEx(dataSql,params);
@@ -125,9 +125,20 @@ public class DefaultQueryTemplate implements QueryTemplate {
     }
 
     @Override
+    public <T> PageInfo<T> selectPage(String sql, Integer pageNumber, Integer pageSize, Class<T> clazz, Object... params) {
+        String totalSql = pagePlugin.getSqlForTotalRow(sql);
+        Long totalRow = selectScalar(totalSql,Long.class,params);
+        PageInfo<T> pageInfo = new PageInfo<>(pageNumber, pageSize, totalRow);
+        String dataSql = pagePlugin.getSqlForPagingData(sql,pageInfo.getStartRow(),pageSize);
+        List<T> data = selectList(dataSql,clazz,params);
+        pageInfo.setData(data);
+        return pageInfo;
+    }
+
+    @Override
     public <T> PageInfo<RowRecord<T>> selectPageEx(String sql, Class<T> clazz, Integer pageNumber, Integer pageSize, Object... params) {
         String totalSql = pagePlugin.getSqlForTotalRow(sql);
-        Long totalRow = selectScalar(totalSql,Long.class);
+        Long totalRow = selectScalar(totalSql,Long.class,params);
         PageInfo<RowRecord<T>> pageInfo = new PageInfo<>(pageNumber, pageSize, totalRow);
         String dataSql = pagePlugin.getSqlForPagingData(sql,pageInfo.getStartRow(),pageSize);
         List<RowRecord<T>> data = selectListEx(dataSql,clazz,params);
