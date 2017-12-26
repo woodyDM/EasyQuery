@@ -183,7 +183,7 @@ public class DefaultQueryTemplate implements QueryTemplate {
      * @return
      */
     @Override
-    public <T> PageInfo<T> selectPage(String sql, Integer pageNumber, Integer pageSize, Class<T> clazz, Object... params) {
+    public <T> PageInfo<T> selectPage(String sql, Class<T> clazz,Integer pageNumber, Integer pageSize,  Object... params) {
         String totalSql = pagePlugin.getSqlForTotalRow(sql);
         Long totalRow = selectScalar(totalSql,Long.class,params);
         PageInfo<T> pageInfo = new PageInfo<>(pageNumber, pageSize, totalRow);

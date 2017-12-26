@@ -65,7 +65,7 @@ public interface QueryTemplate {
      * @param <T>
      * @return
      */
-    <T> PageInfo<T>  selectPage(String sql,Integer pageNumber,Integer pageSize,Class<T> clazz,Object... params);
+    <T> PageInfo<T>  selectPage(String sql,Class<T> clazz,Integer pageNumber,Integer pageSize,Object... params);
 
     /**
      *
