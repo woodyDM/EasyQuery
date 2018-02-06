@@ -21,7 +21,7 @@ import java.util.function.Function;
 
 
 /**
- *
+ * Default
  *
  */
 public class DefaultQueryTemplate implements QueryTemplate {
@@ -130,7 +130,7 @@ public class DefaultQueryTemplate implements QueryTemplate {
     @Override
     public <T> PageInfo<T> selectPage(String sql, Integer pageNumber, Integer pageSize, Function<RowRecord, T> converter, Object... params) {
         return doSelectPage(sql, null , pageNumber, pageSize,
-                result-> selectList((String)result.get(0),(Class<T>)result.get(1), converter, (Object[])result.get(2)),
+                result-> selectList((String)result.get(0), converter, (Object[])result.get(2)),
                 params);
     }
 
@@ -189,8 +189,8 @@ public class DefaultQueryTemplate implements QueryTemplate {
 
 
     @Override
-    public <T> T select(String sql, Class<T> clazz, Function<RowRecord, T> converter, Object... params) {
-        List<T> results = selectList(sql, clazz, converter, params);
+    public <T> T select(String sql, Function<RowRecord, T> converter, Object... params) {
+        List<T> results = selectList(sql, converter, params);
         return handleUnique(results);
     }
 

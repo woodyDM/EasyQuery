@@ -8,6 +8,18 @@ import java.util.List;
 import java.util.Map;
 import java.util.function.Function;
 
+
+/**
+ * Including:
+ * select list *4
+ * select one   *4
+ * select page  *4
+ * select scalar
+ * execute sql
+ * batch operations
+ * entity operations *3
+ * transaction support
+ */
 public interface QueryTemplate {
 
     /**
@@ -46,6 +58,7 @@ public interface QueryTemplate {
      */
     <T> List<T> selectList(String sql, Function<RowRecord,T> converter,Object... params);
 
+
     /**
      *
      * @param sql
@@ -54,7 +67,7 @@ public interface QueryTemplate {
      * @param params
      * @return
      */
-    PageInfo<Map<String,Object>> selectPage(String sql,Integer pageNumber,Integer pageSize,Object... params);
+    PageInfo<Map<String,Object>> selectPage(String sql, Integer pageNumber, Integer pageSize, Object... params);
 
 
     /**
@@ -65,7 +78,7 @@ public interface QueryTemplate {
      * @param params
      * @return
      */
-    PageInfo<RowRecord> selectPageEx(String sql,Integer pageNumber,Integer pageSize,Object... params);
+    PageInfo<RowRecord> selectPageEx(String sql, Integer pageNumber, Integer pageSize, Object... params);
 
     /**
      *
@@ -77,17 +90,19 @@ public interface QueryTemplate {
      * @param <T>
      * @return
      */
-    <T> PageInfo<T>  selectPage(String sql,Class<T> clazz,Integer pageNumber,Integer pageSize,Object... params);
+    <T> PageInfo<T> selectPage(String sql, Class<T> clazz, Integer pageNumber,Integer pageSize, Object... params);
 
     /**
      *
      * @param sql
      * @param pageNumber
      * @param pageSize
+     * @param converter
      * @param params
+     * @param <T>
      * @return
      */
-    <T> PageInfo<T> selectPage(String sql, Integer pageNumber,Integer pageSize,Function<RowRecord,T> converter,Object... params);
+    <T> PageInfo<T> selectPage(String sql, Integer pageNumber, Integer pageSize, Function<RowRecord,T> converter,Object... params);
 
     /**
      *
@@ -119,13 +134,12 @@ public interface QueryTemplate {
     /**
      *
      * @param sql
-     * @param clazz
      * @param converter
      * @param params
      * @param <T>
      * @return
      */
-    <T> T select(String sql, Class<T> clazz, Function<RowRecord,T> converter,Object... params);
+    <T> T select(String sql, Function<RowRecord,T> converter, Object... params);
 
 
     /**
@@ -138,13 +152,6 @@ public interface QueryTemplate {
      */
     <T> T selectScalar(String sql, Class<T> clazz, Object... params);
 
-    /**
-     *
-     * @param sql
-     * @param paramList
-     * @return
-     */
-    int[] executeBatch(String sql, List<List<Object>> paramList);
 
     /**
      *
@@ -152,7 +159,15 @@ public interface QueryTemplate {
      * @param params
      * @return
      */
-    int executeUpdate(String sql,Object... params);
+    int executeUpdate(String sql, Object... params);
+
+    /**
+     *
+     * @param sql
+     * @param paramList
+     * @return
+     */
+    int[] executeBatch(String sql, List<List<Object>> paramList);
 
     /**
      *
