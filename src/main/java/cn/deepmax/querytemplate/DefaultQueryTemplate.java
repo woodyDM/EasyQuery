@@ -17,6 +17,8 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import java.sql.*;
 import java.util.*;
+import java.util.function.Function;
+
 
 /**
  *
@@ -44,10 +46,6 @@ public class DefaultQueryTemplate implements QueryTemplate {
     }
 
 
-    /**
-     *
-     * @return
-     */
     @Override
     public Transaction transaction() {
         return transaction;
@@ -65,54 +63,29 @@ public class DefaultQueryTemplate implements QueryTemplate {
     }
 
 
-    /**
-     *
-     * @param sql
-     * @param clazz
-     * @param params
-     * @param <T>
-     * @return
-     */
     @Override
-    public <T> List<RowRecord<T>> selectListEx(String sql, Class<T> clazz, Object... params) {
-        Pair<DbMetaData,List<Map<String,Object>>> pair = doSelect(sql,params);
-        List<Map<String,Object>> rawResults = pair.last;
-        List<RowRecord<T>> results = new ArrayList<>();
-        for(Map<String,Object> it:rawResults){
-            T obj = entityFactory.create(clazz,it);
-            if(it!=null) {
-                RowRecord<T> oneRecord = new RowRecord<>(it,clazz,obj);
-                results.add(oneRecord);
-            }
-        }
-        if(config.isGenerateClass()){
-            generator.generateIfNecessary(pair.first, clazz);
-        }
-        return results;
+    public <T> List<T> selectList(String sql, Function<RowRecord, T> converter, Object... params) {
+        return selectList(sql, null ,converter, params);
     }
 
-
-    /**
-     *
-     * @param sql
-     * @param clazz
-     * @param params
-     * @param <T>
-     * @return
-     */
     @Override
     public  <T> List<T> selectList(String sql, Class<T> clazz, Object... params) {
+        return selectList(sql, clazz ,map-> entityFactory.create(clazz,map), params);
+    }
+
+    private <T> List<T> selectList(String sql, Class<T> clazz, Function<RowRecord, T> converter, Object... params) {
         Pair<DbMetaData,List<Map<String,Object>>> pair = doSelect(sql,params);
-        List<Map<String,Object>> rawResults = pair.last;
-        List<T> results = new ArrayList<>();
-        for(Map<String,Object> it:rawResults){
-            T obj = entityFactory.create(clazz,it);
-            results.add(obj);
+        List<Map<String,Object>> results = pair.last;
+        List<T> entityList = new ArrayList<>();
+        for(Map<String,Object> it:results){
+            RowRecord temp = new RowRecord(it);
+            T re = converter.apply(temp);
+            entityList.add(re);
         }
-        if(config.isGenerateClass()){
+        if(config.isGenerateClass() && clazz!=null){
             generator.generateIfNecessary(pair.first, clazz);
         }
-        return results;
+        return entityList;
     }
 
     /**
@@ -126,90 +99,52 @@ public class DefaultQueryTemplate implements QueryTemplate {
         List<Map<String,Object>> rawResults = doSelect(sql,params).last;
         List<RowRecord> results = new ArrayList<>();
         for(Map<String,Object> it:rawResults){
-            if(it!=null){
-                RowRecord oneRecord = new RowRecord<>(it,null,null);
-                results.add(oneRecord);
-            }
+            RowRecord oneRecord = new RowRecord (it);
+            results.add(oneRecord);
         }
         return results;
     }
 
-    /**
-     *
-     * @param sql
-     * @param pageNumber
-     * @param pageSize
-     * @param params
-     * @return
-     */
     @Override
     public PageInfo<Map<String, Object>> selectPage(String sql, Integer pageNumber, Integer pageSize, Object... params) {
-        String totalSql = pagePlugin.getSqlForTotalRow(sql);
-        Long totalRow = selectScalar(totalSql,Long.class,params);
-        PageInfo<Map<String, Object>> pageInfo = new PageInfo<>(pageNumber, pageSize, totalRow);
-        String dataSql = pagePlugin.getSqlForPagingData(sql,pageInfo.getStartRow(),pageSize);
-        List<Map<String,Object>> data = selectList(dataSql,params);
-        pageInfo.setData(data);
-        return pageInfo;
+        return doSelectPage(sql, null, pageNumber, pageSize,
+                result-> selectList((String)result.get(0),(Object[])result.get(2)),
+                params);
     }
 
-    /**
-     *
-     * @param sql
-     * @param pageNumber
-     * @param pageSize
-     * @param params
-     * @return
-     */
+
     @Override
     public PageInfo<RowRecord> selectPageEx(String sql, Integer pageNumber, Integer pageSize, Object... params) {
-        String totalSql = pagePlugin.getSqlForTotalRow(sql);
-        Long totalRow = selectScalar(totalSql,Long.class,params);
-        PageInfo<RowRecord> pageInfo = new PageInfo<>(pageNumber, pageSize, totalRow);
-        String dataSql = pagePlugin.getSqlForPagingData(sql,pageInfo.getStartRow(),pageSize);
-        List<RowRecord> data = selectListEx(dataSql,params);
-        pageInfo.setData(data);
-        return pageInfo;
+        return doSelectPage(sql, null, pageNumber, pageSize,
+                result-> selectListEx((String)result.get(0), (Object[])result.get(2)),
+                params);
     }
 
-    /**
-     *
-     * @param sql
-     * @param pageNumber
-     * @param pageSize
-     * @param clazz
-     * @param params
-     * @param <T>
-     * @return
-     */
     @Override
     public <T> PageInfo<T> selectPage(String sql, Class<T> clazz,Integer pageNumber, Integer pageSize,  Object... params) {
-        String totalSql = pagePlugin.getSqlForTotalRow(sql);
-        Long totalRow = selectScalar(totalSql,Long.class,params);
-        PageInfo<T> pageInfo = new PageInfo<>(pageNumber, pageSize, totalRow);
-        String dataSql = pagePlugin.getSqlForPagingData(sql,pageInfo.getStartRow(),pageSize);
-        List<T> data = selectList(dataSql,clazz,params);
-        pageInfo.setData(data);
-        return pageInfo;
+        return doSelectPage(sql, clazz, pageNumber, pageSize,
+                result-> selectList((String)result.get(0),(Class<T>) result.get(1),(Object[])result.get(2)),
+                params);
     }
 
-    /**
-     *
-     * @param sql
-     * @param clazz
-     * @param pageNumber
-     * @param pageSize
-     * @param params
-     * @param <T>
-     * @return
-     */
     @Override
-    public <T> PageInfo<RowRecord<T>> selectPageEx(String sql, Class<T> clazz, Integer pageNumber, Integer pageSize, Object... params) {
+    public <T> PageInfo<T> selectPage(String sql, Integer pageNumber, Integer pageSize, Function<RowRecord, T> converter, Object... params) {
+        return doSelectPage(sql, null , pageNumber, pageSize,
+                result-> selectList((String)result.get(0),(Class<T>)result.get(1), converter, (Object[])result.get(2)),
+                params);
+    }
+
+
+    private <T> PageInfo<T>  doSelectPage(String sql, Class<T> clazz, Integer pageNumber, Integer pageSize, Function<List<Object>,List<T>> generator, Object... params) {
         String totalSql = pagePlugin.getSqlForTotalRow(sql);
-        Long totalRow = selectScalar(totalSql,Long.class,params);
-        PageInfo<RowRecord<T>> pageInfo = new PageInfo<>(pageNumber, pageSize, totalRow);
-        String dataSql = pagePlugin.getSqlForPagingData(sql,pageInfo.getStartRow(),pageSize);
-        List<RowRecord<T>> data = selectListEx(dataSql,clazz,params);
+        Long totalRow = selectScalar(totalSql, Long.class, params);
+        PageInfo<T> pageInfo = new PageInfo<>(pageNumber, pageSize, totalRow);
+        String dataSql = pagePlugin.getSqlForPagingData(sql,pageInfo.getStartRow(), pageSize);
+        List<Object> generatorParams = new ArrayList<>();
+        generatorParams.add(dataSql);
+        generatorParams.add(clazz);
+        generatorParams.add(params);
+        List<T> data = generator.apply(generatorParams);
         pageInfo.setData(data);
         return pageInfo;
     }
@@ -226,22 +161,6 @@ public class DefaultQueryTemplate implements QueryTemplate {
         return handleUnique(results);
     }
 
-
-    /**
-     *
-     * @param sql
-     * @param clazz
-     * @param params
-     * @param <T>
-     * @return
-     */
-    @Override
-    public  <T> RowRecord<T> selectEx(String sql, Class<T> clazz, Object... params) {
-        List<RowRecord<T>> result = selectListEx(sql, clazz, params);
-        return handleUnique(result);
-    }
-
-
     /**
      *
      * @param sql
@@ -252,7 +171,7 @@ public class DefaultQueryTemplate implements QueryTemplate {
      */
     @Override
     public  <T> T select(String sql, Class<T> clazz, Object... params) {
-        List<T> results = selectList(sql,clazz,params);
+        List<T> results = selectList(sql, clazz, params);
         return handleUnique(results);
     }
 
@@ -264,11 +183,15 @@ public class DefaultQueryTemplate implements QueryTemplate {
      */
     @Override
     public RowRecord selectEx(String sql, Object... params) {
-        Map<String,Object> rawResult = select(sql,params);
-        if(rawResult==null){
-            return null;
-        }
-        return new RowRecord<>(rawResult,null, null );
+        List<RowRecord> results = selectListEx(sql,params);
+        return handleUnique(results);
+    }
+
+
+    @Override
+    public <T> T select(String sql, Class<T> clazz, Function<RowRecord, T> converter, Object... params) {
+        List<T> results = selectList(sql, clazz, converter, params);
+        return handleUnique(results);
     }
 
     /**
@@ -468,7 +391,6 @@ public class DefaultQueryTemplate implements QueryTemplate {
             }
             rs = ps.executeQuery();
             return ResultSetHandler.handle(rs,config.isGenerateClass());
-
         } catch (SQLException e) {
             throw new EasyQueryException(e);
         } finally {

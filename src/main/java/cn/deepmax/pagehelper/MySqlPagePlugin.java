@@ -6,7 +6,6 @@ public class MySqlPagePlugin implements PagePlugin {
 
     @Override
     public String getSqlForTotalRow(String rawSql) {
-
         StringBuilder sb = new StringBuilder();
         sb.append("select count(*) from ( ");
         sb.append(rawSql).append(" ) shouldNotBeUsedByUser ");

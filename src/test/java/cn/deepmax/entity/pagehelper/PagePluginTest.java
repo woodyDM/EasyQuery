@@ -18,18 +18,26 @@ public class PagePluginTest extends BaseTest {
 
         QueryTemplate template = factory.create();
         String sql = "select * from super_user where id > ? ";
-        PageInfo<Map<String,Object>> info = template.selectPage(sql,3,1,1);
-        Assert.notNull(info,"info notnull");
+//        PageInfo<Map<String,Object>> info = template.selectPage(sql,3,1,1);
+//        Assert.notNull(info,"info notnull");
 
         PageInfo<RowRecord> info2 = template.selectPageEx(sql,3,3,1);
         Assert.notNull(info2,"info2 notnull");
 
-        PageInfo<RowRecord<SuperUser>> info3 = template.selectPageEx(sql,SuperUser.class,3,3,1);
+        PageInfo<RowRecord> info3 = template.selectPageEx(sql, 3,3,1);
         Assert.notNull(info3,"info3 notnull");
-        Assert.isTrue(info3.isNotEmpty(),"not empty");
+        Assert.isTrue(info3.isNotEmpty(),"info3 not empty");
 
         PageInfo< SuperUser> info4 = template.selectPage(sql,SuperUser.class,3,3,1);
         Assert.notNull(info4,"info4 notnull");
 
+        PageInfo<SuperUser> info5 = template.selectPage(sql, 3,3,it->{
+           SuperUser user = new SuperUser();
+           user.setUserName(it.getString("USER_NAME"));
+           user.setBigDecimal(it.getBigDecimal("BIG_DECIMAL"));
+           return user;
+        },1);
+        Assert.isTrue(info5.isNotEmpty(),"info5 not empty");
+        
     }
 }

@@ -12,7 +12,7 @@ import java.util.*;
 import java.util.concurrent.ConcurrentHashMap;
 
 /**
- * provide a abstract EntityInfo implementation  to support cache.
+ * provide a abstract EntityInfo implementation to support cache.
  */
 public abstract class AbstractEntityInfo implements EntityInfo {
 
@@ -70,7 +70,6 @@ public abstract class AbstractEntityInfo implements EntityInfo {
         }
         return map;
     }
-
 
 
     /**

@@ -38,8 +38,12 @@ public class ExecuteTest extends BaseTest {
         Assert.isTrue(list.size()>0,"size check");
         List<Map<String,Object>> list2 = template.selectList(sql);
         Assert.isTrue(list2.size()>0,"size check2");
-        List<RowRecord<SuperUser>> list3 = template.selectListEx(sql,SuperUser.class);
-        Assert.isTrue(list3.get(0).e.getId()!=null,"id test");
+        List<SuperUser> list3 = template.selectList (sql,it->{
+            SuperUser temp = new SuperUser();
+            temp.setUserName(it.getString("USER_NAME"));
+            return temp;
+        });
+
         List<RowRecord> list4 = template.selectListEx(sql);
         Assert.isTrue(list4.size()>0,"size check4");
     }
