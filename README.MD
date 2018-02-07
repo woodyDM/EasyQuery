@@ -11,14 +11,24 @@ entity information comes from user defined `EntityInfo` .
 <br>
 It is recommended to use EasyQuery in a spring project.
 
+0 How to use
+----
+A. Visit _https://www.jitpack.io_ and look up "https://github.com/woodyDM/EasyQuery" 
+and follow the instructions.<br>
+B. Clone this git to your computer and build jar.
+
+
+
 1 Quick start
 ----
+This is a simple example to show EasyQuery features.<br>
 Define a `SimpleQueryTemplateFactory` class,which needs a `DataSource` implementation.
 ```java
 @Bean
 public QueryTemplateFactory jpaFactory(){
     SimpleQueryTemplateFactory factory = new SimpleQueryTemplateFactory(h2Datasource());
     factory.setEntityInfo(new JpaEntityInfo());
+    factory.setTransactionFactory(new SpringTransactionFactory());
     factory.isShowSql(true);
     return factory.build(); //returns a QueryTemplateFactory
 }   
@@ -38,6 +48,12 @@ int i = template.executeUpdate(sql,id);
 Assert.isTrue(i==1,"1 row");
 SuperUser userFromGet = template.get(SuperUser.class,id);
 Assert.isTrue(userFromGet.getName().equals("Kitty"),"name");
+PageInfo<SuperUser> pageInfo = template.selectPage(sql,(RowRecord oneRecord) ->{
+            SuperUser user = new SuperUser();
+            user.setUserName(oneRecord.getString("USER_NAME"));
+            user.setBigDecimal(oneRecord.getBigDecimal("BIG_DECIMAL"));
+            return user;
+        }, 3,3,1);
 ```
 2 `QueryTemplate`
 ----
