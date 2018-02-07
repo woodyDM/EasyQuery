@@ -25,6 +25,11 @@ public class TypeAdapter {
         if(isCompatibleType(value,targetType)){
             return value;
         }
+        if(value instanceof Boolean){       //only support Boolean to Numbers
+            Boolean castedValue = (Boolean) value;
+            Integer tempValue = (castedValue) ? 1 : 0;
+            return getCompatibleValue(targetType, tempValue);
+        }
         String v = value.toString();
         Class valueType = value.getClass();
         if(targetType==int.class || targetType==Integer.class){         //Int

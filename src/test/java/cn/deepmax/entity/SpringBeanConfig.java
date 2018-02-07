@@ -28,7 +28,6 @@ public class SpringBeanConfig {
 
     @Bean("H2Datasource")
     public DataSource h2Datasource(){
-
         HikariDataSource dataSource = new HikariDataSource();
         dataSource.setJdbcUrl("jdbc:h2:mem:testdb;MODE=MYSQL;DB_CLOSE_DELAY=-1");
         dataSource.setDriverClassName("org.h2.Driver");
