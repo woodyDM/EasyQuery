@@ -14,6 +14,8 @@ public class TypeAdapter {
     /**
      * change value to desired java type.
      * only support common java type from database
+     * only support Boolean to Numbers  false -> 0 and true -> 1
+     * Numbers to Boolean :  0 -> false  ,others -> true
      * @param targetType
      * @param value
      * @return
@@ -43,19 +45,19 @@ public class TypeAdapter {
         }else if(targetType==BigInteger.class){                         //BigInteger
             return BigInteger.valueOf(Long.valueOf(v));
         }else if(targetType==BigDecimal.class){                         //BigDecimal
-            return BigDecimal.valueOf(Long.valueOf(v));
+            return BigDecimal.valueOf(Double.valueOf(v));
         }else if(targetType==String.class){                             //String
             return v;
         }else if(targetType==Boolean.class || targetType==boolean.class) {  //Boolean
-            Integer intValue = Integer.valueOf(v);
-            if (intValue.equals(0)) {
+            BigDecimal bigDecimal = BigDecimal.valueOf(Double.valueOf(v));
+            if (BigDecimal.ZERO.equals(bigDecimal)) {
                 return Boolean.FALSE;
             } else {
                 return Boolean.TRUE;
             }
         }else if(targetType== Timestamp.class){
             if(valueType== Date.class){
-                Long l =( (Date)value).getTime();
+                Long l =((Date)value).getTime();
                 return new Timestamp(l);
             }
         }else if(targetType == Date.class){
