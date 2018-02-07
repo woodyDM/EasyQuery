@@ -11,7 +11,8 @@ entity information comes from user defined `EntityInfo` .
 <br>
 It is recommended to use EasyQuery in a spring project.
 
-#0 How to use
+0 How to use
+---
 
 A. Visit _https://www.jitpack.io_ and look up "https://github.com/woodyDM/EasyQuery" 
 and follow the instructions.<br>
@@ -19,7 +20,8 @@ B. Clone this git or download source code to your computer and build jar yoursel
 
 
 
-#1 Quick start
+1 Quick start
+---
 
 There is a simple example to show EasyQuery features.<br>
 Step 1: Define a `SimpleQueryTemplateFactory` class,which needs a `DataSource`. 
@@ -56,7 +58,9 @@ PageInfo<SuperUser> pageInfo = template.selectPage(sql,(RowRecord oneRecord) ->{
             return user;
         }, 3,3,1);                                  //user defined entity mapping using Function<T,R> interface.
 ```
-#2 `QueryTemplate`
+2 `QueryTemplate`
+---
+
 `QueryTemplate` ,the core interface of EasyQuery, provides SQL query and entity operations.
 <br>
 `select` and `selectList` is common choose to get data from database, `select` for an
@@ -96,7 +100,8 @@ Long count = template.selectScalar(sql,Long.class,100);
 **Method in QueryTemplate** <br>
  
  
-#3 `EntityInfo`
+3 `EntityInfo`
+---
 
 Tips Before:<br>
 1,EasyQuery only support auto-increment primary key in `save` operation.<br>
@@ -115,7 +120,7 @@ tables.
 Two `EntityInfo` implementations:`MappedEntityInfo` and `JpaEntityInfo` are provided.
 <br>
 
-####MappedEntityInfo
+**MappedEntityInfo**
 
 `MappedEntityInfo` uses two `NameMapper` to set those rules.
 'toTableNameMapper' in 'MappedEntityInfo' defines the table name according to entity
@@ -148,7 +153,8 @@ class User{
 }
 ```
 
-####JpaEntityInfo
+**JpaEntityInfo**
+
 `JpaEntityInfo` supports standard JPA annotations :`@Table`, `@Column`, `@Id`<br>
  Just like using Hibernate, put `@Table` on your class, and `@Column` in your class field (or field getter) ,
  and `@Id` on the primaryKey field. Every entity class must have a primary key field.
@@ -157,8 +163,9 @@ class User{
 4 Transaction
 ---
 EasyQuery supports two kind of transaction with class `DefaultTransaction` and 
-`SpringTransaction`.<br>
-####DefaultTransaction
+`SpringTransaction`.<br><br>
+**DefaultTransaction**
+
 When using `DefaultTransaction` from `DefaultTransactionFactory`,the template gets jdbc connection directly from datasource.you manage transaction yourself like this:
 ```java
 try{
@@ -175,7 +182,8 @@ try{
 }
 ```
 
-####SpringTransaction
+**SpringTransaction**
+
 When in Spring-managed environment,you can choose `SpringTransaction` from `SpringTransactionFactory` in declarative transaction ,
 which is defined with @Transactional and TransactionManager 
 (commonly `DataSourceTransactionManager` when using EasyQuery).
@@ -183,13 +191,15 @@ In this condition, the template gets jdbc connection via `DataSourceUtils` provi
 Directly using `QueryTemplate` methods is ok, the transaction now is managed by Spring.
 Also in non-transactional condition ,you can also use `beginTransaction`,`commit` and `rollback`.
 
-#5 `DefaultQueryTemplateFactory`
+5 DefaultQueryTemplateFactory
+---
 
 All `QueryTemplate` comes from `QueryTemplateFactory`, use `DefaultQueryTemplateFactory`
 to config `EntityInfo` and `TransactionFactory` , 
 and finally call `build` method to complete.<br>
 
-#6 Log
+6 Log
+--
 
 EasyQuery uses logback for logging. If SQLs are desired to be logged, set `DefaultQueryTemplateFactory`
 defaultQueryTemplateFactory.config().setShowSql(true) to true , and logging level of `cn.deepmax.querytemplate.DefaultQueryTemplate` class to DEBUG.
