@@ -2,6 +2,8 @@ package cn.deepmax.pagehelper;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Objects;
+import java.util.function.Consumer;
 
 
 /**
@@ -40,6 +42,7 @@ public class PageInfo<T> {
 
 
     public void setData(List<T> data) {
+        Objects.requireNonNull(data);
         this.data = data;
     }
 
@@ -77,6 +80,10 @@ public class PageInfo<T> {
 
     public Boolean isNotEmpty(){
         return !data.isEmpty();
+    }
+
+    public void forEach(Consumer<T> consumer){
+        getData().forEach(consumer);
     }
 
 }

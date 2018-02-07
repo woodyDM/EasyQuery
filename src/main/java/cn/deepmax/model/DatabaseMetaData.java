@@ -10,7 +10,7 @@ import java.util.Map;
 /**
  * database info ,including tableName and catalogName.
  */
-public class DbMetaData {
+public class DatabaseMetaData {
 
     public static final String INIT_VALUE= "";
 

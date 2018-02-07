@@ -118,11 +118,6 @@ public class JpaEntityInfo extends AbstractEntityInfo {
     }
 
 
-
-
-
-
-
     private Field getField(Class<?> clazz, String fieldName){
         Field field=null;
         try {

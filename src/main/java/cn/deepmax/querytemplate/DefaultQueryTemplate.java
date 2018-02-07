@@ -6,7 +6,7 @@ import cn.deepmax.util.TypeAdapter;
 import cn.deepmax.exception.EasyQueryException;
 import cn.deepmax.generator.Generator;
 import cn.deepmax.model.Config;
-import cn.deepmax.model.DbMetaData;
+import cn.deepmax.model.DatabaseMetaData;
 import cn.deepmax.model.Pair;
 import cn.deepmax.pagehelper.PageInfo;
 import cn.deepmax.pagehelper.PagePlugin;
@@ -35,6 +35,7 @@ public class DefaultQueryTemplate implements QueryTemplate {
 
     private static final Logger logger = LoggerFactory.getLogger(DefaultQueryTemplate.class);
 
+
     public DefaultQueryTemplate(Transaction transaction, EntityFactory entityFactory, Config config, SqlTranslator sqlTranslator,PagePlugin pagePlugin) {
         Objects.requireNonNull(config);
         this.transaction = transaction;
@@ -43,12 +44,6 @@ public class DefaultQueryTemplate implements QueryTemplate {
         this.sqlTranslator = sqlTranslator;
         this.generator = new Generator(config);
         this.pagePlugin = pagePlugin;
-    }
-
-
-    @Override
-    public Transaction transaction() {
-        return transaction;
     }
 
     /**
@@ -63,37 +58,7 @@ public class DefaultQueryTemplate implements QueryTemplate {
     }
 
 
-    @Override
-    public <T> List<T> selectList(String sql, Function<RowRecord, T> converter, Object... params) {
-        return selectList(sql, null ,converter, params);
-    }
 
-    @Override
-    public  <T> List<T> selectList(String sql, Class<T> clazz, Object... params) {
-        return selectList(sql, clazz ,map-> entityFactory.create(clazz,map), params);
-    }
-
-    private <T> List<T> selectList(String sql, Class<T> clazz, Function<RowRecord, T> converter, Object... params) {
-        Pair<DbMetaData,List<Map<String,Object>>> pair = doSelect(sql,params);
-        List<Map<String,Object>> results = pair.last;
-        List<T> entityList = new ArrayList<>();
-        for(Map<String,Object> it:results){
-            RowRecord temp = new RowRecord(it);
-            T re = converter.apply(temp);
-            entityList.add(re);
-        }
-        if(config.isGenerateClass() && clazz!=null){
-            generator.generateIfNecessary(pair.first, clazz);
-        }
-        return entityList;
-    }
-
-    /**
-     *
-     * @param sql
-     * @param params
-     * @return
-     */
     @Override
     public List<RowRecord> selectListEx(String sql, Object... params) {
         List<Map<String,Object>> rawResults = doSelect(sql,params).last;
@@ -104,6 +69,34 @@ public class DefaultQueryTemplate implements QueryTemplate {
         }
         return results;
     }
+
+    @Override
+    public  <T> List<T> selectList(String sql, Class<T> clazz, Object... params) {
+        return selectList(sql, clazz ,map-> entityFactory.create(clazz,map), params);
+    }
+
+    @Override
+    public <T> List<T> selectList(String sql, Function<RowRecord, T> converter, Object... params) {
+        return selectList(sql, null ,converter, params);
+    }
+
+    private <T> List<T> selectList(String sql, Class<T> clazz, Function<RowRecord, T> converter, Object... params) {
+        Pair<DatabaseMetaData,List<Map<String,Object>>> pair = doSelect(sql,params);
+        if(config.isGenerateClass() && clazz!=null){
+            generator.generateIfNecessary(pair.first, clazz);
+        }
+
+        List<Map<String,Object>> results = pair.last;
+        List<T> entityList = new ArrayList<>();
+        for(Map<String,Object> it:results){
+            RowRecord temp = new RowRecord(it);
+            T re = converter.apply(temp);
+            entityList.add(re);
+        }
+        return entityList;
+    }
+
+
 
     @Override
     public PageInfo<Map<String, Object>> selectPage(String sql, Integer pageNumber, Integer pageSize, Object... params) {
@@ -128,7 +121,7 @@ public class DefaultQueryTemplate implements QueryTemplate {
     }
 
     @Override
-    public <T> PageInfo<T> selectPage(String sql, Integer pageNumber, Integer pageSize, Function<RowRecord, T> converter, Object... params) {
+    public <T> PageInfo<T> selectPage(String sql, Function<RowRecord, T> converter, Integer pageNumber, Integer pageSize,  Object... params) {
         return doSelectPage(sql, null , pageNumber, pageSize,
                 result-> selectList((String)result.get(0), converter, (Object[])result.get(2)),
                 params);
@@ -161,29 +154,16 @@ public class DefaultQueryTemplate implements QueryTemplate {
         return handleUnique(results);
     }
 
-    /**
-     *
-     * @param sql
-     * @param clazz
-     * @param params
-     * @param <T>
-     * @return
-     */
-    @Override
-    public  <T> T select(String sql, Class<T> clazz, Object... params) {
-        List<T> results = selectList(sql, clazz, params);
-        return handleUnique(results);
-    }
-
-    /**
-     *
-     * @param sql
-     * @param params
-     * @return
-     */
     @Override
     public RowRecord selectEx(String sql, Object... params) {
         List<RowRecord> results = selectListEx(sql,params);
+        return handleUnique(results);
+    }
+
+
+    @Override
+    public  <T> T select(String sql, Class<T> clazz, Object... params) {
+        List<T> results = selectList(sql, clazz, params);
         return handleUnique(results);
     }
 
@@ -220,7 +200,7 @@ public class DefaultQueryTemplate implements QueryTemplate {
     }
 
     /**
-     * 批量update insert delete执行
+     * batch -> update insert delete
      * @param sql
      * @param paramList
      * @return
@@ -247,7 +227,7 @@ public class DefaultQueryTemplate implements QueryTemplate {
     }
 
     /**
-     * 单个update insert delete执行
+     * single -> update insert delete
      * @param sql
      * @param params
      * @return
@@ -271,7 +251,7 @@ public class DefaultQueryTemplate implements QueryTemplate {
     }
 
     /**
-     *
+     *  get operation.
      * @param clazz
      * @param primary
      * @param <T>
@@ -285,7 +265,7 @@ public class DefaultQueryTemplate implements QueryTemplate {
     }
 
     /**
-     *
+     * save operation
      * @param obj
      * @return
      */
@@ -299,6 +279,11 @@ public class DefaultQueryTemplate implements QueryTemplate {
         }
     }
 
+    /**
+     * when obj primaryKey value not exist ,do save, and generate increment id..
+     * @param obj
+     * @return
+     */
     private Boolean doSave(Object obj){
         Pair<String,List<Object>> info = sqlTranslator.getInsertSQLInfo(obj);
         Connection cn = transaction.getConnection();
@@ -323,6 +308,11 @@ public class DefaultQueryTemplate implements QueryTemplate {
         }
     }
 
+    /**
+     * when obj primaryKey value exist ,do update.
+     * @param obj
+     * @return
+     */
     private Boolean doUpdate(Object obj) {
         Pair<String,List<Object>> pair = sqlTranslator.getUpdateSQLInfo(obj);
         int i =executeUpdate(pair.first, pair.last.toArray());
@@ -330,7 +320,8 @@ public class DefaultQueryTemplate implements QueryTemplate {
     }
 
     /**
-     *
+     *  delete obj by its primaryKey value.
+     *  if primaryKey value is null , raise an exception
      * @param obj
      * @return
      */
@@ -338,9 +329,15 @@ public class DefaultQueryTemplate implements QueryTemplate {
     public Boolean delete(Object obj){
         Objects.requireNonNull(obj, "Deleted object should not be null");
         Pair<String, Object> pair = sqlTranslator.getDeleteSQLInfo(obj);
-        int i =executeUpdate(pair.first, pair.last);
+        int i = executeUpdate(pair.first, pair.last);
         return (i!=0);
     }
+
+    @Override
+    public Transaction transaction() {
+        return transaction;
+    }
+
 
     private Boolean setEntityPrimaryKeyValue(ResultSet rs, Object target) throws SQLException {
         Object nextId=null;
@@ -358,10 +355,21 @@ public class DefaultQueryTemplate implements QueryTemplate {
         return false;
     }
 
+    /**
+     * whethere the object primaryKey value exist.
+     * @param obj
+     * @return
+     */
     private Boolean isPrimaryKeyValueExist(Object obj){
         return (sqlTranslator.getEntityInfo().getPrimaryKeyFieldValue(obj)!=null);
     }
 
+    /**
+     * used to support unique select.
+     * @param list
+     * @param <T>
+     * @return null if not found. if found more than one result ,cause exception.
+     */
     private <T> T handleUnique(List<T> list){
         if(list.size()==0){
             return null;
@@ -373,12 +381,12 @@ public class DefaultQueryTemplate implements QueryTemplate {
     }
 
     /**
-     * 查询语句执行
+     * select operation
      * @param sql
      * @param params
      * @return
      */
-    private Pair<DbMetaData,List<Map<String,Object>>> doSelect(String sql, Object... params){
+    private Pair<DatabaseMetaData,List<Map<String,Object>>> doSelect(String sql, Object... params){
         Objects.requireNonNull(sql,"Sql should not be null");
         Connection cn = transaction.getConnection();
         PreparedStatement ps=null;
@@ -390,14 +398,19 @@ public class DefaultQueryTemplate implements QueryTemplate {
                 logger.debug("[select] {}",sql);
             }
             rs = ps.executeQuery();
-            return ResultSetHandler.handle(rs,config.isGenerateClass());
+            return ResultSetHandler.handle(rs, config.isGenerateClass());
         } catch (SQLException e) {
             throw new EasyQueryException(e);
         } finally {
-            closeResources(ps,rs,transaction);
+            closeResources(ps, rs, transaction);
         }
     }
 
+    /**
+     * To set parameters in prepareStatement
+     * @param ps
+     * @param params
+     */
     private void setPrepareStatementParams(PreparedStatement ps, Object... params){
         for (int i = 0; i < params.length; i++) {
             try {
@@ -408,6 +421,13 @@ public class DefaultQueryTemplate implements QueryTemplate {
         }
     }
 
+    /**
+     * close used resources.
+     * but in self-managed transaction mode, transaction will not close.
+     * @param statement
+     * @param resultSet
+     * @param transaction
+     */
     private void closeResources(Statement statement, ResultSet resultSet,Transaction transaction){
         if(statement!=null) {
             try {
@@ -427,6 +447,8 @@ public class DefaultQueryTemplate implements QueryTemplate {
             transaction.close();
         }
     }
+
+
 
 
 }

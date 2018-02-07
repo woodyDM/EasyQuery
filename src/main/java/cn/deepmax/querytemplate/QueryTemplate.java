@@ -102,7 +102,7 @@ public interface QueryTemplate {
      * @param <T>
      * @return
      */
-    <T> PageInfo<T> selectPage(String sql, Integer pageNumber, Integer pageSize, Function<RowRecord,T> converter,Object... params);
+    <T> PageInfo<T> selectPage(String sql, Function<RowRecord,T> converter, Integer pageNumber, Integer pageSize, Object... params);
 
     /**
      *

@@ -1,9 +1,11 @@
 package cn.deepmax.entity;
 
 import cn.deepmax.annotation.Ignore;
+import cn.deepmax.mapper.column.CamelToLowerUnderLineColumnNameMapper;
 import cn.deepmax.mapper.table.LowerCaseTableNameMapper;
 import cn.deepmax.mapper.NameMapper;
 import cn.deepmax.mapper.column.UpperCaseColumnNameMapper;
+import cn.deepmax.mapper.table.PascalToLowerUnderLineTableNameMapper;
 import cn.deepmax.util.BeanToMap;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -31,8 +33,8 @@ public class MappedEntityInfo extends AbstractEntityInfo {
     }
 
     public MappedEntityInfo() {
-        this.toTableNameMapper = new LowerCaseTableNameMapper();
-        this.toColumnNameMapper = new UpperCaseColumnNameMapper();
+        this.toTableNameMapper = new PascalToLowerUnderLineTableNameMapper();
+        this.toColumnNameMapper = new CamelToLowerUnderLineColumnNameMapper();
     }
 
     public void setToTableNameMapper(NameMapper toTableNameMapper) {

@@ -18,4 +18,5 @@ public class MySqlPagePlugin implements PagePlugin {
         sb.append(rawSql).append( " limit ").append(boundLower).append(" , ").append(pageSize);
         return sb.toString();
     }
+
 }

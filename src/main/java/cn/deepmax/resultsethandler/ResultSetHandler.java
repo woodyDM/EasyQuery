@@ -2,7 +2,7 @@ package cn.deepmax.resultsethandler;
 
 
 import cn.deepmax.model.ColumnMetaData;
-import cn.deepmax.model.DbMetaData;
+import cn.deepmax.model.DatabaseMetaData;
 import cn.deepmax.model.Pair;
 import cn.deepmax.util.StringUtils;
 
@@ -13,11 +13,11 @@ import java.util.*;
 
 public class ResultSetHandler {
 
-    public static Pair<DbMetaData,List<Map<String,Object>>> handle(ResultSet rs,boolean needMetaData) {
+    public static Pair<DatabaseMetaData,List<Map<String,Object>>> handle(ResultSet rs, boolean needMetaData) {
 
         List<Map<String,Object>> resultsList = new ArrayList<>();
-        DbMetaData metaData = (needMetaData)?new DbMetaData():null;
-        Pair<DbMetaData,List<Map<String,Object>>> pair = new Pair<>(metaData,resultsList);
+        DatabaseMetaData metaData = (needMetaData)?new DatabaseMetaData():null;
+        Pair<DatabaseMetaData,List<Map<String,Object>>> pair = new Pair<>(metaData,resultsList);
         if(rs==null){
             return pair;
         }
@@ -27,7 +27,7 @@ public class ResultSetHandler {
                 int totalColumnCount = rs.getMetaData().getColumnCount();
                 Map<String,Object> row = new LinkedHashMap<>();
                 for (int i = 1; i <= totalColumnCount; i++) {
-                    addToMap(metaData,row,rs,i,isFirstLoop);
+                    addToMap(metaData, row, rs, i, isFirstLoop);
                 }
                 resultsList.add(row);
                 isFirstLoop = false;        //no need to repeat getting dbMetaData
@@ -46,7 +46,7 @@ public class ResultSetHandler {
      * @param pos
      * @param isFirstLoop
      */
-    private static void addToMap(DbMetaData dbMetaData, Map<String,Object> row,ResultSet rs,int pos,boolean isFirstLoop){
+    private static void addToMap(DatabaseMetaData dbMetaData, Map<String,Object> row, ResultSet rs, int pos, boolean isFirstLoop){
         try {
             ResultSetMetaData metaData = rs.getMetaData();
             String labelName = metaData.getColumnLabel(pos);
@@ -60,16 +60,10 @@ public class ResultSetHandler {
                 start++;
                 labelName = oldLableName+start;
             }
-
             row.put(labelName,value);   //add values
-
-            if(!isFirstLoop){
+            if(!isFirstLoop || dbMetaData==null){
                 return;
             }
-            if(dbMetaData==null){
-                return;
-            }
-
             //handle tableName and catalogName .only unique allowed.
             handleTableName(dbMetaData, metaData.getTableName(pos));
             handleCatalogName(dbMetaData, metaData.getCatalogName(pos));
@@ -83,7 +77,7 @@ public class ResultSetHandler {
         }
     }
 
-    private static void handleTableName(DbMetaData metaData,String comingTableName){
+    private static void handleTableName(DatabaseMetaData metaData, String comingTableName){
         if(metaData.getTableName()==null){   //if more than one table.
             return;
         }
@@ -95,7 +89,7 @@ public class ResultSetHandler {
             }
         }
     }
-    private static void handleCatalogName(DbMetaData metaData,String comingCatalogName){
+    private static void handleCatalogName(DatabaseMetaData metaData, String comingCatalogName){
         if(metaData.getCatalogName()==null){   //if more than one catalog.
             return;
         }

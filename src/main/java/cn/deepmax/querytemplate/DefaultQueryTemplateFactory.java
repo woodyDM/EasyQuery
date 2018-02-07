@@ -41,10 +41,10 @@ public class DefaultQueryTemplateFactory implements QueryTemplateFactory {
         if(this.sqlTranslator ==null){
             sqlTranslator = new DefaultSqlTranslator(entityInfo);
         }
-        if(transactionFactory==null){
+        if(transactionFactory == null){
             transactionFactory = new DefaultTransactionFactory();
         }
-        if(pagePlugin==null){
+        if(pagePlugin == null){
             pagePlugin = new MySqlPagePlugin();
         }
         if(config.isGenerateClass()){
@@ -62,33 +62,16 @@ public class DefaultQueryTemplateFactory implements QueryTemplateFactory {
             }
             config.normalizePath();
         }
-
         init = true;
         return this;
     }
 
 
     /**
-     *
-     * @param isShowSql
-     */
-    public void isShowSql(Boolean isShowSql) {
-        this.config.setShowSql(isShowSql);
-    }
-
-    /**
-     *
-     * @param config
-     */
-    public void setConfig(Config config) {
-        this.config = config;
-    }
-
-    /**
-     *
+     * getConfig
      * @return
      */
-    public Config getConfig() {
+    public Config config() {
         return config;
     }
 
@@ -98,7 +81,7 @@ public class DefaultQueryTemplateFactory implements QueryTemplateFactory {
             throw new EasyQueryException("QueryTemplateFactory init failed, build() should be called.");
         }
         Transaction transaction = transactionFactory.newTransaction(dataSource);
-        return new DefaultQueryTemplate(transaction,entityFactory,this.config,sqlTranslator,pagePlugin);
+        return new DefaultQueryTemplate(transaction, entityFactory, this.config, sqlTranslator, pagePlugin);
     }
 
     /**

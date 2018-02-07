@@ -10,7 +10,7 @@ import java.io.File;
  */
 public class Config {
 
-    private boolean isShowSql = false;      //whether show sql in log
+    private boolean isShowSql = false;          //whether show sql in log
     private boolean isGenerateClass = false;    //whether enable class generator for entity and VO
     private NameMapper toFieldNameMapper;       //using to define columnName to fieldName rules.
     private String valueObjectPath ;            //generated VO java file root path,(not include package path)

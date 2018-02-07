@@ -4,7 +4,7 @@ package cn.deepmax.generator;
 import cn.deepmax.annotation.SelfManage;
 import cn.deepmax.exception.EasyQueryException;
 import cn.deepmax.model.Config;
-import cn.deepmax.model.DbMetaData;
+import cn.deepmax.model.DatabaseMetaData;
 import cn.deepmax.util.StringUtils;
 import freemarker.template.Configuration;
 import freemarker.template.Template;
@@ -31,14 +31,14 @@ public class Generator {
     private static final Logger logger = LoggerFactory.getLogger(Generator.class);
 
 
-    public void generateIfNecessary(DbMetaData dbMetaData, Class<?> clazz){
+    public void generateIfNecessary(DatabaseMetaData dbMetaData, Class<?> clazz){
         int newHash = dbMetaData.getHash();
         String targetFileName = getTargetFilePath(dbMetaData,clazz);
         boolean isSelfManage = isSelfManaged(clazz);
         boolean needUpdate = needUpdate(targetFileName, newHash);
         if(!isSelfManage && needUpdate){
             logger.debug("[EasyQueryGenerator]Try generating java file for class "+clazz.getName());
-            TemplateData data = TemplateData.instance(dbMetaData,clazz,config);
+            FreemarkerTemplateClassData data = FreemarkerTemplateClassData.instance(dbMetaData,clazz,config);
             doGenerate(targetFileName, data);
             logger.debug("[EasyQueryGenerator]End generating java file for class "+clazz.getName());
         }else{
@@ -62,7 +62,7 @@ public class Generator {
      * @param clazz
      * @return return java path.
      */
-    private String getTargetFilePath(DbMetaData metaData, Class<?> clazz){
+    private String getTargetFilePath(DatabaseMetaData metaData, Class<?> clazz){
         String pa = getPackageAndFilePath(clazz);
         if(StringUtils.isEmpty(metaData.getTableName())){   //value object
             return config.getValueObjectPath()+pa;
@@ -114,7 +114,7 @@ public class Generator {
 
 
 
-    public static void doGenerate(String outputFileName, TemplateData data)  {
+    public static void doGenerate(String outputFileName, FreemarkerTemplateClassData data)  {
         Configuration cfg = new Configuration(Configuration.VERSION_2_3_23);
         OutputStream out = null;
         try  {

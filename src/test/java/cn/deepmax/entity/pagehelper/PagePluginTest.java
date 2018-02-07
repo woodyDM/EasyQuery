@@ -31,12 +31,12 @@ public class PagePluginTest extends BaseTest {
         PageInfo< SuperUser> info4 = template.selectPage(sql,SuperUser.class,3,3,1);
         Assert.notNull(info4,"info4 notnull");
 
-        PageInfo<SuperUser> info5 = template.selectPage(sql, 3,3,it->{
-           SuperUser user = new SuperUser();
-           user.setUserName(it.getString("USER_NAME"));
-           user.setBigDecimal(it.getBigDecimal("BIG_DECIMAL"));
-           return user;
-        },1);
+        PageInfo<SuperUser> info5 = template.selectPage(sql,it->{
+            SuperUser user = new SuperUser();
+            user.setUserName(it.getString("USER_NAME"));
+            user.setBigDecimal(it.getBigDecimal("BIG_DECIMAL"));
+            return user;
+        }, 3,3,1);
         Assert.isTrue(info5.isNotEmpty(),"info5 not empty");
         
     }

@@ -1,7 +1,7 @@
 package cn.deepmax.model;
 
 /**
- * turple.
+ * tuple.
  * @param <U>
  * @param <V>
  */

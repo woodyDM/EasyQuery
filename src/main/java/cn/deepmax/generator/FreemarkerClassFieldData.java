@@ -4,14 +4,14 @@ package cn.deepmax.generator;
 /**
  * define classInformation in Freemarker template.
  */
-public class ClassMetaData {
+public class FreemarkerClassFieldData {
     private String propertyName;
     private String propertyType;        //property javaType
     private String writeMethodName;     //property
     private String readMethodName;
     private String columnName;          //property database columnName
 
-    public ClassMetaData(String propertyName, String propertyType, String writeMethodName, String readMethodName, String columnName) {
+    public FreemarkerClassFieldData(String propertyName, String propertyType, String writeMethodName, String readMethodName, String columnName) {
         this.propertyName = propertyName;
         this.propertyType = propertyType;
         this.writeMethodName = writeMethodName;

@@ -41,7 +41,7 @@ public class SpringBeanConfig {
     public QueryTemplateFactory factory(){
         DefaultQueryTemplateFactory factory = new DefaultQueryTemplateFactory(h2Datasource());
         factory.setTransactionFactory(new SpringTransactionFactory());
-        factory.isShowSql(true);
+        factory.config().setShowSql(true);
         MappedEntityInfo entityInfo = new MappedEntityInfo();
         entityInfo.setToColumnNameMapper(new CamelToUpperUnderLineColumnNameMapper());
         entityInfo.setToTableNameMapper(new PascalToLowerUnderLineTableNameMapper());
@@ -52,15 +52,15 @@ public class SpringBeanConfig {
     @Bean("defaultFactory")
     public QueryTemplateFactory defaultFactory(){
         DefaultQueryTemplateFactory factory = new DefaultQueryTemplateFactory(h2Datasource());
-        factory.isShowSql(true);
+        factory.config().setShowSql(true);
         MappedEntityInfo entityInfo = new MappedEntityInfo();
         entityInfo.setToColumnNameMapper(new CamelToUpperUnderLineColumnNameMapper());
         entityInfo.setToTableNameMapper(new PascalToLowerUnderLineTableNameMapper());
         factory.setEntityInfo(entityInfo);
-        factory.getConfig().setGenerateClass(true);
-        factory.getConfig().setToFieldNameMapper(new UpperUnderlineToCamelColumnNameMapper());
-        factory.getConfig().setValueObjectPath("D:/test/vo");
-        factory.getConfig().setEntityPath("D:/test/entity");
+        factory.config().setGenerateClass(true);
+        factory.config().setToFieldNameMapper(new UpperUnderlineToCamelColumnNameMapper());
+        factory.config().setValueObjectPath("D:/test/vo");
+        factory.config().setEntityPath("D:/test/entity");
         return factory.build();
     }
 
@@ -68,11 +68,11 @@ public class SpringBeanConfig {
     public QueryTemplateFactory jpaFactory(){
         DefaultQueryTemplateFactory factory = new DefaultQueryTemplateFactory(h2Datasource());
         factory.setEntityInfo(new JpaEntityInfo());
-        factory.isShowSql(true);
-        factory.getConfig().setGenerateClass(true);
-        factory.getConfig().setToFieldNameMapper(new UpperUnderlineToCamelColumnNameMapper());
-        factory.getConfig().setValueObjectPath("D:/test/vo");
-        factory.getConfig().setEntityPath("D:/test/entity");
+        factory.config().setShowSql(true);
+        factory.config().setGenerateClass(true);
+        factory.config().setToFieldNameMapper(new UpperUnderlineToCamelColumnNameMapper());
+        factory.config().setValueObjectPath("D:/test/vo");
+        factory.config().setEntityPath("D:/test/entity");
         return factory.build();
     }
 

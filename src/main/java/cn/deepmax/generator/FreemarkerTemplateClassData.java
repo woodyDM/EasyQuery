@@ -2,7 +2,7 @@ package cn.deepmax.generator;
 
 import cn.deepmax.model.ColumnMetaData;
 import cn.deepmax.model.Config;
-import cn.deepmax.model.DbMetaData;
+import cn.deepmax.model.DatabaseMetaData;
 import cn.deepmax.util.BeanUtils;
 import cn.deepmax.util.StringUtils;
 import java.util.ArrayList;
@@ -12,18 +12,18 @@ import java.util.List;
 /**
  * class for Freemarker template.
  */
-public class TemplateData {
+public class FreemarkerTemplateClassData {
     private boolean entity = false;
     private String className;
     private String versionAndHashInfo;
     private String tableName;
     private String catalogName;
     private String packageName;
-    private List<ClassMetaData> columns = new ArrayList<>();
+    private List<FreemarkerClassFieldData> columns = new ArrayList<>();
 
-    private TemplateData(){}
-    public static TemplateData instance(DbMetaData dbMetaData, Class<?> clazz, Config config){
-        TemplateData data = new TemplateData();
+    private FreemarkerTemplateClassData(){}
+    public static FreemarkerTemplateClassData instance(DatabaseMetaData dbMetaData, Class<?> clazz, Config config){
+        FreemarkerTemplateClassData data = new FreemarkerTemplateClassData();
         if(StringUtils.isEmpty(dbMetaData.getTableName()) || StringUtils.isEmpty(dbMetaData.getCatalogName())){
             data.entity = false;
         }else{
@@ -41,7 +41,7 @@ public class TemplateData {
             String propertyName = config.getToFieldNameMapper().convert(clazz,columnName);
             String writeMethodName = BeanUtils.getWriteMethodName(propertyName, javaTypeName);
             String readMethodName = BeanUtils.getReadMethodName(propertyName, javaTypeName);
-            ClassMetaData metaData = new ClassMetaData(propertyName,javaTypeName,writeMethodName,readMethodName,columnName);
+            FreemarkerClassFieldData metaData = new FreemarkerClassFieldData(propertyName,javaTypeName,writeMethodName,readMethodName,columnName);
             data.columns.add(metaData);
         }
         return data;
@@ -95,11 +95,11 @@ public class TemplateData {
         this.catalogName = catalogName;
     }
 
-    public List<ClassMetaData> getColumns() {
+    public List<FreemarkerClassFieldData> getColumns() {
         return columns;
     }
 
-    public void setColumns(List<ClassMetaData> columns) {
+    public void setColumns(List<FreemarkerClassFieldData> columns) {
         this.columns = columns;
     }
 }
