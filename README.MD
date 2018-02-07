@@ -48,12 +48,13 @@ int i = template.executeUpdate(sql,id);
 Assert.isTrue(i==1,"1 row");
 SuperUser userFromGet = template.get(SuperUser.class,id);
 Assert.isTrue(userFromGet.getName().equals("Kitty"),"name");
+
 PageInfo<SuperUser> pageInfo = template.selectPage(sql,(RowRecord oneRecord) ->{
             SuperUser user = new SuperUser();
             user.setUserName(oneRecord.getString("USER_NAME"));
             user.setBigDecimal(oneRecord.getBigDecimal("BIG_DECIMAL"));
             return user;
-        }, 3,3,1);
+        }, 3,3,1);      //user defined entity mapping using Function<T,R> interface.
 ```
 2 `QueryTemplate`
 ----
