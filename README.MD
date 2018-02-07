@@ -11,29 +11,29 @@ entity information comes from user defined `EntityInfo` .
 <br>
 It is recommended to use EasyQuery in a spring project.
 
-0 How to use
-----
+#0 How to use
+
 A. Visit _https://www.jitpack.io_ and look up "https://github.com/woodyDM/EasyQuery" 
 and follow the instructions.<br>
-B. Clone this git to your computer and build jar.
+B. Clone this git or download source code to your computer and build jar yourself.
 
 
 
-1 Quick start
-----
-This is a simple example to show EasyQuery features.<br>
-Define a `SimpleQueryTemplateFactory` class,which needs a `DataSource` implementation.
+#1 Quick start
+
+There is a simple example to show EasyQuery features.<br>
+Step 1: Define a `SimpleQueryTemplateFactory` class,which needs a `DataSource`. 
 ```java
 @Bean
-public QueryTemplateFactory jpaFactory(){
-    SimpleQueryTemplateFactory factory = new SimpleQueryTemplateFactory(h2Datasource());
-    factory.setEntityInfo(new JpaEntityInfo());
-    factory.setTransactionFactory(new SpringTransactionFactory());
-    factory.isShowSql(true);
-    return factory.build(); //returns a QueryTemplateFactory
+public QueryTemplateFactory jpaFactory(DataSource dataSource){
+    SimpleQueryTemplateFactory factory = new SimpleQueryTemplateFactory(dataSource);
+    factory.setEntityInfo(new JpaEntityInfo());                 //define entityInfo to support entity operations
+    factory.setTransactionFactory(new SpringTransactionFactory());  //define transaction mode.
+    factory.isShowSql(true);                        //whether show sql.
+    return factory.build();                     //must call build() to return a QueryTemplateFactory
 }   
 ```
-Using the factory `create` method to create new `QueryTemplate` which 
+Step 2: Using `create` method of the factory to create new `QueryTemplate` which 
 supports core SQL operations of EasyQuery.
 <br>
 ```java
@@ -41,12 +41,12 @@ QueryTemplate template = factory.create();
 SuperUser user = new SuperUser();
 user.setName("EasyQuery");
 user.setBigDecimal(BigDecimal.ONE);
-template.save(user);
-Long id = user.getId();
+template.save(user);                                        //directly save an entity.
+Long id = user.getId();         
 String sql = "update superuser set name ='Kitty' ,ok1 = '2' where id  = ? ";
-int i = template.executeUpdate(sql,id);
+int i = template.executeUpdate(sql,id);                     //execute sql .
 Assert.isTrue(i==1,"1 row");
-SuperUser userFromGet = template.get(SuperUser.class,id);
+SuperUser userFromGet = template.get(SuperUser.class,id);   //get via entity primaryKey value
 Assert.isTrue(userFromGet.getName().equals("Kitty"),"name");
 
 PageInfo<SuperUser> pageInfo = template.selectPage(sql,(RowRecord oneRecord) ->{
@@ -54,11 +54,10 @@ PageInfo<SuperUser> pageInfo = template.selectPage(sql,(RowRecord oneRecord) ->{
             user.setUserName(oneRecord.getString("USER_NAME"));
             user.setBigDecimal(oneRecord.getBigDecimal("BIG_DECIMAL"));
             return user;
-        }, 3,3,1);      //user defined entity mapping using Function<T,R> interface.
+        }, 3,3,1);                                  //user defined entity mapping using Function<T,R> interface.
 ```
-2 `QueryTemplate`
-----
-`QueryTemplate` provides SQL query operation and entity operations.
+#2 `QueryTemplate`
+`QueryTemplate` ,the core interface of EasyQuery, provides SQL query and entity operations.
 <br>
 `select` and `selectList` is common choose to get data from database, `select` for an
 unique result or `selectList` for list of result.if any parameters in 
@@ -69,20 +68,23 @@ The key of map is sql column label name.For example:<br>
 String sql="select id as userId, name ,password pwd from t_user where id < ?";
 List<Map<String,Object>> resultList = template.selectList(sql,10);
 
+
 ```
 the key of map would be "userId, name , pwd".
 <br>
-`selectEx` and `selectListEx` are provide by EasyQuery.Those method return 
+`selectEx` and `selectListEx` also work well. Those method return 
  `RowRecord` ,which is a child class of LinkedHashMap<String,Object>.
  The key rule is same.But `RowRecord` provide another method to get value in the map.
  For example:<br>
 If the value of 'userId' is type of `Long`( or even other compatible type like `Integer`),use:
 ```java
 Long userId = rowRecord.getLong("userId");
+Integer userIdInteger = rowRecord.getInteger("userId");
+Boolean isIdNotZero = rowRecord.getBoolean("userId");   //Boolean value
 //but when using Map,must cast:
-Long userId =(Long) map.get("userId")
+//Long userId =(Long) map.get("userId")
 ```
-The four 'select' methods above that require `class` can also return POJO entity.
+There are other 'select' methods requiring `Class<T>` as parameter which return POJO entity or entity list.
 see `EntityInfo` next section.<br>
 `selectScalar` can be used to get single scalar value.For example:
 ```java
@@ -90,9 +92,12 @@ String sql = "select count(*) from t_user where id < ?";
 Long count = template.selectScalar(sql,Long.class,100);
 ```
 `executeBatch` and `executeUpdate` can be used for update,delete,insert SQL statement.
+<br><br>
+**Method in QueryTemplate** <br>
+ 
+ 
+#3 `EntityInfo`
 
-3 `EntityInfo`
-----
 Tips Before:<br>
 1,EasyQuery only support auto-increment primary key in `save` operation.<br>
 2,It is highly recommended that the entity class is a standard javabean with default
@@ -101,13 +106,16 @@ Tips Before:<br>
 else an `update` SQL will be executed to update all fields. If this causes 
 performance problem, use `executeUpdate` and provide your own SQL.<br>
 
-All entity operations are related to an `EntityInfo` implementation.
+All entity operations are related to an `EntityInfo` implementation. The key point of entity mapping ( from Map<String,Object>
+to POJO ) is to rule relationship between POJO fields and database columns.
 `EntityInfo` defines the relationship between the POJO field name and database
-column lable name, and also the relationship between the POJO class and database
+column label name, and also the relationship between the POJO class and database
 tables.
+<br><br>
+Two `EntityInfo` implementations:`MappedEntityInfo` and `JpaEntityInfo` are provided.
 <br>
-EasyQuery provide two `EntityInfo` implementation:`MappedEntityInfo` and `JpaEntityInfo`.
-<br>
+
+####MappedEntityInfo
 
 `MappedEntityInfo` uses two `NameMapper` to set those rules.
 'toTableNameMapper' in 'MappedEntityInfo' defines the table name according to entity
@@ -125,19 +133,32 @@ new NameMapper(){
         }
 };
 ```
-Defines an upper case column namemapper.If your field name is "userId" ,the database column
- name should be USERID.<br>
-Additionally: If any field that is not desired to persist in database,
-put `@Ignore` on the field.
-<br>
+Defines an upper case columnNameMapper.If set in "toColumnNameMapper" method, your field name is "userId" ,the database column
+ name should be USERID. ie: class field name ---> database columnName<br>
+ The same when you facing "toTableNameMapper" method.<br>
+ 
+**Tip**: If any field in the class that is not desired to persist in database, 
+just put `@Ignore` on the field, just like
+```java
+class User{
+    private Integer id;
+    private String userName;
+    @Ignore
+    private double transientProperty;
+}
+```
 
-`JpaEntityInfo` supports standard JPA annotation `@Table` and `@Column` in your entity class to define the relationship 
-mentioned above. 
+####JpaEntityInfo
+`JpaEntityInfo` supports standard JPA annotations :`@Table`, `@Column`, `@Id`<br>
+ Just like using Hibernate, put `@Table` on your class, and `@Column` in your class field (or field getter) ,
+ and `@Id` on the primaryKey field. Every entity class must have a primary key field.
+ 
 
-4 `Transaction`
+4 Transaction
 ---
 EasyQuery supports two kind of transaction with class `DefaultTransaction` and 
 `SpringTransaction`.<br>
+####DefaultTransaction
 When using `DefaultTransaction` from `DefaultTransactionFactory`,the template gets jdbc connection directly from datasource.you manage transaction yourself like this:
 ```java
 try{
@@ -153,8 +174,8 @@ try{
     template.transaction().close();
 }
 ```
-<br>
 
+####SpringTransaction
 When in Spring-managed environment,you can choose `SpringTransaction` from `SpringTransactionFactory` in declarative transaction ,
 which is defined with @Transactional and TransactionManager 
 (commonly `DataSourceTransactionManager` when using EasyQuery).
@@ -162,16 +183,16 @@ In this condition, the template gets jdbc connection via `DataSourceUtils` provi
 Directly using `QueryTemplate` methods is ok, the transaction now is managed by Spring.
 Also in non-transactional condition ,you can also use `beginTransaction`,`commit` and `rollback`.
 
-5 `DefaultQueryTemplateFactory`
----
+#5 `DefaultQueryTemplateFactory`
+
 All `QueryTemplate` comes from `QueryTemplateFactory`, use `DefaultQueryTemplateFactory`
-to config `EntityInfo` and `TransactionFactory` of EasyQuery, 
+to config `EntityInfo` and `TransactionFactory` , 
 and finally call `build` method to complete.<br>
 
-6 Log
----
+#6 Log
+
 EasyQuery uses logback for logging. If SQLs are desired to be logged, set `DefaultQueryTemplateFactory`
-isShowSql to true , and logging level of `cn.deepmax.querytemplate.DefaultQueryTemplate` class to DEBUG.
+defaultQueryTemplateFactory.config().setShowSql(true) to true , and logging level of `cn.deepmax.querytemplate.DefaultQueryTemplate` class to DEBUG.
 
 
 <br>
