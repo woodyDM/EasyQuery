@@ -7,6 +7,8 @@ import org.junit.Test;
 import org.springframework.util.Assert;
 
 import java.math.BigDecimal;
+import java.sql.Date;
+import java.sql.Timestamp;
 
 public class EntityOpsTest extends BaseTest {
 
@@ -14,7 +16,16 @@ public class EntityOpsTest extends BaseTest {
     public void testSave(){
         SuperUser user = new SuperUser();
         user.setBigDecimal(BigDecimal.TEN);
-        user.setUserName("woody");
+        user.setUserName("eq");
+        user.setAuth("1234auth");
+        user.setBigDecimal(BigDecimal.ONE);
+        user.setaBigPoint(123.23D);
+        Timestamp now = new Timestamp(System.currentTimeMillis());
+        user.setCreateTime(now);
+        user.setUpdateDate(new Date(now.getTime()));
+        user.setHide(true);
+        user.setShow(false);
+        user.setTransientProperty(345.234D);
         QueryTemplate template = factory.create();
         template.save(user);
         Assert.notNull(user.getId(),"Id null");
@@ -26,8 +37,10 @@ public class EntityOpsTest extends BaseTest {
         QueryTemplate queryTemplate = factory.create();
         SuperUser user = queryTemplate.get(SuperUser.class,2);
         Assert.notNull(user,"user null");
-        Assert.notNull(user.getBigDecimal(),"bigdecimal null");
+        Assert.notNull(user.getBigDecimal(),"bigDecimal null");
         Assert.isTrue(user.getUserName().equals("name2"),"name2 check");
+        Assert.isTrue(user.getShow(),"show should be true");
+        Assert.isTrue(!user.isHide(),"should hide");
     }
 
     @Test

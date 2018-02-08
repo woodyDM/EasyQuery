@@ -17,27 +17,28 @@ public class PagePluginTest extends BaseTest {
     public void testPageHelper(){
 
         QueryTemplate template = factory.create();
-        String sql = "select * from super_user where id > ? ";
-//        PageInfo<Map<String,Object>> info = template.selectPage(sql,3,1,1);
-//        Assert.notNull(info,"info notnull");
+        String sql = "select * from super_user where big_decimal > ? ";
+        PageInfo<Map<String,Object>> info = template.selectPage(sql,1,3,1);
+        Assert.isTrue(info.getData().size() > 0 ,"info notnull");
 
-        PageInfo<RowRecord> info2 = template.selectPageEx(sql,3,3,1);
-        Assert.notNull(info2,"info2 notnull");
+        PageInfo<RowRecord> info2 = template.selectPageEx(sql,2,3,3.6);
+        Assert.isTrue(info2.getData().size()> 0 ,"info2 notnull");
 
-        PageInfo<RowRecord> info3 = template.selectPageEx(sql, 3,3,1);
+        PageInfo<RowRecord> info3 = template.selectPageEx(sql, 3,3,0.3333);
         Assert.notNull(info3,"info3 notnull");
         Assert.isTrue(info3.isNotEmpty(),"info3 not empty");
 
-        PageInfo< SuperUser> info4 = template.selectPage(sql,SuperUser.class,3,3,1);
-        Assert.notNull(info4,"info4 notnull");
+        String sql2 = "select * from super_user where big_decimal > ? and id > ? ";
+        PageInfo< SuperUser> info4 = template.selectPage(sql2,SuperUser.class,1,3,1.2,2);
+        Assert.isTrue(info4.isNotEmpty(),"info4 not empty.");
 
-        PageInfo<SuperUser> info5 = template.selectPage(sql,it->{
+        PageInfo<SuperUser> pageInfo = template.selectPage(sql2,(RowRecord oneRecord) ->{
             SuperUser user = new SuperUser();
-            user.setUserName(it.getString("USER_NAME"));
-            user.setBigDecimal(it.getBigDecimal("BIG_DECIMAL"));
+            user.setUserName(oneRecord.getString("USER_NAME"));
+            user.setBigDecimal(oneRecord.getBigDecimal("BIG_DECIMAL"));
             return user;
-        }, 3,3,1);
-        Assert.isTrue(info5.isNotEmpty(),"info5 not empty");
+        }, 1,4,0.2,4);
+        Assert.isTrue(pageInfo.isNotEmpty(),"pageInfo not empty");
         
     }
 }
