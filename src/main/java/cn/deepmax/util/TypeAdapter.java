@@ -49,12 +49,18 @@ public class TypeAdapter {
         }else if(targetType==String.class){                             //String
             return v;
         }else if(targetType==Boolean.class || targetType==boolean.class) {  //Boolean
-            BigDecimal bigDecimal = BigDecimal.valueOf(Double.valueOf(v));
-            if (BigDecimal.ZERO.equals(bigDecimal)) {
+
+            try{
+                Integer i= Integer.valueOf(v);
+                if (i==0) {
+                    return Boolean.FALSE;
+                } else {
+                    return Boolean.TRUE;
+                }
+            }catch (NumberFormatException e){
                 return Boolean.FALSE;
-            } else {
-                return Boolean.TRUE;
             }
+
         }else if(targetType== Timestamp.class){
             if(valueType== Date.class){
                 Long l =((Date)value).getTime();
