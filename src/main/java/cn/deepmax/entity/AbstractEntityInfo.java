@@ -22,6 +22,8 @@ public abstract class AbstractEntityInfo implements EntityInfo {
     private Map<String,Map<String,String>> columnNameToFieldNameMapCache = new ConcurrentHashMap<>();
     private Map<String,String> fullTableNameCache = new ConcurrentHashMap<>();
 
+
+
     abstract List<String> getBeanFieldNameList(Class<?> clazz);
     abstract Map<String, String> getFieldNameToColumnNameMap(Class<?> clazz);
 
