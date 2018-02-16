@@ -19,7 +19,7 @@ public class Config {
     private String databaseDriver;
     private String packageName;
     private Mapper toFieldMapper;       //using to define columnName to fieldName rules.
-    private Mapper toClassMapper;       //using to define databaseTableName to javaClassName rules.
+    private Mapper toClassNameMapper;       //using to define databaseTableName to javaClassName rules.
     private String valueObjectPath ;            //generated VO java file root path,(not include package path)
     private String entityPath;                  //generated entity java file root path,(not include package path)
     private TypeTranslator typeTranslator;      //translate ColumnMetaData to javaType in javaClass file.
@@ -32,8 +32,8 @@ public class Config {
         return toFieldMapper;
     }
 
-    public Mapper getToClassMapper() {
-        return toClassMapper;
+    public Mapper getToClassNameMapper() {
+        return toClassNameMapper;
     }
 
     public String getValueObjectPath() {
@@ -118,7 +118,7 @@ public class Config {
         }
 
         public Builder setToClassNameMapper(Mapper toClassNameMapper) {
-            this.config.toClassMapper = toClassNameMapper;
+            this.config.toClassNameMapper = toClassNameMapper;
             return this;
         }
 
@@ -159,8 +159,8 @@ public class Config {
             if(StringUtils.isEmpty(this.config.entityPath)){
                 throw new IllegalArgumentException("GeneratorExecutor.config needs a notEmpty entityPath.");
             }
-            if(this.config.getToClassMapper() == null){
-                throw new IllegalArgumentException("GeneratorExecutor.config needs a non-null toClassMapper.");
+            if(this.config.getToClassNameMapper() == null){
+                throw new IllegalArgumentException("GeneratorExecutor.config needs a non-null toClassNameMapper.");
             }
             if(this.config.toFieldMapper == null){
                 throw new IllegalArgumentException("GeneratorExecutor.config needs a non-null toFieldMapper.");

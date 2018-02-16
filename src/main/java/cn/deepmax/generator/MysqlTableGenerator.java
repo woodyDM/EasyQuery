@@ -82,7 +82,7 @@ public class MysqlTableGenerator {
                 String javaTypeName = typeTranslator.translate(columnMetaData);
                 columnMetaData.setClassTypeName(javaTypeName);
             }
-            executor.generateIfNecessary(dbmeta, config.getToClassMapper().map(tableName));
+            executor.generateIfNecessary(dbmeta, config.getToClassNameMapper().map(tableName));
         }
 
     }

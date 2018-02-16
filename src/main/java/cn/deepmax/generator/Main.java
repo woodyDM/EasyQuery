@@ -23,7 +23,7 @@ public class Main {
                 .setToFieldNameMapper(mapper)
                 .build();
         MysqlTableGenerator generator = new MysqlTableGenerator(config,"shoppingh");
-        generator.addPrefix("t_usert","t_p").addTables("test");
+        generator.addTables("db_types");
         generator.generate();
     }
 
@@ -45,6 +45,9 @@ public class Main {
         String sql = "SELECT p.user_id,p.myTime,p.adress,u.email FROM  t_page p  INNER JOIN t_user u on p.user_id = u.id\n" +
                 "where p.id < ? ";
         generator.generate("JoinTest",sql,-1);
+        String sql2 = "select * from db_types limit 1";
+        generator.generate("TestJav",sql2);
+
     }
 
 
