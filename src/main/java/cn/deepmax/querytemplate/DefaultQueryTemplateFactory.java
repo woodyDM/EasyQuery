@@ -2,15 +2,13 @@ package cn.deepmax.querytemplate;
 
 
 import cn.deepmax.entity.*;
-import cn.deepmax.exception.EasyQueryException;
-import cn.deepmax.generator.SimpleJavaTypeTranslator;
-import cn.deepmax.model.Config;
 import cn.deepmax.pagehelper.MySqlPagePlugin;
 import cn.deepmax.pagehelper.PagePlugin;
 import cn.deepmax.transaction.DefaultTransactionFactory;
 import cn.deepmax.transaction.Transaction;
 import cn.deepmax.transaction.TransactionFactory;
-import cn.deepmax.util.StringUtils;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import javax.sql.DataSource;
 import java.util.Objects;
@@ -24,99 +22,86 @@ public class DefaultQueryTemplateFactory implements QueryTemplateFactory {
     private SqlTranslator sqlTranslator;
     private TransactionFactory transactionFactory;
     private PagePlugin pagePlugin;
-    private Config config = new Config();
-    private boolean init = false;
+    private boolean isShowSql = false;
+    private boolean isCollectMetadata = false;
+    public static Logger logger = LoggerFactory.getLogger(DefaultQueryTemplate.class);
 
-    public DefaultQueryTemplateFactory(DataSource dataSource) {
-        Objects.requireNonNull(dataSource,"DataSource is null.");
-        this.dataSource = dataSource;
-    }
-
-    public DefaultQueryTemplateFactory build(){
-
-        if(entityInfo==null){
-            entityInfo = new MappedEntityInfo();
-        }
-        entityFactory = new EntityFactory(entityInfo);
-        if(this.sqlTranslator ==null){
-            sqlTranslator = new DefaultSqlTranslator(entityInfo);
-        }
-        if(transactionFactory == null){
-            transactionFactory = new DefaultTransactionFactory();
-        }
-        if(pagePlugin == null){
-            pagePlugin = new MySqlPagePlugin();
-        }
-        if(config.isGenerateClass()){
-            if(config.getToFieldNameMapper()==null){
-                throw new IllegalArgumentException("When isGenerateClass is true, a NameMapper should be set.");
-            }
-            if(StringUtils.isEmpty(config.getValueObjectPath())){
-                throw new IllegalArgumentException("When isGenerateClass is true, valueObjectPath should be set.");
-            }
-            if(StringUtils.isEmpty(config.getEntityPath())){
-                throw new IllegalArgumentException("When isGenerateClass is true, entityPath should be set.");
-            }
-            if(config.getTypeTranslator()==null){
-                config.setTypeTranslator(new SimpleJavaTypeTranslator());
-            }
-            config.normalizePath();
-        }
-        init = true;
-        return this;
-    }
-
-
-    /**
-     * getConfig
-     * @return
-     */
-    public Config config() {
-        return config;
+    private DefaultQueryTemplateFactory() {
     }
 
     @Override
     public QueryTemplate create(){
-        if(!init){
-            throw new EasyQueryException("QueryTemplateFactory init failed, build() should be called.");
-        }
         Transaction transaction = transactionFactory.newTransaction(dataSource);
-        return new DefaultQueryTemplate(transaction, entityFactory, this.config, sqlTranslator, pagePlugin);
+        return new DefaultQueryTemplate(transaction, entityFactory, sqlTranslator, pagePlugin,this.isShowSql, this.isCollectMetadata);
     }
 
-    /**
-     *
-     * @param transactionFactory
-     */
-    public void setTransactionFactory(TransactionFactory transactionFactory) {
-        this.transactionFactory = transactionFactory;
+    public static class DefaultQueryTemplateFactoryBuilder{
+        private DefaultQueryTemplateFactory factory = new DefaultQueryTemplateFactory();
+
+        public DefaultQueryTemplateFactoryBuilder setDataSource(DataSource dataSource) {
+            Objects.requireNonNull("Datasource should not be null.");
+            this.factory.dataSource = dataSource;
+            return this;
+        }
+
+        public DefaultQueryTemplateFactoryBuilder setEntityInfo(EntityInfo entityInfo) {
+            this.factory.entityInfo = entityInfo;
+            return this;
+        }
+
+        public DefaultQueryTemplateFactoryBuilder setEntityFactory(EntityFactory entityFactory) {
+            this.factory.entityFactory = entityFactory;
+            return this;
+        }
+
+        public DefaultQueryTemplateFactoryBuilder setSqlTranslator(SqlTranslator sqlTranslator) {
+            this.factory.sqlTranslator = sqlTranslator;
+            return this;
+        }
+
+        public DefaultQueryTemplateFactoryBuilder setTransactionFactory(TransactionFactory transactionFactory) {
+            this.factory.transactionFactory = transactionFactory;
+            return this;
+        }
+
+        public DefaultQueryTemplateFactoryBuilder setPagePlugin(PagePlugin pagePlugin) {
+            this.factory.pagePlugin = pagePlugin;
+            return this;
+        }
+
+        public DefaultQueryTemplateFactoryBuilder setShowSql(boolean showSql) {
+            this.factory.isShowSql = showSql;
+            return this;
+        }
+
+        public DefaultQueryTemplateFactoryBuilder setCollectMetadata(boolean collectMetadata) {
+            this.factory.isCollectMetadata = collectMetadata;
+            return this;
+        }
+
+        public DefaultQueryTemplateFactory build(){
+            if(this.factory.dataSource==null){
+                throw new NullPointerException("DefaultQueryTemplateFactory needs a non-null datasource.");
+            }
+            if(this.factory.entityInfo==null){
+                logger.debug("No EntityInfo set for DefaultQueryTemplateFactory, set default EntityInfo to JpaEntityInfo");
+                factory.entityInfo = new JpaEntityInfo();
+            }
+            factory.entityFactory = new EntityFactory(factory.entityInfo);
+            if(this.factory.sqlTranslator ==null){
+                logger.debug("No SqlTranslator set for DefaultQueryTemplateFactory, set default SqlTranslator to DefaultSqlTranslator");
+                factory.sqlTranslator = new DefaultSqlTranslator(factory.entityInfo);
+            }
+            if(factory.transactionFactory == null){
+                logger.debug("No TransactionFactory set for DefaultQueryTemplateFactory, set default TransactionFactory to DefaultTransactionFactory");
+                factory.transactionFactory = new DefaultTransactionFactory();
+            }
+            if(factory.pagePlugin == null){
+                logger.debug("No PagePlugin set for DefaultQueryTemplateFactory, set default PagePlugin to MySqlPagePlugin");
+                factory.pagePlugin = new MySqlPagePlugin();
+            }
+            return factory;
+        }
     }
-
-    /**
-     *
-     * @param entityInfo
-     */
-    public void setEntityInfo(EntityInfo entityInfo) {
-        this.entityInfo = entityInfo;
-    }
-
-    /**
-     *
-     * @param pagePlugin
-     */
-    public void setPagePlugin(PagePlugin pagePlugin) {
-        this.pagePlugin = pagePlugin;
-    }
-
-    /**
-     *
-     * @param sqlTranslator
-     */
-    public void setSqlTranslator(SqlTranslator sqlTranslator) {
-        this.sqlTranslator = sqlTranslator;
-    }
-
-
-
 
 }

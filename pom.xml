@@ -6,7 +6,7 @@
 
     <groupId>cn.deepmax</groupId>
     <artifactId>EasyQuery</artifactId>
-    <version>1.0.1-SNAPSHOT</version>
+    <version>0.2-SNAPSHOT</version>
 
 
     <properties>

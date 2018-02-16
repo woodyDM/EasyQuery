@@ -4,8 +4,6 @@ import cn.deepmax.entity.EntityFactory;
 import cn.deepmax.entity.SqlTranslator;
 import cn.deepmax.util.TypeAdapter;
 import cn.deepmax.exception.EasyQueryException;
-import cn.deepmax.generator.Generator;
-import cn.deepmax.model.Config;
 import cn.deepmax.model.DatabaseMetaData;
 import cn.deepmax.model.Pair;
 import cn.deepmax.pagehelper.PageInfo;
@@ -29,21 +27,20 @@ public class DefaultQueryTemplate implements QueryTemplate {
     private Transaction transaction;
     private EntityFactory entityFactory;
     private SqlTranslator sqlTranslator;
-    private Config config;
-    private Generator generator;
     private PagePlugin pagePlugin;
+    private boolean isShowSql;
+    private boolean isCollectMetadata ;
 
     private static final Logger logger = LoggerFactory.getLogger(DefaultQueryTemplate.class);
 
 
-    public DefaultQueryTemplate(Transaction transaction, EntityFactory entityFactory, Config config, SqlTranslator sqlTranslator,PagePlugin pagePlugin) {
-        Objects.requireNonNull(config);
+    public DefaultQueryTemplate(Transaction transaction, EntityFactory entityFactory, SqlTranslator sqlTranslator,PagePlugin pagePlugin,boolean isShowSql, boolean isCollectMetadata) {
         this.transaction = transaction;
         this.entityFactory = entityFactory;
-        this.config = config;
         this.sqlTranslator = sqlTranslator;
-        this.generator = new Generator(config);
         this.pagePlugin = pagePlugin;
+        this.isShowSql = isShowSql;
+        this.isCollectMetadata = isCollectMetadata;
     }
 
     /**
@@ -82,9 +79,7 @@ public class DefaultQueryTemplate implements QueryTemplate {
 
     private <T> List<T> selectList(String sql, Class<T> clazz, Function<RowRecord, T> converter, Object... params) {
         Pair<DatabaseMetaData,List<Map<String,Object>>> pair = doSelect(sql,params);
-        if(config.isGenerateClass() && clazz!=null){
-            generator.generateIfNecessary(pair.first, clazz);
-        }
+
 
         List<Map<String,Object>> results = pair.last;
         List<T> entityList = new ArrayList<>();
@@ -215,7 +210,7 @@ public class DefaultQueryTemplate implements QueryTemplate {
                 setPrepareStatementParams(ps,params.toArray());
                 ps.addBatch();
             }
-            if(config.isShowSql()){
+            if(isShowSql){
                 logger.debug("[executeBatch] {}",sql);
             }
             return ps.executeBatch();
@@ -239,7 +234,7 @@ public class DefaultQueryTemplate implements QueryTemplate {
         try {
             ps = cn.prepareStatement(sql);
             setPrepareStatementParams(ps,params);
-            if(config.isShowSql()){
+            if(isShowSql){
                 logger.debug("[executeUpdate] {}",sql);
             }
             return ps.executeUpdate();
@@ -292,7 +287,7 @@ public class DefaultQueryTemplate implements QueryTemplate {
         try {
             ps = cn.prepareStatement(info.first,Statement.RETURN_GENERATED_KEYS);
             setPrepareStatementParams(ps,info.last.toArray());
-            if(config.isShowSql()){
+            if(isShowSql){
                 logger.debug("[insert] {}",info.first);
             }
             int effectRow= ps.executeUpdate();
@@ -386,7 +381,8 @@ public class DefaultQueryTemplate implements QueryTemplate {
      * @param params
      * @return
      */
-    private Pair<DatabaseMetaData,List<Map<String,Object>>> doSelect(String sql, Object... params){
+    @Override
+    public Pair<DatabaseMetaData,List<Map<String,Object>>> doSelect(String sql, Object... params){
         Objects.requireNonNull(sql,"Sql should not be null");
         Connection cn = transaction.getConnection();
         PreparedStatement ps=null;
@@ -394,11 +390,11 @@ public class DefaultQueryTemplate implements QueryTemplate {
         try {
             ps = cn.prepareStatement(sql);
             setPrepareStatementParams(ps,params);
-            if(config.isShowSql()){
+            if(isShowSql){
                 logger.debug("[select] {}",sql);
             }
             rs = ps.executeQuery();
-            return ResultSetHandler.handle(rs, config.isGenerateClass());
+            return ResultSetHandler.handle(rs, isCollectMetadata);
         } catch (SQLException e) {
             throw new EasyQueryException(e);
         } finally {

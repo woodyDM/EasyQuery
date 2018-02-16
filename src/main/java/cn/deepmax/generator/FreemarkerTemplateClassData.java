@@ -1,7 +1,6 @@
 package cn.deepmax.generator;
 
 import cn.deepmax.model.ColumnMetaData;
-import cn.deepmax.model.Config;
 import cn.deepmax.model.DatabaseMetaData;
 import cn.deepmax.util.BeanUtils;
 import cn.deepmax.util.StringUtils;
@@ -22,7 +21,7 @@ public class FreemarkerTemplateClassData {
     private List<FreemarkerClassFieldData> columns = new ArrayList<>();
 
     private FreemarkerTemplateClassData(){}
-    public static FreemarkerTemplateClassData instance(DatabaseMetaData dbMetaData, Class<?> clazz, Config config){
+    public static FreemarkerTemplateClassData instance(DatabaseMetaData dbMetaData, String javaClassName, Config config){
         FreemarkerTemplateClassData data = new FreemarkerTemplateClassData();
         if(StringUtils.isEmpty(dbMetaData.getTableName()) || StringUtils.isEmpty(dbMetaData.getCatalogName())){
             data.entity = false;
@@ -31,17 +30,18 @@ public class FreemarkerTemplateClassData {
             data.tableName = dbMetaData.getTableName();
             data.catalogName = dbMetaData.getCatalogName();
         }
-        data.versionAndHashInfo = Generator.FLAG + dbMetaData.getHash();
-        data.className = clazz.getSimpleName();
-        data.packageName = clazz.getPackage().getName();
+        data.versionAndHashInfo = GeneratorExecutor.FLAG + dbMetaData.getHash();
+        data.className = javaClassName;
+        data.packageName = config.getPackageName();
 
         for(ColumnMetaData it:dbMetaData.getColumnMetaDataList()){
             String columnName = it.getColumnName();
             String javaTypeName = config.getTypeTranslator().translate(it);
-            String propertyName = config.getToFieldNameMapper().convert(clazz,columnName);
+            String propertyName = config.getToFieldMapper().map(columnName);
             String writeMethodName = BeanUtils.getWriteMethodName(propertyName, javaTypeName);
             String readMethodName = BeanUtils.getReadMethodName(propertyName, javaTypeName);
-            FreemarkerClassFieldData metaData = new FreemarkerClassFieldData(propertyName,javaTypeName,writeMethodName,readMethodName,columnName);
+            String comment = it.getComment();
+            FreemarkerClassFieldData metaData = new FreemarkerClassFieldData(propertyName,javaTypeName,writeMethodName,readMethodName,columnName,comment);
             data.columns.add(metaData);
         }
         return data;

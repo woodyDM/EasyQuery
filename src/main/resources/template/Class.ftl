@@ -19,7 +19,7 @@ public class ${className} {
     public ${className}(){}
 
     <#list columns as column>
-    private ${column.propertyType} ${column.propertyName};
+    private ${column.propertyType} ${column.propertyName};      //${column.comment!}
     </#list>
 
 <#list columns as column>

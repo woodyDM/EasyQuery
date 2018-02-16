@@ -1,6 +1,7 @@
 package cn.deepmax.resultsethandler;
 
 
+import cn.deepmax.exception.EasyQueryException;
 import cn.deepmax.model.ColumnMetaData;
 import cn.deepmax.model.DatabaseMetaData;
 import cn.deepmax.model.Pair;
@@ -13,68 +14,79 @@ import java.util.*;
 
 public class ResultSetHandler {
 
-    public static Pair<DatabaseMetaData,List<Map<String,Object>>> handle(ResultSet rs, boolean needMetaData) {
 
+
+    public static Pair<DatabaseMetaData,List<Map<String,Object>>> handle(ResultSet rs, boolean needMetaData) {
         List<Map<String,Object>> resultsList = new ArrayList<>();
-        DatabaseMetaData metaData = (needMetaData)?new DatabaseMetaData():null;
+        DatabaseMetaData metaData = (needMetaData) ? new DatabaseMetaData() : null;
         Pair<DatabaseMetaData,List<Map<String,Object>>> pair = new Pair<>(metaData,resultsList);
         if(rs==null){
             return pair;
         }
-        try {
-            boolean isFirstLoop = true;
-            while (rs.next()){
-                int totalColumnCount = rs.getMetaData().getColumnCount();
-                Map<String,Object> row = new LinkedHashMap<>();
-                for (int i = 1; i <= totalColumnCount; i++) {
-                    addToMap(metaData, row, rs, i, isFirstLoop);
+        try{
+            if(needMetaData){
+                Map<String,Integer> labelIndex = new LinkedHashMap<>();
+                ResultSetMetaData resultSetMetaData = rs.getMetaData();
+                int totalColumnCount = resultSetMetaData.getColumnCount();
+                for (int i = 1; i <= totalColumnCount ; i++) {
+                    String labelName = getLabelName(rs.getMetaData(), labelIndex.keySet(), i);
+                    labelIndex.put(labelName,i);
+                    handleTableName(metaData, resultSetMetaData.getTableName(i));
+                    handleCatalogName(metaData, resultSetMetaData.getCatalogName(i));
+                    String className = resultSetMetaData.getColumnClassName(i);
+                    String dbtypeName = resultSetMetaData.getColumnTypeName(i);
+                    int precision = resultSetMetaData.getPrecision(i);
+                    ColumnMetaData columnMetaData = new ColumnMetaData(labelName,className,dbtypeName,precision,null);
+                    metaData.getColumnMetaDataList().add(columnMetaData);
                 }
-                resultsList.add(row);
-                isFirstLoop = false;        //no need to repeat getting dbMetaData
+                while (rs.next()){
+                    Map<String,Object> row = new LinkedHashMap<>();
+                    for (Map.Entry<String,Integer> entry:labelIndex.entrySet()) {
+                        String mapKey = entry.getKey();
+                        Object value = rs.getObject(entry.getValue());
+                        row.put(mapKey, value);
+                    }
+                    resultsList.add(row);
+                }
+            }else{
+                while (rs.next()){
+                    int totalColumnCount = rs.getMetaData().getColumnCount();
+                    Map<String,Object> row = new LinkedHashMap<>();
+                    for (int i = 1; i <= totalColumnCount; i++) {
+                        String mapKey = getLabelName(rs.getMetaData(),row.keySet(), i);
+                        Object value = rs.getObject(i);
+                        row.put(mapKey, value);
+                    }
+                    resultsList.add(row);
+                }
             }
-        } catch (SQLException e) {
-            throw new RuntimeException(e);
+        }catch (Exception e){
+            throw new EasyQueryException(e);
         }
-
         return pair;
     }
 
-    /**
-     * add result value to map and analysis metaData in firstLoop.
-     * @param row
-     * @param rs
-     * @param pos
-     * @param isFirstLoop
-     */
-    private static void addToMap(DatabaseMetaData dbMetaData, Map<String,Object> row, ResultSet rs, int pos, boolean isFirstLoop){
-        try {
-            ResultSetMetaData metaData = rs.getMetaData();
-            String labelName = metaData.getColumnLabel(pos);
-            if( null == labelName || 0 == labelName.length()){
-                labelName = metaData.getColumnName(pos);
-            }
-            String oldLableName = labelName;
-            Object value =rs.getObject(pos);
-            int start = 0;
-            while (row.containsKey(labelName)){
-                start++;
-                labelName = oldLableName+start;
-            }
-            row.put(labelName,value);   //add values
-            if(!isFirstLoop || dbMetaData==null){
-                return;
-            }
-            //handle tableName and catalogName .only unique allowed.
-            handleTableName(dbMetaData, metaData.getTableName(pos));
-            handleCatalogName(dbMetaData, metaData.getCatalogName(pos));
-            String className = metaData.getColumnClassName(pos);
-            String dbtypeName = metaData.getColumnTypeName(pos);
-            int precision = metaData.getPrecision(pos);
-            ColumnMetaData columnMetaData = new ColumnMetaData(labelName,className,dbtypeName,precision);
-            dbMetaData.getColumnMetaDataList().add(columnMetaData);
-        } catch (SQLException e) {
-            throw new RuntimeException(e);
+    private static String getLabelName(ResultSetMetaData metaData, Set<String> valueSet,int position ) throws SQLException {
+        String labelName = metaData.getColumnLabel(position);
+        if( null == labelName || 0 == labelName.length()){
+            labelName = metaData.getColumnName(position);
         }
+        return genLabelName(valueSet, labelName);
+    }
+
+    private static String genLabelName(Set<String> valueSet, String oldLabelName){
+        if(!valueSet.contains(oldLabelName)){
+            return oldLabelName;
+        }else{
+            int start = 0;
+            String labelName = oldLabelName;
+            while (valueSet.contains(labelName)){
+                start++;
+                labelName = oldLabelName+start;
+            }
+            return labelName;
+        }
+
     }
 
     private static void handleTableName(DatabaseMetaData metaData, String comingTableName){

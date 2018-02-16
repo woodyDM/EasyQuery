@@ -10,13 +10,16 @@ public class FreemarkerClassFieldData {
     private String writeMethodName;     //property
     private String readMethodName;
     private String columnName;          //property database columnName
+    private String comment;
 
-    public FreemarkerClassFieldData(String propertyName, String propertyType, String writeMethodName, String readMethodName, String columnName) {
+    public FreemarkerClassFieldData(String propertyName, String propertyType, String writeMethodName, String readMethodName, String columnName,String comment) {
         this.propertyName = propertyName;
         this.propertyType = propertyType;
         this.writeMethodName = writeMethodName;
         this.readMethodName = readMethodName;
         this.columnName = columnName;
+        this.comment = comment;
+
     }
 
     public String getPropertyName() {
@@ -57,5 +60,13 @@ public class FreemarkerClassFieldData {
 
     public void setColumnName(String columnName) {
         this.columnName = columnName;
+    }
+
+    public String getComment() {
+        return comment;
+    }
+
+    public void setComment(String comment) {
+        this.comment = comment;
     }
 }

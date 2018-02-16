@@ -38,41 +38,42 @@ public class SpringBeanConfig {
 
     @Bean("springFactory")
     public QueryTemplateFactory factory(){
-        DefaultQueryTemplateFactory factory = new DefaultQueryTemplateFactory(h2Datasource());
-        factory.setTransactionFactory(new SpringTransactionFactory());
-        factory.config().setShowSql(true);
         MappedEntityInfo entityInfo = new MappedEntityInfo();
         entityInfo.setToColumnNameMapper(new CamelToUpperUnderLineColumnNameMapper());
         entityInfo.setToTableNameMapper(new PascalToLowerUnderLineTableNameMapper());
-        factory.setEntityInfo(entityInfo);
-        return factory.build();
+        DefaultQueryTemplateFactory.DefaultQueryTemplateFactoryBuilder builder = new DefaultQueryTemplateFactory.DefaultQueryTemplateFactoryBuilder();
+        return builder.setDataSource(h2Datasource())
+                .setTransactionFactory(new SpringTransactionFactory())
+                .setShowSql(true)
+                .setCollectMetadata(true)
+                .setEntityInfo(entityInfo)
+                .build();
+
+
     }
 
     @Bean("defaultFactory")
     public QueryTemplateFactory defaultFactory(){
-        DefaultQueryTemplateFactory factory = new DefaultQueryTemplateFactory(h2Datasource());
-        factory.config().setShowSql(true);
+        DefaultQueryTemplateFactory.DefaultQueryTemplateFactoryBuilder builder = new DefaultQueryTemplateFactory.DefaultQueryTemplateFactoryBuilder();
         MappedEntityInfo entityInfo = new MappedEntityInfo();
         entityInfo.setToColumnNameMapper(new CamelToUpperUnderLineColumnNameMapper());
         entityInfo.setToTableNameMapper(new PascalToLowerUnderLineTableNameMapper());
-        factory.setEntityInfo(entityInfo);
-        factory.config().setGenerateClass(true);
-        factory.config().setToFieldNameMapper(new UpperUnderlineToCamelColumnNameMapper());
-        factory.config().setValueObjectPath("D:/test/vo");
-        factory.config().setEntityPath("D:/test/entity");
-        return factory.build();
+        return builder.setDataSource(h2Datasource())
+                .setShowSql(true)
+                .setEntityInfo(entityInfo)
+                .setCollectMetadata(true)
+                .build();
     }
 
     @Bean("jpaFactory")
     public QueryTemplateFactory jpaFactory(){
-        DefaultQueryTemplateFactory factory = new DefaultQueryTemplateFactory(h2Datasource());
-        factory.setEntityInfo(new JpaEntityInfo());
-        factory.config().setShowSql(true);
-        factory.config().setGenerateClass(true);
-        factory.config().setToFieldNameMapper(new UpperUnderlineToCamelColumnNameMapper());
-        factory.config().setValueObjectPath("D:/test/vo");
-        factory.config().setEntityPath("D:/test/entity");
-        return factory.build();
+
+        DefaultQueryTemplateFactory.DefaultQueryTemplateFactoryBuilder builder = new DefaultQueryTemplateFactory.DefaultQueryTemplateFactoryBuilder();
+
+        return builder.setDataSource(h2Datasource())
+                .setShowSql(true)
+                .setCollectMetadata(true)
+                .build();
     }
 
 

@@ -8,13 +8,15 @@ public class ColumnMetaData {
     private String columnName;
     private String classTypeName;       //java type name, decided by jdbc?
     private String dbTypeName;      //database name
-    private int precise;            //precise of data.
+    private Integer precise;            //precise of data.
+    private String comment;
 
-    public ColumnMetaData(String columnName, String classTypeName, String dbTypeName, int precise) {
+    public ColumnMetaData(String columnName, String classTypeName, String dbTypeName, Integer precise,String comment) {
         this.columnName = columnName;
         this.classTypeName = classTypeName;
         this.dbTypeName = dbTypeName;
         this.precise = precise;
+        this.comment = comment;
     }
 
     @Override
@@ -24,10 +26,11 @@ public class ColumnMetaData {
 
         ColumnMetaData that = (ColumnMetaData) o;
 
-        if (precise != that.precise) return false;
         if (!columnName.equals(that.columnName)) return false;
         if (!classTypeName.equals(that.classTypeName)) return false;
-        return dbTypeName.equals(that.dbTypeName);
+        if (!dbTypeName.equals(that.dbTypeName)) return false;
+        if (precise != null ? !precise.equals(that.precise) : that.precise != null) return false;
+        return comment != null ? comment.equals(that.comment) : that.comment == null;
     }
 
     @Override
@@ -35,7 +38,8 @@ public class ColumnMetaData {
         int result = columnName.hashCode();
         result = 31 * result + classTypeName.hashCode();
         result = 31 * result + dbTypeName.hashCode();
-        result = 31 * result + precise;
+        result = 31 * result + (precise != null ? precise.hashCode() : 0);
+        result = 31 * result + (comment != null ? comment.hashCode() : 0);
         return result;
     }
 
@@ -51,7 +55,15 @@ public class ColumnMetaData {
         return dbTypeName;
     }
 
-    public int getPrecise() {
+    public Integer getPrecise() {
         return precise;
+    }
+
+    public String getComment() {
+        return comment;
+    }
+
+    public void setClassTypeName(String classTypeName) {
+        this.classTypeName = classTypeName;
     }
 }
