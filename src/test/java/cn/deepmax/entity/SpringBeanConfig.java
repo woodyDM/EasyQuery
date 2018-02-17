@@ -3,6 +3,7 @@ package cn.deepmax.entity;
 
 import cn.deepmax.mapper.column.*;
 import cn.deepmax.mapper.table.PascalToLowerUnderLineTableNameMapper;
+import cn.deepmax.pagehelper.MySqlPagePlugin;
 import cn.deepmax.querytemplate.QueryTemplateFactory;
 import cn.deepmax.querytemplate.DefaultQueryTemplateFactory;
 import cn.deepmax.transaction.SpringTransactionFactory;
@@ -47,9 +48,8 @@ public class SpringBeanConfig {
                 .setShowSql(true)
                 .setCollectMetadata(true)
                 .setEntityInfo(entityInfo)
+                .setPagePlugin(new MySqlPagePlugin())
                 .build();
-
-
     }
 
     @Bean("defaultFactory")

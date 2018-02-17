@@ -24,16 +24,22 @@ B. Clone this git or download source code to your computer and build jar yoursel
 ---
 
 There is a simple example to show EasyQuery features.<br>
-Step 1: Define a `SimpleQueryTemplateFactory` class,which needs a `DataSource`. 
+Step 1: Use  `DefaultQueryTemplateFactory.DefaultQueryTemplateFactoryBuilder` to create `QueryTemplateFactory`. 
 ```java
-@Bean
-public QueryTemplateFactory jpaFactory(DataSource dataSource){
-    SimpleQueryTemplateFactory factory = new SimpleQueryTemplateFactory(dataSource);
-    factory.setEntityInfo(new JpaEntityInfo());                 //define entityInfo to support entity operations
-    factory.setTransactionFactory(new SpringTransactionFactory());  //define transaction mode.
-    factory.isShowSql(true);                        //whether show sql.
-    return factory.build();                     //must call build() to return a QueryTemplateFactory
-}   
+    @Bean("springFactory")
+    public QueryTemplateFactory factory(){
+        MappedEntityInfo entityInfo = new MappedEntityInfo();
+        entityInfo.setToColumnNameMapper(new CamelToUpperUnderLineColumnNameMapper());
+        entityInfo.setToTableNameMapper(new PascalToLowerUnderLineTableNameMapper());
+        DefaultQueryTemplateFactory.DefaultQueryTemplateFactoryBuilder builder = new DefaultQueryTemplateFactory.DefaultQueryTemplateFactoryBuilder();
+        return builder.setDataSource(h2Datasource())
+                .setTransactionFactory(new SpringTransactionFactory())
+                .setShowSql(true)       
+                .setCollectMetadata(true)
+                .setEntityInfo(entityInfo)
+                .setPagePlugin(new MySqlPagePlugin())
+                .build();
+    }
 ```
 Step 2: Using `create` method of the factory to create new `QueryTemplate` which 
 supports core SQL operations of EasyQuery.
@@ -204,6 +210,54 @@ and finally call `build` method to complete.<br>
 EasyQuery uses logback for logging. If SQLs are desired to be logged, set `DefaultQueryTemplateFactory`
 defaultQueryTemplateFactory.config().setShowSql(true) to true , and logging level of `cn.deepmax.querytemplate.DefaultQueryTemplate` class to DEBUG.
 
+7 Generator
+--
+A simple POJO class generator is provided.Use like this:
+```java
+
+public static void mysqlTableGenerator(){
+        Config.Builder builder = new Config.Builder();
+        Mapper fieldMapper = new LowerUnderlineToCamelMapper();
+        Mapper classNameMapper = new LowerUnderlineToPascalMapper();
+        Config config = builder.setDatabaseDriver("com.mysql.jdbc.Driver")
+                .setDatabasePassword("")
+                .setDatabaseUserName("root")
+                .setDatabaseUrl("jdbc:mysql://localhost:3306/test")
+                .setPackageName("cn.deepmax.entity")
+                .setEntityPath("/E:/test/po")
+                .setValueObjectPath("/E:/test/vo")
+                .setToClassNameMapper(classNameMapper)
+                .setToFieldNameMapper(fieldMapper)
+                .build();
+        MysqlTableGenerator generator = new MysqlTableGenerator(config,"shoppingh");
+        generator.addTables("db_types");
+        generator.generate();
+    }
+
+
+    public static void fromSqlGenerator(){
+        Config.Builder builder = new Config.Builder();
+        Mapper fieldMapper = new LowerUnderlineToCamelMapper();
+        Mapper classNameMapper = new LowerUnderlineToPascalMapper();
+        Config config = builder.setDatabaseDriver("com.mysql.jdbc.Driver")
+                .setDatabasePassword("")
+                .setDatabaseUserName("root")
+                .setDatabaseUrl("jdbc:mysql://localhost:3306/shoppingh")
+                .setPackageName("cn.deepmax.entity")
+                .setEntityPath("/E:/test/po")
+                .setValueObjectPath("/E:/test/vo")
+                .setToClassNameMapper(classNameMapper)
+                .setToFieldNameMapper(fieldMapper)
+                .build();
+        FromSqlGenerator generator = new FromSqlGenerator(config);
+        String sql = "SELECT p.user_id,p.myTime,p.adress,u.email FROM  t_page p  INNER JOIN t_user u on p.user_id = u.id\n" +
+                "where p.id < ? ";
+        generator.generate("JoinTest",sql,-1);
+        String sql2 = "select * from db_types limit 1";
+        generator.generate("TestJav",sql2);
+
+    }
+```
 
 <br>
 EasyQuery is now only tested on win10 (x64) with mysql 5.7.15, java 1.8. <br>
