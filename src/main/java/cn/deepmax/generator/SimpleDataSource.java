@@ -1,7 +1,6 @@
 package cn.deepmax.generator;
 
 import cn.deepmax.exception.EasyQueryException;
-
 import javax.sql.DataSource;
 import java.io.PrintWriter;
 import java.sql.Connection;

@@ -1,17 +1,19 @@
 package cn.deepmax.generator;
 
 import cn.deepmax.generator.mapper.LowerUnderlineToCamelMapper;
+import cn.deepmax.generator.mapper.LowerUnderlineToPascalMapper;
 import cn.deepmax.generator.mapper.Mapper;
 
 public class Main {
 
     public static void main(String[] args) {
-        fromSqlGenerator();
+        mysqlTableGenerator();
     }
 
     public static void mysqlTableGenerator(){
         Config.Builder builder = new Config.Builder();
-        Mapper mapper = new LowerUnderlineToCamelMapper();
+        Mapper fieldMapper = new LowerUnderlineToCamelMapper();
+        Mapper classNameMapper = new LowerUnderlineToPascalMapper();
         Config config = builder.setDatabaseDriver("com.mysql.jdbc.Driver")
                 .setDatabasePassword("")
                 .setDatabaseUserName("root")
@@ -19,8 +21,8 @@ public class Main {
                 .setPackageName("cn.deepmax.entity")
                 .setEntityPath("/E:/test/po")
                 .setValueObjectPath("/E:/test/vo")
-                .setToClassNameMapper(mapper)
-                .setToFieldNameMapper(mapper)
+                .setToClassNameMapper(classNameMapper)
+                .setToFieldNameMapper(fieldMapper)
                 .build();
         MysqlTableGenerator generator = new MysqlTableGenerator(config,"shoppingh");
         generator.addTables("db_types");
@@ -30,7 +32,8 @@ public class Main {
 
     public static void fromSqlGenerator(){
         Config.Builder builder = new Config.Builder();
-        Mapper mapper = new LowerUnderlineToCamelMapper();
+        Mapper fieldMapper = new LowerUnderlineToCamelMapper();
+        Mapper classNameMapper = new LowerUnderlineToPascalMapper();
         Config config = builder.setDatabaseDriver("com.mysql.jdbc.Driver")
                 .setDatabasePassword("")
                 .setDatabaseUserName("root")
@@ -38,8 +41,8 @@ public class Main {
                 .setPackageName("cn.deepmax.entity")
                 .setEntityPath("/E:/test/po")
                 .setValueObjectPath("/E:/test/vo")
-                .setToClassNameMapper(mapper)
-                .setToFieldNameMapper(mapper)
+                .setToClassNameMapper(classNameMapper)
+                .setToFieldNameMapper(fieldMapper)
                 .build();
         FromSqlGenerator generator = new FromSqlGenerator(config);
         String sql = "SELECT p.user_id,p.myTime,p.adress,u.email FROM  t_page p  INNER JOIN t_user u on p.user_id = u.id\n" +

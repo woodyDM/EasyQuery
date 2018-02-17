@@ -1,13 +1,11 @@
 package cn.deepmax.generator;
 
-import cn.deepmax.model.ColumnMetaData;
+
 import cn.deepmax.model.DatabaseMetaData;
 import cn.deepmax.model.Pair;
 import cn.deepmax.querytemplate.DefaultQueryTemplateFactory;
 import cn.deepmax.querytemplate.QueryTemplate;
-import cn.deepmax.resultsethandler.RowRecord;
 import cn.deepmax.transaction.DefaultTransactionFactory;
-
 import java.util.List;
 import java.util.Map;
 
