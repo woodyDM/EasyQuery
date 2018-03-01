@@ -127,13 +127,18 @@ public class DefaultQueryTemplate implements QueryTemplate {
         String totalSql = pagePlugin.getSqlForTotalRow(sql);
         Long totalRow = selectScalar(totalSql, Long.class, params);
         PageInfo<T> pageInfo = new PageInfo<>(pageNumber, pageSize, totalRow);
-        String dataSql = pagePlugin.getSqlForPagingData(sql,pageInfo.getStartRow(), pageSize);
-        List<Object> generatorParams = new ArrayList<>();
-        generatorParams.add(dataSql);
-        generatorParams.add(clazz);
-        generatorParams.add(params);
-        List<T> data = generator.apply(generatorParams);
-        pageInfo.setData(data);
+        if(totalRow.equals(0L)){
+            List<T> data = new ArrayList<>();
+            pageInfo.setData(data);
+        }else{
+            String dataSql = pagePlugin.getSqlForPagingData(sql,pageInfo.getStartRow(), pageSize);
+            List<Object> generatorParams = new ArrayList<>();
+            generatorParams.add(dataSql);
+            generatorParams.add(clazz);
+            generatorParams.add(params);
+            List<T> data = generator.apply(generatorParams);
+            pageInfo.setData(data);
+        }
         return pageInfo;
     }
 
