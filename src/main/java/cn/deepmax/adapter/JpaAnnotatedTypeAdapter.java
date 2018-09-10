@@ -4,20 +4,21 @@ import cn.deepmax.adapter.mapper.*;
 import cn.deepmax.exception.EasyQueryException;
 import cn.deepmax.model.Pair;
 import cn.deepmax.support.CacheDataSupport;
-import cn.deepmax.support.LocalCache;
 import cn.deepmax.util.BeanToMap;
 import cn.deepmax.util.BeanUtils;
 import cn.deepmax.util.ForceTypeAdapter;
-
 import javax.persistence.Convert;
 import javax.persistence.EnumType;
 import javax.persistence.Enumerated;
 import java.beans.PropertyDescriptor;
 import java.lang.reflect.Field;
 import java.lang.reflect.Method;
-import java.util.HashMap;
 import java.util.List;
 
+/**
+ * to support entity field of type Enum
+ * @Convert and @Enumerated
+ */
 public class JpaAnnotatedTypeAdapter extends CacheDataSupport<String,ClassFieldTypeData<MapperHolder>> implements TypeAdapter {
 
 
@@ -39,7 +40,7 @@ public class JpaAnnotatedTypeAdapter extends CacheDataSupport<String,ClassFieldT
         Method getter = propertyDescriptor.getReadMethod();
         Class<?> converter = getConverterClass(field, getter);
         if(converter!=null){
-            classFieldTypeData.value.setMapper(fieldName, new AttributePropertyMapper(converter));
+            classFieldTypeData.value.setMapper(fieldName, new AttributePropertyMapper<>(converter));
             return;
         }
         Pair<Class<? extends Enum>,Boolean> pair = getEnumeratedClassWithType(field, getter);

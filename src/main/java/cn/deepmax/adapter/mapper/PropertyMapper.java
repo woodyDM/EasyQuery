@@ -25,6 +25,7 @@ public interface PropertyMapper<X,Y> {
     X convertToEntityAttribute (Y dbData);
 
 
+
     default String getUniqueMapperName(){
         return this.toString();
     }

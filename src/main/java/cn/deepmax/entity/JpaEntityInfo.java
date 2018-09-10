@@ -1,5 +1,6 @@
 package cn.deepmax.entity;
 
+import cn.deepmax.adapter.TypeAdapter;
 import cn.deepmax.exception.EasyQueryException;
 
 import cn.deepmax.util.BeanToMap;
@@ -16,6 +17,9 @@ import java.util.*;
 
 public class JpaEntityInfo extends AbstractEntityInfo {
 
+    public JpaEntityInfo(TypeAdapter typeAdapter) {
+        super(typeAdapter);
+    }
 
     @Override
     String getPrimaryKeyFieldNameInternal(Class<?> clazz) {

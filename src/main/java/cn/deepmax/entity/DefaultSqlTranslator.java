@@ -17,20 +17,18 @@ public class DefaultSqlTranslator extends CacheDataSupport<String,SqlCacheData> 
 
     private EntityInfo entityInfo;
     private SqlColumnWrapper columnWrapper;
-    private TypeAdapter typeAdapter = new JpaAnnotatedTypeAdapter();
+    private TypeAdapter typeAdapter;
 
     public DefaultSqlTranslator(EntityInfo entityInfo, SqlColumnWrapper columnWrapper, TypeAdapter typeAdapter) {
+        Objects.requireNonNull(entityInfo);
+        Objects.requireNonNull(typeAdapter);
         this.entityInfo = entityInfo;
-        this.columnWrapper = columnWrapper;
+        if(columnWrapper==null){
+            this.columnWrapper = (data)->data;
+        }else{
+            this.columnWrapper = columnWrapper;
+        }
         this.typeAdapter = typeAdapter;
-    }
-
-    public DefaultSqlTranslator(EntityInfo entityInfo, SqlColumnWrapper columnWrapper) {
-        this.entityInfo = entityInfo;
-        this.columnWrapper = columnWrapper;
-    }
-    public DefaultSqlTranslator(EntityInfo entityInfo) {
-        this(entityInfo, (data)->data);
     }
 
     @Override

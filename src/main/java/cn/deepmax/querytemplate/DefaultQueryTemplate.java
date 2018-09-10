@@ -31,7 +31,7 @@ public class DefaultQueryTemplate implements QueryTemplate {
     private SqlTranslator sqlTranslator;
     private PagePlugin pagePlugin;
     private boolean isShowSql;
-    private TypeAdapter typeAdapter = new JpaAnnotatedTypeAdapter();
+    private TypeAdapter typeAdapter;
 
     private static final Logger logger = LoggerFactory.getLogger(DefaultQueryTemplate.class);
 
@@ -42,6 +42,10 @@ public class DefaultQueryTemplate implements QueryTemplate {
         this.pagePlugin = pagePlugin;
         this.isShowSql = isShowSql;
 
+    }
+
+    public void setTypeAdapter(TypeAdapter typeAdapter) {
+        this.typeAdapter = typeAdapter;
     }
 
     /**

@@ -24,8 +24,12 @@ public abstract class AbstractEntityInfo extends CacheDataSupport<String, ClassM
 
 
     public static Logger logger = LoggerFactory.getLogger(AbstractEntityInfo.class);
-    protected  TypeAdapter typeAdapter = new JpaAnnotatedTypeAdapter();
+    protected  TypeAdapter typeAdapter ;
 
+    public AbstractEntityInfo(TypeAdapter typeAdapter) {
+        Objects.requireNonNull(typeAdapter);
+        this.typeAdapter = typeAdapter;
+    }
 
     @Override
     public String getTableName(Class<?> clazz) {

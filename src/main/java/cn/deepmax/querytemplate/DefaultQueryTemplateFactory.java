@@ -1,6 +1,8 @@
 package cn.deepmax.querytemplate;
 
 
+import cn.deepmax.adapter.JpaAnnotatedTypeAdapter;
+import cn.deepmax.adapter.TypeAdapter;
 import cn.deepmax.entity.*;
 import cn.deepmax.pagehelper.MySqlPagePlugin;
 import cn.deepmax.pagehelper.PagePlugin;
@@ -25,6 +27,7 @@ public class DefaultQueryTemplateFactory implements QueryTemplateFactory {
     private TransactionFactory transactionFactory;
     private PagePlugin pagePlugin;
     private boolean isShowSql = false;
+    private TypeAdapter typeAdapter;
 
     public static Logger logger = LoggerFactory.getLogger(DefaultQueryTemplate.class);
 
@@ -38,7 +41,9 @@ public class DefaultQueryTemplateFactory implements QueryTemplateFactory {
     @Override
     public QueryTemplate create(){
         Transaction transaction = transactionFactory.newTransaction(dataSource);
-        return new DefaultQueryTemplate(transaction, entityFactory, sqlTranslator, pagePlugin,this.isShowSql );
+        DefaultQueryTemplate template =  new DefaultQueryTemplate(transaction, entityFactory, sqlTranslator, pagePlugin,this.isShowSql );
+        template.setTypeAdapter(this.typeAdapter);
+        return template;
     }
 
 
@@ -50,6 +55,12 @@ public class DefaultQueryTemplateFactory implements QueryTemplateFactory {
         public Builder setDataSource(DataSource dataSource) {
             Objects.requireNonNull("Datasource should not be null.");
             this.factory.dataSource = dataSource;
+            return this;
+        }
+
+        public Builder setTypeAdapter(TypeAdapter typeAdapter) {
+            Objects.requireNonNull("typeAdapter should not be null.");
+            this.factory.typeAdapter = typeAdapter;
             return this;
         }
 
@@ -89,14 +100,18 @@ public class DefaultQueryTemplateFactory implements QueryTemplateFactory {
             if(this.factory.dataSource==null){
                 throw new NullPointerException("DefaultQueryTemplateFactory needs a non-null datasource.");
             }
+            if(factory.typeAdapter ==null){
+                logger.debug("No typeAdapter set for DefaultQueryTemplateFactory, set default typeAdapter to JpaAnnotatedTypeAdapter");
+                factory.typeAdapter = new JpaAnnotatedTypeAdapter();
+            }
             if(this.factory.entityInfo==null){
                 logger.debug("No EntityInfo set for DefaultQueryTemplateFactory, set default EntityInfo to JpaEntityInfo");
-                factory.entityInfo = new JpaEntityInfo();
+                factory.entityInfo = new JpaEntityInfo(factory.typeAdapter);
             }
-            factory.entityFactory = new EntityFactory(factory.entityInfo);
+            factory.entityFactory = new EntityFactory(factory.entityInfo, factory.typeAdapter);
             if(this.factory.sqlTranslator ==null){
                 logger.debug("No SqlTranslator set for DefaultQueryTemplateFactory, set default SqlTranslator to DefaultSqlTranslator");
-                factory.sqlTranslator = new DefaultSqlTranslator(factory.entityInfo);
+                factory.sqlTranslator = new DefaultSqlTranslator(factory.entityInfo, null, factory.typeAdapter);
             }
             if(factory.transactionFactory == null){
                 logger.debug("No TransactionFactory set for DefaultQueryTemplateFactory, set default TransactionFactory to DefaultTransactionFactory");

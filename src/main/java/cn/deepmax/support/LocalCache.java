@@ -5,7 +5,7 @@ import java.util.Objects;
 import java.util.function.Supplier;
 
 public class LocalCache<K, V> {
-    private static Object NIL = new Object();
+    private static final Object NIL = new Object();
     private Map<K, Object> cache ;
 
     public LocalCache(Map cache) {

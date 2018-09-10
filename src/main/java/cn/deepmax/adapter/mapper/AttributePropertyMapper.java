@@ -9,6 +9,7 @@ public class AttributePropertyMapper<X,Y> implements PropertyMapper<X,Y> {
 
     private Object attributeConverter ;
     private boolean isJpaMapper;
+
     public AttributePropertyMapper(Class<?> mapper){
         if(AttributeConverter.class.isAssignableFrom(mapper)){
             isJpaMapper = true;

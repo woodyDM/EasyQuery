@@ -1,6 +1,8 @@
 package cn.deepmax.entity;
 
 
+import cn.deepmax.adapter.JpaAnnotatedTypeAdapter;
+import cn.deepmax.adapter.TypeAdapter;
 import cn.deepmax.pagehelper.MySqlPagePlugin;
 import cn.deepmax.querytemplate.QueryTemplate;
 import cn.deepmax.querytemplate.QueryTemplateFactory;
@@ -36,14 +38,12 @@ public class SpringBeanConfig {
 
     @Bean("springFactory")
     public QueryTemplateFactory factory(){
-        JpaEntityInfo entityInfo = new JpaEntityInfo();
+
 
         DefaultQueryTemplateFactory.Builder builder = new DefaultQueryTemplateFactory.Builder();
         return builder.setDataSource(h2Datasource())
                 .setTransactionFactory(new SpringTransactionFactory())
                 .setShowSql(true)
-
-                .setEntityInfo(entityInfo)
                 .setPagePlugin(new MySqlPagePlugin())
                 .build();
     }
@@ -51,11 +51,10 @@ public class SpringBeanConfig {
     @Bean("defaultFactory")
     public QueryTemplateFactory defaultFactory(){
         DefaultQueryTemplateFactory.Builder builder = new DefaultQueryTemplateFactory.Builder();
-        EntityInfo entityInfo = new JpaEntityInfo();
+
 
         return builder.setDataSource(h2Datasource())
                 .setShowSql(true)
-                .setEntityInfo(entityInfo)
 
                 .build();
     }
@@ -93,11 +92,12 @@ public class SpringBeanConfig {
     @Bean("springTemplate")
     public QueryTemplate localSpringFactory(){
         DefaultQueryTemplateFactory.Builder builder = new DefaultQueryTemplateFactory.Builder();
-        EntityInfo info = new JpaEntityInfo();
+        TypeAdapter typeAdapter = new JpaAnnotatedTypeAdapter();
+        EntityInfo info = new JpaEntityInfo(typeAdapter);
         builder.setDataSource(localDatasource())
                 .setTransactionFactory(new SpringTransactionFactory())
                 .setEntityInfo(info)
-                .setSqlTranslator(new DefaultSqlTranslator(info,(it)->"\""+it+"\""))
+                .setSqlTranslator(new DefaultSqlTranslator(info,(it)->"\""+it+"\"" , typeAdapter))
                 .setShowSql(true);
         return builder.build().create();
     }
