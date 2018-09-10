@@ -97,10 +97,7 @@ public abstract class AbstractEntityInfo extends CacheDataSupport<String, ClassM
         }
     }
 
-    @Override
-    public PropertyMapper<?, ?> getMapper(Class<?> clazz, String fieldName) {
-        return checkLoadedThen(clazz, (data)->data.converterMap.get(fieldName));
-    }
+
 
     /**
      * load if not loaded.
