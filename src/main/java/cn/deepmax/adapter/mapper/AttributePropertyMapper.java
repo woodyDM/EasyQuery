@@ -10,9 +10,9 @@ public class AttributePropertyMapper<X,Y> implements PropertyMapper<X,Y> {
     private Object attributeConverter ;
     private boolean isJpaMapper;
     public AttributePropertyMapper(Class<?> mapper){
-        if(mapper.isAssignableFrom(AttributePropertyMapper.class)){
+        if(AttributeConverter.class.isAssignableFrom(mapper)){
             isJpaMapper = true;
-        }else if(mapper.isAssignableFrom(PropertyMapper.class)){
+        }else if(PropertyMapper.class.isAssignableFrom(mapper)){
             isJpaMapper = false;
         }else{
             throw new EasyQueryException(("mapper of type "+mapper.getName()+" not support."));
@@ -23,7 +23,7 @@ public class AttributePropertyMapper<X,Y> implements PropertyMapper<X,Y> {
     @Override
     public Y convertToDatabaseColumn(X attribute) {
         if(isJpaMapper){
-            return (Y)((AttributePropertyMapper)attributeConverter).convertToDatabaseColumn(attribute);
+            return (Y)((AttributeConverter)attributeConverter).convertToDatabaseColumn(attribute);
         }else{
             return (Y)((PropertyMapper)attributeConverter).convertToDatabaseColumn(attribute);
         }
@@ -32,7 +32,7 @@ public class AttributePropertyMapper<X,Y> implements PropertyMapper<X,Y> {
     @Override
     public X convertToEntityAttribute(Y dbData) {
         if(isJpaMapper){
-            return (X)((AttributePropertyMapper)attributeConverter).convertToEntityAttribute(dbData);
+            return (X)((AttributeConverter)attributeConverter).convertToEntityAttribute(dbData);
         }else{
             return (X)((PropertyMapper)attributeConverter).convertToEntityAttribute(dbData);
         }

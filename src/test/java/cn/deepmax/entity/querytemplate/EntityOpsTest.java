@@ -10,6 +10,7 @@ import org.springframework.util.Assert;
 import java.math.BigDecimal;
 import java.sql.Date;
 import java.sql.Timestamp;
+import java.time.LocalDateTime;
 
 public class EntityOpsTest extends BaseTest {
 
@@ -21,9 +22,9 @@ public class EntityOpsTest extends BaseTest {
         user.setAuth(EnumType.TYPE1);
         user.setBigDecimal(BigDecimal.ONE);
         user.setaBigPoint(123.23D);
-        Timestamp now = new Timestamp(System.currentTimeMillis());
+        LocalDateTime now = LocalDateTime.now();
         user.setCreateTime(now);
-        user.setUpdateDate(new Date(now.getTime()));
+        user.setUpdateDate(now.plusDays(1).toLocalDate());
         user.setHide(true);
         user.setShow(false);
         user.setTransientProperty(345.234D);

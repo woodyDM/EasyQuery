@@ -71,36 +71,36 @@ public class SpringBeanConfig {
                 .build();
     }
 
-//
-//    @Bean
-//    public PlatformTransactionManager platformTransactionManager(){
-//        DataSourceTransactionManager manager = new DataSourceTransactionManager(localDatasource());
-//        return manager;
-//    }
-//
-//    @Bean("localDatasource")
-//    public DataSource localDatasource(){
-//        HikariDataSource dataSource = new HikariDataSource();
-//        dataSource.setJdbcUrl("jdbc:postgresql://localhost:5432/test");
-//        dataSource.setDriverClassName("org.postgresql.Driver");
-//        dataSource.setUsername("postgres");
-//        dataSource.setPassword("123456");
-//        return dataSource ;
-//    }
-//
-//
-//
-//    @Bean("localSpringFactory")
-//    public QueryTemplateFactory localSpringFactory(){
-//        DefaultQueryTemplateFactory.Builder builder = new DefaultQueryTemplateFactory.Builder();
-//        EntityInfo info = new JpaEntityInfo();
-//        builder.setDataSource(localDatasource())
-//                .setTransactionFactory(new SpringTransactionFactory())
-//                .setEntityInfo(info)
-//                .setSqlTranslator(new DefaultSqlTranslator(info,(it)->"\""+it+"\""))
-//                .setShowSql(true);
-//        return builder.build();
-//    }
+
+    @Bean
+    public PlatformTransactionManager platformTransactionManager(){
+        DataSourceTransactionManager manager = new DataSourceTransactionManager(localDatasource());
+        return manager;
+    }
+
+    @Bean("localDatasource")
+    public DataSource localDatasource(){
+        HikariDataSource dataSource = new HikariDataSource();
+        dataSource.setJdbcUrl("jdbc:postgresql://localhost:5432/test");
+        dataSource.setDriverClassName("org.postgresql.Driver");
+        dataSource.setUsername("postgres");
+        dataSource.setPassword("123456");
+        return dataSource ;
+    }
+
+
+
+    @Bean("springTemplate")
+    public QueryTemplate localSpringFactory(){
+        DefaultQueryTemplateFactory.Builder builder = new DefaultQueryTemplateFactory.Builder();
+        EntityInfo info = new JpaEntityInfo();
+        builder.setDataSource(localDatasource())
+                .setTransactionFactory(new SpringTransactionFactory())
+                .setEntityInfo(info)
+                .setSqlTranslator(new DefaultSqlTranslator(info,(it)->"\""+it+"\""))
+                .setShowSql(true);
+        return builder.build().create();
+    }
 
 
 

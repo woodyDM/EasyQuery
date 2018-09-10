@@ -12,7 +12,7 @@ import java.math.BigDecimal;
 @Transactional
 public class TransactionServiceImpl implements TransactionService {
 
-    //@Resource(name = "springTemplate")
+    @Resource(name = "springTemplate")
     QueryTemplate queryTemplate;
 
     @Override

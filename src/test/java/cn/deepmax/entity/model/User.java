@@ -2,11 +2,16 @@ package cn.deepmax.entity.model;
 
 
 
+import cn.deepmax.adapter.mapper.LocalDateTimeToTimestampMapper;
+import cn.deepmax.adapter.mapper.LocalDateToDateMapper;
 import javax.persistence.Column;
+import javax.persistence.Convert;
 import javax.persistence.Id;
 import java.math.BigDecimal;
 import java.math.BigInteger;
 import java.sql.Timestamp;
+import java.time.LocalDate;
+import java.time.LocalDateTime;
 import java.util.Date;
 
 public class User {
@@ -17,9 +22,11 @@ public class User {
     @Column(name = "USER_NAME")
     private String userName;
     @Column(name = "CREATE_TIME")
-    private Timestamp createTime;
+    @Convert(converter = LocalDateTimeToTimestampMapper.class)
+    private LocalDateTime createTime;
 
-    private Date updateDate;
+    @Convert(converter = LocalDateToDateMapper.class)
+    private LocalDate updateDate;
 
     @Column(name = "SHOW")
     private Boolean show;
@@ -47,19 +54,19 @@ public class User {
         this.userName = userName;
     }
 
-    public Timestamp getCreateTime() {
+    public LocalDateTime getCreateTime() {
         return createTime;
     }
 
-    public void setCreateTime(Timestamp createTime) {
+    public void setCreateTime(LocalDateTime createTime) {
         this.createTime = createTime;
     }
     @Column(name = "UPDATE_DATE")
-    public Date getUpdateDate() {
+    public LocalDate getUpdateDate() {
         return updateDate;
     }
 
-    public void setUpdateDate(Date updateDate) {
+    public void setUpdateDate(LocalDate updateDate) {
         this.updateDate = updateDate;
     }
 

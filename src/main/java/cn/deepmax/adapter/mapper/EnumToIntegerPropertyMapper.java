@@ -8,7 +8,7 @@ import java.util.Objects;
 /**
  * when   @Enumerated  EnumType.Integer or no annotation
  */
-public class EnumToIntegerPropertyMapper implements PropertyMapper<Enum, Integer> {
+public class EnumToIntegerPropertyMapper implements PropertyMapper<Enum, Number> {
 
     private Class<? extends Enum> enumClass;
 
@@ -29,13 +29,15 @@ public class EnumToIntegerPropertyMapper implements PropertyMapper<Enum, Integer
     }
 
     @Override
-    public Enum convertToEntityAttribute(Integer dbData) {
-        if(dbData==null || dbData==-1){
+    public Enum convertToEntityAttribute(Number dbData) {
+
+        if(dbData==null || dbData.intValue()==-1){
             return null;
         }
+        Integer v = dbData.intValue();
         Enum[] enums = enumClass.getEnumConstants();
         for(Enum e:enums){
-            if(dbData.equals(e.ordinal())){
+            if(v.equals(e.ordinal())){
                 return e;
             }
         }
