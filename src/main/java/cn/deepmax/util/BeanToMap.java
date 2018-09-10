@@ -40,7 +40,7 @@ public class BeanToMap {
             PropertyDescriptor[] propertyDescriptors = Introspector.getBeanInfo(clazz).getPropertyDescriptors();
             return Arrays.stream(propertyDescriptors).filter((it)->!it.getName().equals("class")).collect(Collectors.toList());
         } catch (IntrospectionException e) {
-            throw new EasyQueryException("Unable to get PropertyDescriptor of class "+clazz.getName(), e);
+            throw new EasyQueryException("Unable to putIfAbsent PropertyDescriptor of class "+clazz.getName(), e);
         }
     }
 
@@ -49,7 +49,7 @@ public class BeanToMap {
             Object value = getter.invoke(target);
             return value;
         } catch (IllegalAccessException | InvocationTargetException e) {
-            throw new EasyQueryException("Unable to call ["+getter.getName()+"] to get value of object"+target.getClass().getName(), e);
+            throw new EasyQueryException("Unable to call ["+getter.getName()+"] to putIfAbsent value of object"+target.getClass().getName(), e);
         }
     }
 

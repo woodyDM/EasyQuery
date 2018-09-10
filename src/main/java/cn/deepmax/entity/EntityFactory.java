@@ -1,11 +1,13 @@
 package cn.deepmax.entity;
 
 
+import cn.deepmax.adapter.AbstractCacheableTypeAdapter;
+import cn.deepmax.adapter.JpaAnnotatedTypeAdapter;
 import cn.deepmax.adapter.SimpleTypeAdapter;
 import cn.deepmax.adapter.TypeAdapter;
 import cn.deepmax.util.BeanToMap;
+import cn.deepmax.util.BeanUtils;
 import cn.deepmax.util.StringUtils;
-import cn.deepmax.util.ForceTypeAdapter;
 
 import java.beans.PropertyDescriptor;
 import java.lang.reflect.InvocationTargetException;
@@ -21,7 +23,7 @@ public class EntityFactory {
 
 
     private EntityInfo entityInfo;
-    private TypeAdapter typeAdapter = new SimpleTypeAdapter();
+    private TypeAdapter typeAdapter = new JpaAnnotatedTypeAdapter();
 
     public EntityFactory(EntityInfo entityInfo) {
         this.entityInfo = entityInfo;
@@ -50,7 +52,7 @@ public class EntityFactory {
         if(clazz==null){
             return null;
         }
-        T targetObj = newInstance(clazz);
+        T targetObj = BeanUtils.newInstance(clazz);
         Map<String,PropertyDescriptor> propertyDescriptorMap = getPropertyDescriptorMap(clazz);
         Map<String,String> columnNameToFieldMap = entityInfo.columnNameToFieldNameMap(clazz);
         for(Map.Entry<String,Object> entry:columnNameWithFieldValueMap.entrySet()){
@@ -85,13 +87,7 @@ public class EntityFactory {
         return propertyDescriptorMap;
     }
 
-    private <T> T newInstance(Class<T> clazz){
-        try {
-            return clazz.newInstance();
-        } catch (InstantiationException | IllegalAccessException e) {
-            throw new RuntimeException("can't create new instance of type "+clazz.getName(),e);
-        }
-    }
+
 
     private void setValue(Object target,Object value,Method setter){
         try {

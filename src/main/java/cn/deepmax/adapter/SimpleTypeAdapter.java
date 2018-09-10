@@ -1,12 +1,11 @@
 package cn.deepmax.adapter;
 
-import cn.deepmax.support.CacheDataSupport;
 import cn.deepmax.util.BeanToMap;
+
 import java.beans.PropertyDescriptor;
 import java.util.List;
 
-public class SimpleTypeAdapter extends CacheDataSupport<String,ClassFieldTypeData> implements TypeAdapter {
-
+public class SimpleTypeAdapter extends AbstractCacheableTypeAdapter {
 
     @Override
     public ClassFieldTypeData load(String uniqueKey) throws Exception {
@@ -20,18 +19,4 @@ public class SimpleTypeAdapter extends CacheDataSupport<String,ClassFieldTypeDat
         }
         return data;
     }
-
-    @Override
-    public Object getCompatibleFieldValue(Class<?> entityClass, String fieldName, Object value) {
-        Class<?> typeClass = loadThen(entityClass.getName(),(data)->data.fieldEntityTypeMap.get(fieldName));
-        return getCompatibleValue(typeClass, value);
-    }
-
-    @Override
-    public Object getCompatibleDatabaseValue(Class<?> entityClass, String fieldName,  Object value) {
-        Class<?> typeClass = loadThen(entityClass.getName(),(data)->data.fieldDatabaseTypeMap.get(fieldName));
-        return getCompatibleValue(typeClass, value);
-    }
-
-
 }

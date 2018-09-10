@@ -1,6 +1,8 @@
 package cn.deepmax.entity;
 
 
+import cn.deepmax.adapter.AbstractCacheableTypeAdapter;
+import cn.deepmax.adapter.JpaAnnotatedTypeAdapter;
 import cn.deepmax.adapter.SimpleTypeAdapter;
 import cn.deepmax.adapter.TypeAdapter;
 import cn.deepmax.model.Pair;
@@ -15,7 +17,7 @@ public class DefaultSqlTranslator extends CacheDataSupport<String,SqlCacheData> 
 
     private EntityInfo entityInfo;
     private SqlColumnWrapper columnWrapper;
-    private TypeAdapter typeAdapter = new SimpleTypeAdapter();
+    private TypeAdapter typeAdapter = new JpaAnnotatedTypeAdapter();
 
     public DefaultSqlTranslator(EntityInfo entityInfo, SqlColumnWrapper columnWrapper, TypeAdapter typeAdapter) {
         this.entityInfo = entityInfo;
@@ -62,7 +64,7 @@ public class DefaultSqlTranslator extends CacheDataSupport<String,SqlCacheData> 
     }
 
     /**
-     * get insert sql from cache.
+     * putIfAbsent insert sql from cache.
      * if cache does not exist, create an insert sql and put it into cache.
      * @param clazz
      * @return
@@ -106,7 +108,7 @@ public class DefaultSqlTranslator extends CacheDataSupport<String,SqlCacheData> 
     }
 
     /**
-     * get update sql
+     * putIfAbsent update sql
      * @param clazz
      * @return
      */
@@ -177,7 +179,7 @@ public class DefaultSqlTranslator extends CacheDataSupport<String,SqlCacheData> 
 
 
     /**
-     * get all entity field value except primary key field value.
+     * putIfAbsent all entity field value except primary key field value.
      * and convert to desired type values.
      * @param clazz
      * @param values
@@ -191,7 +193,7 @@ public class DefaultSqlTranslator extends CacheDataSupport<String,SqlCacheData> 
             if(!primaryKeyName.equals(field)){
                 Object v = values.get(field);
                 v = typeAdapter.getCompatibleDatabaseValue(clazz, field, v);
-                list.add(values.get(field));
+                list.add(v);
             }
         }
         return list;

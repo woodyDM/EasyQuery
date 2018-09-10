@@ -1,7 +1,6 @@
 package cn.deepmax.querytemplate;
 
 
-import cn.deepmax.adapter.PropertyMapper;
 import cn.deepmax.entity.*;
 import cn.deepmax.pagehelper.MySqlPagePlugin;
 import cn.deepmax.pagehelper.PagePlugin;

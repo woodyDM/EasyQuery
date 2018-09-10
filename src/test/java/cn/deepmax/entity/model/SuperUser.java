@@ -2,10 +2,9 @@ package cn.deepmax.entity.model;
 
 
 
-import javax.persistence.Column;
-import javax.persistence.Entity;
-import javax.persistence.Id;
-import javax.persistence.Table;
+import cn.deepmax.entity.adapter.EnumType;
+
+import javax.persistence.*;
 import java.math.BigDecimal;
 
 @Entity
@@ -15,7 +14,8 @@ public class SuperUser extends User{
     @Column(name = "BIG_DECIMAL")
     private BigDecimal bigDecimal;
 
-    private String auth;
+    private EnumType auth;
+
 
 
     public BigDecimal getBigDecimal() {
@@ -26,11 +26,13 @@ public class SuperUser extends User{
         this.bigDecimal = bigDecimal;
     }
 
-    public String getAuth() {
+    @Column(name = "AUTH")
+    @Enumerated(javax.persistence.EnumType.STRING)
+    public EnumType getAuth() {
         return auth;
     }
 
-    public void setAuth(String auth) {
+    public void setAuth(EnumType auth) {
         this.auth = auth;
     }
 }

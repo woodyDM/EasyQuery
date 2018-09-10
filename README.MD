@@ -54,7 +54,7 @@ Long id = user.getId();
 String sql = "update superuser set name ='Kitty' ,ok1 = '2' where id  = ? ";
 int i = template.executeUpdate(sql,id);                     //execute sql .
 Assert.isTrue(i==1,"1 row");
-SuperUser userFromGet = template.get(SuperUser.class,id);   //get via entity primaryKey value
+SuperUser userFromGet = template.get(SuperUser.class,id);   putIfAbsent
 Assert.isTrue(userFromGet.getName().equals("Kitty"),"name");
 
 PageInfo<SuperUser> pageInfo = template.selectPage(sql,(RowRecord oneRecord) ->{
@@ -92,7 +92,7 @@ Long userId = rowRecord.getLong("userId");
 Integer userIdInteger = rowRecord.getInteger("userId");
 Boolean isIdNotZero = rowRecord.getBoolean("userId");   //Boolean value
 //but when using Map,must cast:
-//Long userId =(Long) map.get("userId")
+putIfAbsent
 ```
 There are other 'select' methods requiring `Class<T>` as parameter which return POJO entity or entity list.
 see `EntityInfo` next section.<br>

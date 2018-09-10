@@ -1,8 +1,9 @@
 package cn.deepmax.entity;
 
+import cn.deepmax.adapter.AbstractCacheableTypeAdapter;
+
+import cn.deepmax.adapter.JpaAnnotatedTypeAdapter;
 import cn.deepmax.adapter.SimpleTypeAdapter;
-import cn.deepmax.util.ForceTypeAdapter;
-import cn.deepmax.adapter.PropertyMapper;
 import cn.deepmax.adapter.TypeAdapter;
 import cn.deepmax.exception.EasyQueryException;
 import cn.deepmax.support.CacheDataSupport;
@@ -23,7 +24,7 @@ public abstract class AbstractEntityInfo extends CacheDataSupport<String, ClassM
 
 
     public static Logger logger = LoggerFactory.getLogger(AbstractEntityInfo.class);
-    protected  TypeAdapter typeAdapter = new SimpleTypeAdapter();
+    protected  TypeAdapter typeAdapter = new JpaAnnotatedTypeAdapter();
 
 
     @Override
@@ -73,7 +74,7 @@ public abstract class AbstractEntityInfo extends CacheDataSupport<String, ClassM
         try {
             return getter.invoke(target);
         } catch (IllegalAccessException |InvocationTargetException e) {
-            throw new EasyQueryException("unable to get primary key value.", e);
+            throw new EasyQueryException("unable to putIfAbsent primary key value.", e);
         }
     }
 
@@ -141,31 +142,13 @@ public abstract class AbstractEntityInfo extends CacheDataSupport<String, ClassM
             data.addMapper(fieldName, columnName);
             data.appendFieldName(fieldName);
         });
-        Map<String, PropertyMapper<?,?>> converterMap = loadConverter(clazz);
-        converterMap.forEach(data::addConverter);
+
         return data;
     }
 
-    private Map<String, PropertyMapper<?,?>> loadConverter(Class<?> clazz){
-        Map<String, Class<? extends PropertyMapper<?,?>>> converters = getConverts(clazz);
-        if(converters ==null||converters.isEmpty()){
-            return Collections.EMPTY_MAP;
-        }
-        Map<String,PropertyMapper<?,?>> result = new HashMap<>();
-        converters.forEach((key,value)->{
-            PropertyMapper<?,?> converter = null;
-            try {
-                converter =  value.newInstance();
-            } catch (InstantiationException |IllegalAccessException e) {
-                throw new EasyQueryException(("Unable to create AttributeConverter of type:"+ clazz.getName()),e);
-            }
-            result.put(key, converter);
-        });
-        return result;
-    }
+
 
     abstract String getPrimaryKeyFieldNameInternal(Class<?> clazz);
-    abstract Map<String, Class<? extends PropertyMapper<?,?>>> getConverts(Class<?> clazz);
     abstract Map<String, String> getFieldNameToColumnNameMap(Class<?> clazz);
     abstract String getTableNameInternal(Class<?> clazz);
 

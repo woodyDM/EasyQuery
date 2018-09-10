@@ -1,6 +1,7 @@
 package cn.deepmax.entity.querytemplate;
 
 import cn.deepmax.entity.BaseTest;
+import cn.deepmax.entity.adapter.EnumType;
 import cn.deepmax.entity.model.SuperUser;
 import cn.deepmax.querytemplate.QueryTemplate;
 import org.junit.Test;
@@ -17,7 +18,7 @@ public class EntityOpsTest extends BaseTest {
         SuperUser user = new SuperUser();
         user.setBigDecimal(BigDecimal.TEN);
         user.setUserName("eq");
-        user.setAuth("1234auth");
+        user.setAuth(EnumType.TYPE1);
         user.setBigDecimal(BigDecimal.ONE);
         user.setaBigPoint(123.23D);
         Timestamp now = new Timestamp(System.currentTimeMillis());
@@ -29,6 +30,8 @@ public class EntityOpsTest extends BaseTest {
         QueryTemplate template = factory.create();
         template.save(user);
         Assert.notNull(user.getId(),"Id null");
+        SuperUser u2 = template.get(SuperUser.class, user.getId());
+        Assert.notNull(u2,"u2 not null");
 
     }
 

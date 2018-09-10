@@ -1,7 +1,6 @@
 package cn.deepmax.entity;
 
 
-import cn.deepmax.adapter.PropertyMapper;
 
 import java.util.List;
 import java.util.Map;
@@ -61,7 +60,7 @@ public interface EntityInfo {
 
 
     /**
-     * get object primaryKey value
+     * putIfAbsent object primaryKey value
      * @param object
      * @return
      */

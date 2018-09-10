@@ -1,7 +1,6 @@
 package cn.deepmax.entity;
 
 
-import cn.deepmax.adapter.PropertyMapper;
 import java.beans.PropertyDescriptor;
 import java.util.ArrayList;
 import java.util.List;
@@ -15,7 +14,7 @@ public class ClassMapperData {
     List<String> beanFieldNameList = new ArrayList<>();
     Map<String,String> toFieldMapper = new ConcurrentHashMap<>(16);
     Map<String,String> toColumnMapper = new ConcurrentHashMap<>(16);
-    Map<String, PropertyMapper<?,?>> converterMap = new ConcurrentHashMap<>(16);
+
 
     public void addMapper(String fieldName, String columnName){
         toFieldMapper.put(columnName, fieldName);
@@ -26,8 +25,6 @@ public class ClassMapperData {
         beanFieldNameList.add(fieldName);
     }
 
-    public void addConverter(String fieldName, PropertyMapper<?,?> converter){
-        converterMap.put(fieldName, converter);
-    }
+
 
 }

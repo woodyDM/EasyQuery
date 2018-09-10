@@ -1,10 +1,11 @@
 package cn.deepmax.querytemplate;
 
+import cn.deepmax.adapter.AbstractCacheableTypeAdapter;
+import cn.deepmax.adapter.JpaAnnotatedTypeAdapter;
 import cn.deepmax.adapter.SimpleTypeAdapter;
 import cn.deepmax.adapter.TypeAdapter;
 import cn.deepmax.entity.EntityFactory;
 import cn.deepmax.entity.SqlTranslator;
-import cn.deepmax.util.ForceTypeAdapter;
 import cn.deepmax.exception.EasyQueryException;
 import cn.deepmax.model.Pair;
 import cn.deepmax.pagehelper.PageInfo;
@@ -30,7 +31,7 @@ public class DefaultQueryTemplate implements QueryTemplate {
     private SqlTranslator sqlTranslator;
     private PagePlugin pagePlugin;
     private boolean isShowSql;
-    private TypeAdapter typeAdapter = new SimpleTypeAdapter();
+    private TypeAdapter typeAdapter = new JpaAnnotatedTypeAdapter();
 
     private static final Logger logger = LoggerFactory.getLogger(DefaultQueryTemplate.class);
 
@@ -246,7 +247,7 @@ public class DefaultQueryTemplate implements QueryTemplate {
     }
 
     /**
-     *  get operation.
+     *  putIfAbsent operation.
      * @param clazz
      * @param primary
      * @param <T>
@@ -254,7 +255,7 @@ public class DefaultQueryTemplate implements QueryTemplate {
      */
     @Override
     public <T> T get(Class<T> clazz,Object primary){
-        Objects.requireNonNull(primary,"PrimaryKey value is null, unable to get entity of type["+clazz.getName()+"]");
+        Objects.requireNonNull(primary,"PrimaryKey value is null, unable to putIfAbsent entity of type["+clazz.getName()+"]");
         String sql = sqlTranslator.getSelectSQLInfo(clazz);
         return select (sql,clazz,primary);
     }

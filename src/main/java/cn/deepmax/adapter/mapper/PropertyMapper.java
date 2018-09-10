@@ -1,4 +1,4 @@
-package cn.deepmax.adapter;
+package cn.deepmax.adapter.mapper;
 
 public interface PropertyMapper<X,Y> {
 
@@ -23,5 +23,10 @@ public interface PropertyMapper<X,Y> {
      * @return the converted value to be stored in the entity attribute
      */
     X convertToEntityAttribute (Y dbData);
+
+
+    default String getUniqueMapperName(){
+        return this.toString();
+    }
 
 }

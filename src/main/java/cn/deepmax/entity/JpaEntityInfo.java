@@ -1,8 +1,9 @@
 package cn.deepmax.entity;
 
 import cn.deepmax.exception.EasyQueryException;
-import cn.deepmax.adapter.PropertyMapper;
+
 import cn.deepmax.util.BeanToMap;
+import cn.deepmax.util.BeanUtils;
 import cn.deepmax.util.StringUtils;
 
 import javax.persistence.Column;
@@ -22,7 +23,7 @@ public class JpaEntityInfo extends AbstractEntityInfo {
         List<PropertyDescriptor> propertyDescriptors = BeanToMap.getPropertyDescriptor(clazz);
         for(PropertyDescriptor propertyDescriptor:propertyDescriptors){
             String fieldName = propertyDescriptor.getName();
-            Field tempField =  getField(clazz,fieldName);
+            Field tempField = BeanUtils.getField(clazz,fieldName);
             Method getter = propertyDescriptor.getReadMethod();
             Id idOnField =tempField.getAnnotation(Id.class);
             Id idOnGetter =getter.getAnnotation(Id.class);
@@ -40,10 +41,7 @@ public class JpaEntityInfo extends AbstractEntityInfo {
         return pk;
     }
 
-    @Override
-    Map<String, Class<? extends PropertyMapper<?, ?>>> getConverts(Class<?> clazz) {
-        return null;
-    }
+
 
     @Override
     String getTableNameInternal(Class<?> clazz) {
@@ -71,7 +69,7 @@ public class JpaEntityInfo extends AbstractEntityInfo {
         for(PropertyDescriptor propertyDescriptor:propertyDescriptors){
             String fieldName = propertyDescriptor.getName();
             //if one field has propertyDescriptor, field is not null.
-            Field field = getField(clazz, fieldName);
+            Field field = BeanUtils.getField(clazz, fieldName);
             Method getter = propertyDescriptor.getReadMethod();
             Column columnOnField =field.getAnnotation(Column.class);
             Column columnOnGetter =getter.getAnnotation(Column.class);
@@ -101,30 +99,6 @@ public class JpaEntityInfo extends AbstractEntityInfo {
         return null;
     }
 
-    /**
-     * find Field from class and its superclass.
-     * @param clazz
-     * @param fieldName
-     * @return
-     */
-    private Field getField(Class<?> clazz, String fieldName){
-        Field field=null;
-        try {
-            field = clazz.getDeclaredField(fieldName);
 
-        } catch (NoSuchFieldException e) {
-            //not found
-        }
-        if(field!=null){
-            return field;
-        }else{
-            Class<?> superClass = clazz.getSuperclass();
-            if(superClass==null){
-                return null;
-            }else{
-                return getField(superClass,fieldName);
-            }
-        }
-    }
 
 }

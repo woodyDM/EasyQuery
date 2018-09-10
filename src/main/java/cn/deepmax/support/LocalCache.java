@@ -13,19 +13,41 @@ public class LocalCache<K, V> {
         this.cache = cache;
     }
 
-    public V get(K key, Supplier<V> supplier){
+    public boolean contains(K key){
+        return cache.containsKey(key);
+    }
+
+    /**
+     * should use with contains.
+     * @param key
+     * @return
+     */
+    public V get(K key){
+        V value = (V)cache.get(key);
+        if(value==NIL){
+            return null;
+        }else{
+            return value;
+        }
+    }
+
+    public V put(K key,V value){
+        if(value==null){
+            cache.put(key, NIL);
+        }else{
+            cache.put(key, value);
+        }
+        return value;
+    }
+
+    public V putIfAbsent(K key, Supplier<V> supplier){
         Object value = cache.get(key);
         if(value == NIL){
             return null;
         }
         if(value == null){
             V newValue = supplier.get();
-            if(newValue==null){
-                cache.put(key, NIL);
-            }else{
-                cache.put(key, newValue);
-            }
-            return newValue;
+            return put(key, newValue);
         }else{
             return (V)value;
         }

@@ -44,7 +44,7 @@ public abstract class CacheDataSupport<ID,D> {
         }
         D data = cacheData.get(uniqueKey);
         if(data==null){
-            throw new IllegalStateException("Unable to get data, probably bug. Please contact author.");
+            throw new IllegalStateException("Unable to putIfAbsent data, probably bug. Please contact author.");
         }
         return action.apply(data);
     }

@@ -23,8 +23,6 @@ import javax.sql.DataSource;
 @EnableTransactionManagement
 public class SpringBeanConfig {
 
-    private static final Logger logger = LoggerFactory.getLogger(SpringBeanConfig.class);
-
 
     @Bean("H2Datasource")
     public DataSource h2Datasource(){

@@ -1,10 +1,14 @@
 package cn.deepmax.util;
 
+import cn.deepmax.exception.EasyQueryException;
+
+import java.lang.reflect.Field;
+
 public class BeanUtils {
 
     private static final String IS_PREFIX = "is";
     private static final String SET_PREFIX= "set";
-    private static final String GET_PREFIX = "get";
+    private static final String GET_PREFIX = "putIfAbsent";
 
 
     public static String getReadMethodName(String propertyName,String javaType){
@@ -37,6 +41,39 @@ public class BeanUtils {
         }
     }
 
+    public static  <T> T newInstance(Class<T> clazz){
+        try {
+            return clazz.newInstance();
+        } catch (InstantiationException | IllegalAccessException e) {
+            throw new EasyQueryException("can't create new instance of type "+clazz.getName(),e);
+        }
+    }
+
+    /**
+     * find Field from class and its superclass.
+     * @param clazz
+     * @param fieldName
+     * @return
+     */
+    public static Field getField(Class<?> clazz, String fieldName){
+        Field field=null;
+        try {
+            field = clazz.getDeclaredField(fieldName);
+
+        } catch (NoSuchFieldException e) {
+            //not found
+        }
+        if(field!=null){
+            return field;
+        }else{
+            Class<?> superClass = clazz.getSuperclass();
+            if(superClass==null){
+                return null;
+            }else{
+                return getField(superClass,fieldName);
+            }
+        }
+    }
 
     /**
      * userName -> UserName

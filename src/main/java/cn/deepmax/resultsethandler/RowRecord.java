@@ -1,8 +1,8 @@
 package cn.deepmax.resultsethandler;
 
 
+import cn.deepmax.adapter.AbstractCacheableTypeAdapter;
 import cn.deepmax.adapter.SimpleTypeAdapter;
-import cn.deepmax.util.ForceTypeAdapter;
 import cn.deepmax.adapter.TypeAdapter;
 
 import java.math.BigDecimal;
