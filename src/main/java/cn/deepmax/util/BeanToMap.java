@@ -37,7 +37,7 @@ public class BeanToMap {
         try {
             return Introspector.getBeanInfo(clazz).getPropertyDescriptors();
         } catch (IntrospectionException e) {
-            throw new EasyQueryException(e);
+            throw new EasyQueryException("Unable to get PropertyDescriptor of class "+clazz.getName(), e);
         }
     }
 
@@ -45,10 +45,8 @@ public class BeanToMap {
         try {
             Object value = getter.invoke(target);
             return value;
-        } catch (IllegalAccessException e) {
-            return null;
-        } catch (InvocationTargetException e) {
-            return null;
+        } catch (IllegalAccessException | InvocationTargetException e) {
+            throw new EasyQueryException("Unable to call ["+getter.getName()+"] to get value of object"+target.getClass().getName(), e);
         }
     }
 

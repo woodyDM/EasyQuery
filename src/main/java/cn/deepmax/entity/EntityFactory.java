@@ -1,9 +1,10 @@
 package cn.deepmax.entity;
 
 
+import cn.deepmax.adapter.TypeAdapter;
 import cn.deepmax.util.BeanToMap;
 import cn.deepmax.util.StringUtils;
-import cn.deepmax.util.TypeAdapter;
+import cn.deepmax.adapter.ForceTypeAdapter;
 
 import java.beans.PropertyDescriptor;
 import java.lang.reflect.InvocationTargetException;
@@ -18,6 +19,7 @@ public class EntityFactory {
 
 
     private EntityInfo entityInfo;
+    private TypeAdapter typeAdapter = new ForceTypeAdapter();
 
     public EntityFactory(EntityInfo entityInfo) {
         this.entityInfo = entityInfo;
@@ -25,6 +27,14 @@ public class EntityFactory {
 
     public EntityInfo getEntityInfo() {
         return entityInfo;
+    }
+
+    public void setEntityInfo(EntityInfo entityInfo) {
+        this.entityInfo = entityInfo;
+    }
+
+    public void setTypeAdapter(TypeAdapter typeAdapter) {
+        this.typeAdapter = typeAdapter;
     }
 
     /**
@@ -51,7 +61,7 @@ public class EntityFactory {
                 if(propertyDescriptor!=null){
                     Method setterMethod = propertyDescriptor.getWriteMethod();
                     Class<?> beanFieldType = setterMethod.getParameterTypes()[0];
-                    value = TypeAdapter.getCompatibleValue(beanFieldType,value);
+                    value = typeAdapter.getCompatibleValue(beanFieldType, value);
                     setValue(targetObj, value, setterMethod);
                 }
             }
@@ -77,9 +87,7 @@ public class EntityFactory {
     private <T> T newInstance(Class<T> clazz){
         try {
             return clazz.newInstance();
-        } catch (InstantiationException e) {
-            throw new RuntimeException("can't create new instance of type "+clazz.getName(),e);
-        } catch (IllegalAccessException e) {
+        } catch (InstantiationException | IllegalAccessException e) {
             throw new RuntimeException("can't create new instance of type "+clazz.getName(),e);
         }
     }
@@ -87,9 +95,7 @@ public class EntityFactory {
     private void setValue(Object target,Object value,Method setter){
         try {
             setter.invoke(target,value);
-        } catch (IllegalAccessException e) {
-            throw new RuntimeException("can't set value of type "+value.getClass().getName() +" to entity "+target.getClass().getName()+" "+setter.getName());
-        } catch (InvocationTargetException e) {
+        } catch (IllegalAccessException | InvocationTargetException e) {
             throw new RuntimeException("can't set value of type "+value.getClass().getName() +" to entity "+target.getClass().getName()+" "+setter.getName());
         }
     }

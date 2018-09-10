@@ -6,6 +6,8 @@ import org.junit.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.util.Assert;
 import java.math.BigDecimal;
+import java.sql.Timestamp;
+import java.util.Date;
 
 public class SpringTransactionTest extends BaseTest{
 
@@ -15,22 +17,23 @@ public class SpringTransactionTest extends BaseTest{
     /**
      * !! this test need a local mysql database with engine innoDB .
      */
-//    @Test
-//    public void testWithException(){
-//        SuperUser user = new SuperUser();
-//        user.setBigDecimal(BigDecimal.ONE);
-//        service.save(user);
-//        Assert.notNull(user.getId(),"id null");
-//        try{
-//            //this service set bigDecimal to BigDecimal.TEN,
-//            //rollback after exception.
-//            service.causeExceptionSave(user);
-//        }catch (Exception e){
-//
-//        }
-//        SuperUser user1 = service.get(user.getId());
-//        Assert.isTrue(user1.getBigDecimal().equals(BigDecimal.ONE),"After rollback");
-//    }
+    //@Test
+    public void testWithException(){
+        SuperUser user = new SuperUser();
+        user.setBigDecimal(BigDecimal.ONE);
+        user.setHide(true);
+        user.setShow(false);
+        user.setaBigPoint(23D);
+        user.setCreateTime(new Timestamp(System.currentTimeMillis()));
+        //user.setUpdateDate(new Date());
+        service.save(user);
+        Assert.notNull(user.getId(),"id null");
+
+        service.causeExceptionSave(user);
+
+        SuperUser user1 = service.get(user.getId());
+        Assert.isTrue(user1.getBigDecimal().equals(BigDecimal.ONE),"After rollback");
+    }
 
 
 }

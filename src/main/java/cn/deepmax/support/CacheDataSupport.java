@@ -1,0 +1,53 @@
+package cn.deepmax.support;
+
+import cn.deepmax.exception.EasyQueryException;
+
+import java.util.HashSet;
+import java.util.Map;
+import java.util.Set;
+import java.util.concurrent.ConcurrentHashMap;
+import java.util.function.Function;
+
+/**
+ * provide cache support for type <D> using unique key <ID>
+ * @param <ID>
+ * @param <D>
+ */
+public abstract class CacheDataSupport<ID,D> {
+
+    protected Set<ID> loadedData = new HashSet<>();
+    protected Map<ID, D> cacheData = new ConcurrentHashMap<>(32);
+
+    abstract public D load(ID uniqueKey) throws Exception;
+
+    protected <V> V loadThen(ID uniqueKey, Function<D,V> action){
+        if(!loadedData.contains(uniqueKey)){
+            synchronized (uniqueKey.toString().intern()){
+                if(!loadedData.contains(uniqueKey)){
+                    try{
+                        D theData= load(uniqueKey);
+                        if(theData!=null){
+                            loadedData.add(uniqueKey);
+                            cacheData.put(uniqueKey, theData);
+                        }else{
+                            throw new EasyQueryException("load(ID target) should always return a non-null instance. ");
+                        }
+                    }catch (Exception e){
+                        if(e instanceof EasyQueryException){
+                            throw (EasyQueryException)e;
+                        }else{
+                            throw new EasyQueryException("Fail to load data of type:"+uniqueKey.toString(), e);
+                        }
+                    }
+                }
+            }
+        }
+        D data = cacheData.get(uniqueKey);
+        if(data==null){
+            throw new IllegalStateException("Unable to get data, probably bug. Please contact author.");
+        }
+        return action.apply(data);
+    }
+
+
+}

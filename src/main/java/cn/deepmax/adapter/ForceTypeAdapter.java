@@ -1,4 +1,4 @@
-package cn.deepmax.util;
+package cn.deepmax.adapter;
 
 import cn.deepmax.exception.EasyQueryException;
 import java.lang.reflect.Field;
@@ -9,7 +9,9 @@ import java.sql.Timestamp;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 
-public class TypeAdapter {
+public class ForceTypeAdapter implements TypeAdapter  {
+
+
 
     /**
      * change value to desired java type.
@@ -20,7 +22,8 @@ public class TypeAdapter {
      * @param value
      * @return
      */
-    public static Object getCompatibleValue(Class<?> targetType, Object value){
+    @Override
+    public Object getCompatibleValue(Class<?> targetType, Object value){
         if(value==null){
             return null;
         }

@@ -1,6 +1,6 @@
 package cn.deepmax.entity.model;
 
-import cn.deepmax.annotation.Ignore;
+
 
 import javax.persistence.Column;
 import javax.persistence.Id;
@@ -25,10 +25,11 @@ public class User {
     private Boolean show;
     @Column(name = "HIDE")
     private boolean hide;
-    @Ignore
+
     private double transientProperty;
     @Column(name = "A_BIG_POINT")
     private Double aBigPoint;
+
 
     public Long getId() {
         return id;

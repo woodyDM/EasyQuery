@@ -1,9 +1,8 @@
 package cn.deepmax.entity;
 
 
-import cn.deepmax.mapper.column.*;
-import cn.deepmax.mapper.table.PascalToLowerUnderLineTableNameMapper;
 import cn.deepmax.pagehelper.MySqlPagePlugin;
+import cn.deepmax.querytemplate.QueryTemplate;
 import cn.deepmax.querytemplate.QueryTemplateFactory;
 import cn.deepmax.querytemplate.DefaultQueryTemplateFactory;
 import cn.deepmax.transaction.SpringTransactionFactory;
@@ -39,14 +38,13 @@ public class SpringBeanConfig {
 
     @Bean("springFactory")
     public QueryTemplateFactory factory(){
-        MappedEntityInfo entityInfo = new MappedEntityInfo();
-        entityInfo.setToColumnNameMapper(new CamelToUpperUnderLineColumnNameMapper());
-        entityInfo.setToTableNameMapper(new PascalToLowerUnderLineTableNameMapper());
-        DefaultQueryTemplateFactory.DefaultQueryTemplateFactoryBuilder builder = new DefaultQueryTemplateFactory.DefaultQueryTemplateFactoryBuilder();
+        JpaEntityInfo entityInfo = new JpaEntityInfo();
+
+        DefaultQueryTemplateFactory.Builder builder = new DefaultQueryTemplateFactory.Builder();
         return builder.setDataSource(h2Datasource())
                 .setTransactionFactory(new SpringTransactionFactory())
                 .setShowSql(true)
-                .setCollectMetadata(true)
+
                 .setEntityInfo(entityInfo)
                 .setPagePlugin(new MySqlPagePlugin())
                 .build();
@@ -54,29 +52,28 @@ public class SpringBeanConfig {
 
     @Bean("defaultFactory")
     public QueryTemplateFactory defaultFactory(){
-        DefaultQueryTemplateFactory.DefaultQueryTemplateFactoryBuilder builder = new DefaultQueryTemplateFactory.DefaultQueryTemplateFactoryBuilder();
-        MappedEntityInfo entityInfo = new MappedEntityInfo();
-        entityInfo.setToColumnNameMapper(new CamelToUpperUnderLineColumnNameMapper());
-        entityInfo.setToTableNameMapper(new PascalToLowerUnderLineTableNameMapper());
+        DefaultQueryTemplateFactory.Builder builder = new DefaultQueryTemplateFactory.Builder();
+        EntityInfo entityInfo = new JpaEntityInfo();
+
         return builder.setDataSource(h2Datasource())
                 .setShowSql(true)
                 .setEntityInfo(entityInfo)
-                .setCollectMetadata(true)
+
                 .build();
     }
 
     @Bean("jpaFactory")
     public QueryTemplateFactory jpaFactory(){
 
-        DefaultQueryTemplateFactory.DefaultQueryTemplateFactoryBuilder builder = new DefaultQueryTemplateFactory.DefaultQueryTemplateFactoryBuilder();
+        DefaultQueryTemplateFactory.Builder builder = new DefaultQueryTemplateFactory.Builder();
 
         return builder.setDataSource(h2Datasource())
                 .setShowSql(true)
-                .setCollectMetadata(true)
+
                 .build();
     }
 
-
+//
 //    @Bean
 //    public PlatformTransactionManager platformTransactionManager(){
 //        DataSourceTransactionManager manager = new DataSourceTransactionManager(localDatasource());
@@ -86,9 +83,9 @@ public class SpringBeanConfig {
 //    @Bean("localDatasource")
 //    public DataSource localDatasource(){
 //        HikariDataSource dataSource = new HikariDataSource();
-//        dataSource.setJdbcUrl("jdbc:mysql://localhost:3306/test?useUnicode=true&characterEncoding=utf8&autoReconnect=true&useSSL=false");
-//        dataSource.setDriverClassName("com.mysql.jdbc.Driver");
-//        dataSource.setUsername("root");
+//        dataSource.setJdbcUrl("jdbc:postgresql://localhost:5432/test");
+//        dataSource.setDriverClassName("org.postgresql.Driver");
+//        dataSource.setUsername("postgres");
 //        dataSource.setPassword("123456");
 //        return dataSource ;
 //    }
@@ -97,17 +94,16 @@ public class SpringBeanConfig {
 //
 //    @Bean("localSpringFactory")
 //    public QueryTemplateFactory localSpringFactory(){
-//        DefaultQueryTemplateFactory factory = new DefaultQueryTemplateFactory(localDatasource());
-//        factory.setTransactionFactory(new SpringTransactionFactory());
-//
-//        factory.setEntityInfo(new JpaEntityInfo());
-//        factory.isShowSql(true);
-//        factory.getConfig().setGenerateClass(true);
-//        factory.getConfig().setToFieldNameMapper(new LowerUnderlineToCamelColumnNameMapper());
-//        factory.getConfig().setValueObjectPath("D:\\Projects\\EasyQuery\\src\\test\\java\\");
-//        factory.getConfig().setEntityPath("D:\\Projects\\EasyQuery\\src\\test\\java\\");
-//        return factory.build();
+//        DefaultQueryTemplateFactory.Builder builder = new DefaultQueryTemplateFactory.Builder();
+//        EntityInfo info = new JpaEntityInfo();
+//        builder.setDataSource(localDatasource())
+//                .setTransactionFactory(new SpringTransactionFactory())
+//                .setEntityInfo(info)
+//                .setSqlTranslator(new DefaultSqlTranslator(info,(it)->"\""+it+"\""))
+//                .setShowSql(true);
+//        return builder.build();
 //    }
+
 
 
 

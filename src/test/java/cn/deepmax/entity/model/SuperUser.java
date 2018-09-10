@@ -1,20 +1,22 @@
 package cn.deepmax.entity.model;
 
-import cn.deepmax.annotation.Ignore;
+
 
 import javax.persistence.Column;
 import javax.persistence.Entity;
+import javax.persistence.Id;
 import javax.persistence.Table;
 import java.math.BigDecimal;
 
 @Entity
-@Table(name = "super_user")
+@Table(name = "super_user" )
 public class SuperUser extends User{
 
     @Column(name = "BIG_DECIMAL")
     private BigDecimal bigDecimal;
-    @Ignore
+
     private String auth;
+
 
     public BigDecimal getBigDecimal() {
         return bigDecimal;
