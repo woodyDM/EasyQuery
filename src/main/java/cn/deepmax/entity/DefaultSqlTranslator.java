@@ -1,6 +1,8 @@
 package cn.deepmax.entity;
 
 
+import cn.deepmax.adapter.SimpleTypeAdapter;
+import cn.deepmax.adapter.TypeAdapter;
 import cn.deepmax.model.Pair;
 import cn.deepmax.support.CacheDataSupport;
 import cn.deepmax.util.BeanToMap;
@@ -13,7 +15,13 @@ public class DefaultSqlTranslator extends CacheDataSupport<String,SqlCacheData> 
 
     private EntityInfo entityInfo;
     private SqlColumnWrapper columnWrapper;
+    private TypeAdapter typeAdapter = new SimpleTypeAdapter();
 
+    public DefaultSqlTranslator(EntityInfo entityInfo, SqlColumnWrapper columnWrapper, TypeAdapter typeAdapter) {
+        this.entityInfo = entityInfo;
+        this.columnWrapper = columnWrapper;
+        this.typeAdapter = typeAdapter;
+    }
 
     public DefaultSqlTranslator(EntityInfo entityInfo, SqlColumnWrapper columnWrapper) {
         this.entityInfo = entityInfo;
@@ -167,8 +175,10 @@ public class DefaultSqlTranslator extends CacheDataSupport<String,SqlCacheData> 
     }
 
 
+
     /**
      * get all entity field value except primary key field value.
+     * and convert to desired type values.
      * @param clazz
      * @param values
      * @return
@@ -179,6 +189,8 @@ public class DefaultSqlTranslator extends CacheDataSupport<String,SqlCacheData> 
         String primaryKeyName = entityInfo.getPrimaryKeyFieldName(clazz);
         for(String field:fieldList){
             if(!primaryKeyName.equals(field)){
+                Object v = values.get(field);
+                v = typeAdapter.getCompatibleDatabaseValue(clazz, field, v);
                 list.add(values.get(field));
             }
         }
@@ -200,6 +212,7 @@ public class DefaultSqlTranslator extends CacheDataSupport<String,SqlCacheData> 
     public interface SqlColumnWrapper {
         String wrap(String definedColumnName);
     }
+
 
 
 

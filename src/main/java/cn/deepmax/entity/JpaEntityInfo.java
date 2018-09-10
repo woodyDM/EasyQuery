@@ -19,20 +19,18 @@ public class JpaEntityInfo extends AbstractEntityInfo {
     @Override
     String getPrimaryKeyFieldNameInternal(Class<?> clazz) {
         String pk = null;
-        PropertyDescriptor[] propertyDescriptors = BeanToMap.getPropertyDescriptor(clazz);
+        List<PropertyDescriptor> propertyDescriptors = BeanToMap.getPropertyDescriptor(clazz);
         for(PropertyDescriptor propertyDescriptor:propertyDescriptors){
             String fieldName = propertyDescriptor.getName();
-            if(!"class".equals(fieldName)){
-                Field tempField =  getField(clazz,fieldName);
-                Method getter = propertyDescriptor.getReadMethod();
-                Id idOnField =tempField.getAnnotation(Id.class);
-                Id idOnGetter =getter.getAnnotation(Id.class);
-                if(idOnField!=null || idOnGetter!=null){
-                    if(pk==null){
-                        pk = fieldName;
-                    }else{
-                        throw new EasyQueryException("Duplicate @Id found in class["+clazz.getName()+"], check it and its superclass.");
-                    }
+            Field tempField =  getField(clazz,fieldName);
+            Method getter = propertyDescriptor.getReadMethod();
+            Id idOnField =tempField.getAnnotation(Id.class);
+            Id idOnGetter =getter.getAnnotation(Id.class);
+            if(idOnField!=null || idOnGetter!=null){
+                if(pk==null){
+                    pk = fieldName;
+                }else{
+                    throw new EasyQueryException("Duplicate @Id found in class["+clazz.getName()+"], check it and its superclass.");
                 }
             }
         }
@@ -69,19 +67,17 @@ public class JpaEntityInfo extends AbstractEntityInfo {
     @Override
     Map<String, String> getFieldNameToColumnNameMap(Class<?> clazz) {
         Map<String,String> fieldNameToColumnNameMap = new LinkedHashMap<>();
-        PropertyDescriptor[] propertyDescriptors = BeanToMap.getPropertyDescriptor(clazz);
+        List<PropertyDescriptor> propertyDescriptors = BeanToMap.getPropertyDescriptor(clazz);
         for(PropertyDescriptor propertyDescriptor:propertyDescriptors){
             String fieldName = propertyDescriptor.getName();
-            if(!"class".equals(fieldName)){
-                //if one field has propertyDescriptor, field is not null.
-                Field field = getField(clazz, fieldName);
-                Method getter = propertyDescriptor.getReadMethod();
-                Column columnOnField =field.getAnnotation(Column.class);
-                Column columnOnGetter =getter.getAnnotation(Column.class);
-                String columnName = getColumnName(clazz, columnOnField, columnOnGetter);
-                if(StringUtils.isNotEmpty(columnName)){
-                    fieldNameToColumnNameMap.put(fieldName,columnName);
-                }
+            //if one field has propertyDescriptor, field is not null.
+            Field field = getField(clazz, fieldName);
+            Method getter = propertyDescriptor.getReadMethod();
+            Column columnOnField =field.getAnnotation(Column.class);
+            Column columnOnGetter =getter.getAnnotation(Column.class);
+            String columnName = getColumnName(clazz, columnOnField, columnOnGetter);
+            if(StringUtils.isNotEmpty(columnName)){
+                fieldNameToColumnNameMap.put(fieldName,columnName);
             }
         }
         return fieldNameToColumnNameMap;

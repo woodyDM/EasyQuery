@@ -11,6 +11,7 @@ import java.beans.PropertyDescriptor;
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
 import java.util.LinkedHashMap;
+import java.util.List;
 import java.util.Map;
 
 /**
@@ -61,8 +62,7 @@ public class EntityFactory {
                 PropertyDescriptor propertyDescriptor = propertyDescriptorMap.get(fieldName);
                 if(propertyDescriptor!=null){
                     Method setterMethod = propertyDescriptor.getWriteMethod();
-                    Class<?> beanFieldType = setterMethod.getParameterTypes()[0];
-                    value = typeAdapter.getCompatibleValue(beanFieldType, value);
+                    value = typeAdapter.getCompatibleFieldValue(clazz, fieldName, value);
                     setValue(targetObj, value, setterMethod);
                 }
             }
@@ -78,7 +78,7 @@ public class EntityFactory {
      */
     private Map<String,PropertyDescriptor> getPropertyDescriptorMap(Class<?> clazz){
         Map<String,PropertyDescriptor> propertyDescriptorMap = new LinkedHashMap<>();
-        PropertyDescriptor[] propertyDescriptors = BeanToMap.getPropertyDescriptor(clazz);
+        List<PropertyDescriptor> propertyDescriptors = BeanToMap.getPropertyDescriptor(clazz);
         for(PropertyDescriptor it:propertyDescriptors){
             propertyDescriptorMap.put(it.getName(),it);
         }

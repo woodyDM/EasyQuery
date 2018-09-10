@@ -89,10 +89,10 @@ public abstract class AbstractEntityInfo extends CacheDataSupport<String, ClassM
     }
 
     private void setPrimaryKeyFieldValue(Object target,Object value, Method setter){
-        Class<?> targetType = getPrimaryKeyFieldType(target.getClass());
+
         Class<?> entityType = target.getClass();
         String idField = getPrimaryKeyFieldName(entityType);
-        value = typeAdapter.getCompatibleFieldValue(entityType, idField, targetType,  value);
+        value = typeAdapter.getCompatibleFieldValue(entityType, idField, value);
         try {
             setter.invoke(target,value);
         } catch (IllegalAccessException  |InvocationTargetException e) {
