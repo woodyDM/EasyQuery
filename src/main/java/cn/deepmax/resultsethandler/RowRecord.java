@@ -1,7 +1,8 @@
 package cn.deepmax.resultsethandler;
 
 
-import cn.deepmax.adapter.ForceTypeAdapter;
+import cn.deepmax.adapter.SimpleTypeAdapter;
+import cn.deepmax.util.ForceTypeAdapter;
 import cn.deepmax.adapter.TypeAdapter;
 
 import java.math.BigDecimal;
@@ -25,7 +26,7 @@ public class RowRecord extends LinkedHashMap<String,Object>   {
         return get(columnName);
     }
 
-    protected static TypeAdapter typeAdapter = new ForceTypeAdapter();
+    protected static TypeAdapter typeAdapter = new SimpleTypeAdapter();
 
 
     public String getString(String columnName) {

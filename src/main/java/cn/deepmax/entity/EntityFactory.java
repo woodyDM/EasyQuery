@@ -1,10 +1,11 @@
 package cn.deepmax.entity;
 
 
+import cn.deepmax.adapter.SimpleTypeAdapter;
 import cn.deepmax.adapter.TypeAdapter;
 import cn.deepmax.util.BeanToMap;
 import cn.deepmax.util.StringUtils;
-import cn.deepmax.adapter.ForceTypeAdapter;
+import cn.deepmax.util.ForceTypeAdapter;
 
 import java.beans.PropertyDescriptor;
 import java.lang.reflect.InvocationTargetException;
@@ -19,7 +20,7 @@ public class EntityFactory {
 
 
     private EntityInfo entityInfo;
-    private TypeAdapter typeAdapter = new ForceTypeAdapter();
+    private TypeAdapter typeAdapter = new SimpleTypeAdapter();
 
     public EntityFactory(EntityInfo entityInfo) {
         this.entityInfo = entityInfo;

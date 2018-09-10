@@ -1,6 +1,7 @@
 package cn.deepmax.entity;
 
-import cn.deepmax.adapter.ForceTypeAdapter;
+import cn.deepmax.adapter.SimpleTypeAdapter;
+import cn.deepmax.util.ForceTypeAdapter;
 import cn.deepmax.adapter.PropertyMapper;
 import cn.deepmax.adapter.TypeAdapter;
 import cn.deepmax.exception.EasyQueryException;
@@ -22,7 +23,7 @@ public abstract class AbstractEntityInfo extends CacheDataSupport<String, ClassM
 
 
     public static Logger logger = LoggerFactory.getLogger(AbstractEntityInfo.class);
-    protected  TypeAdapter typeAdapter = new ForceTypeAdapter();
+    protected  TypeAdapter typeAdapter = new SimpleTypeAdapter();
 
 
     @Override
@@ -89,7 +90,9 @@ public abstract class AbstractEntityInfo extends CacheDataSupport<String, ClassM
 
     private void setPrimaryKeyFieldValue(Object target,Object value, Method setter){
         Class<?> targetType = getPrimaryKeyFieldType(target.getClass());
-        value = typeAdapter.getCompatibleValue(targetType,  value);
+        Class<?> entityType = target.getClass();
+        String idField = getPrimaryKeyFieldName(entityType);
+        value = typeAdapter.getCompatibleFieldValue(entityType, idField, targetType,  value);
         try {
             setter.invoke(target,value);
         } catch (IllegalAccessException  |InvocationTargetException e) {

@@ -1,9 +1,10 @@
 package cn.deepmax.querytemplate;
 
+import cn.deepmax.adapter.SimpleTypeAdapter;
 import cn.deepmax.adapter.TypeAdapter;
 import cn.deepmax.entity.EntityFactory;
 import cn.deepmax.entity.SqlTranslator;
-import cn.deepmax.adapter.ForceTypeAdapter;
+import cn.deepmax.util.ForceTypeAdapter;
 import cn.deepmax.exception.EasyQueryException;
 import cn.deepmax.model.Pair;
 import cn.deepmax.pagehelper.PageInfo;
@@ -29,7 +30,7 @@ public class DefaultQueryTemplate implements QueryTemplate {
     private SqlTranslator sqlTranslator;
     private PagePlugin pagePlugin;
     private boolean isShowSql;
-    private TypeAdapter typeAdapter = new ForceTypeAdapter();
+    private TypeAdapter typeAdapter = new SimpleTypeAdapter();
 
     private static final Logger logger = LoggerFactory.getLogger(DefaultQueryTemplate.class);
 
