@@ -2,6 +2,8 @@ package cn.deepmax.entity.querytemplate;
 
 import cn.deepmax.entity.BaseTest;
 import cn.deepmax.entity.adapter.EnumType;
+import cn.deepmax.entity.adapter.MyColor;
+import cn.deepmax.entity.adapter.MyConverter;
 import cn.deepmax.entity.model.SuperUser;
 import cn.deepmax.querytemplate.QueryTemplate;
 import org.junit.Test;
@@ -28,6 +30,9 @@ public class EntityOpsTest extends BaseTest {
         user.setHide(true);
         user.setShow(false);
         user.setTransientProperty(345.234D);
+        user.setColor1(MyColor.BLACK);
+        user.setColor4(MyColor.RED);
+        user.setColor2(MyColor.WHITE);
         QueryTemplate template = factory.create();
         template.save(user);
         Assert.notNull(user.getId(),"Id null");

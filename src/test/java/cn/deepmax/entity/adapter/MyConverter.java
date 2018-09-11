@@ -2,8 +2,6 @@ package cn.deepmax.entity.adapter;
 
 import cn.deepmax.adapter.mapper.PropertyMapper;
 
-import javax.persistence.AttributeConverter;
-
 public class MyConverter implements PropertyMapper<MyColor,String> {
 
     @Override

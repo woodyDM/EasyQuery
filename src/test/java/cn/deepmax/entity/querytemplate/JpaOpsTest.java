@@ -15,7 +15,7 @@ public class JpaOpsTest extends BaseTest{
 
     @Test
     public void test1(){
-        QueryTemplate template = jpaFactory.create();
+        QueryTemplate template = factory.create();
         Assert.notNull(template,"tem null");
         SuperUser user = new SuperUser();
         user.setBigDecimal(BigDecimal.TEN);

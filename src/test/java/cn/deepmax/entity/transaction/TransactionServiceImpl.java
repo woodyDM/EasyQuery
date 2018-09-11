@@ -1,10 +1,13 @@
 package cn.deepmax.entity.transaction;
 
+import cn.deepmax.entity.adapter.MyColor;
 import cn.deepmax.entity.model.SuperUser;
 import cn.deepmax.querytemplate.QueryTemplate;
 import cn.deepmax.querytemplate.QueryTemplateFactory;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+import org.springframework.util.Assert;
+
 import javax.annotation.Resource;
 import java.math.BigDecimal;
 
@@ -27,19 +30,21 @@ public class TransactionServiceImpl implements TransactionService {
     }
 
     @Override
-    public SuperUser causeExceptionSave(SuperUser user) {
-        QueryTemplate template = queryTemplate;
-        user.setBigDecimal(BigDecimal.TEN);
-        template.save(user);
-        SuperUser u2 = template.get(SuperUser.class, user.getId());
-        System.out.println(u2.getBigDecimal());
+    public SuperUser causeExceptionSave(Long id, MyColor color1) {
+        SuperUser u2 = queryTemplate.get(SuperUser.class, id);
+        u2.setColor1(color1);
+        queryTemplate.save(u2);
+        SuperUser u3 = queryTemplate.get(SuperUser.class, id);
+        Assert.isTrue(u3.getColor1().equals(color1),"color check");
         c();
-        return user;
+        return u3;
     }
 
-    private void c(){
 
+
+    private void c(){
         //throw exception
         queryTemplate.selectList("flewjfklewf");
+
     }
 }

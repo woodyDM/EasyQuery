@@ -1,6 +1,7 @@
 package cn.deepmax.entity.transaction;
 
 import cn.deepmax.entity.BaseTest;
+import cn.deepmax.entity.adapter.MyColor;
 import cn.deepmax.entity.model.SuperUser;
 import org.junit.Test;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -16,10 +17,10 @@ public class SpringTransactionTest extends BaseTest{
     TransactionService service;
 
     /**
-     * !! this test need a local mysql database with engine innoDB .
+     *
      */
     @Test
-    public void testWithException(){
+    public void testWithNoException(){
         SuperUser user = new SuperUser();
         user.setBigDecimal(BigDecimal.ONE);
         user.setHide(true);
@@ -28,13 +29,24 @@ public class SpringTransactionTest extends BaseTest{
         user.setCreateTime(LocalDateTime.now());
         user.setUpdateDate(null);
         service.save(user);
-        SuperUser u2 = service.get(9L);
-        Assert.notNull(user.getId(),"id null");
+        SuperUser u2 = service.get(user.getId());
+        Assert.isTrue(u2.getId().equals(user.getId()));
+    }
 
-        //service.causeExceptionSave(user);
+    @Test
+    public void testWithException(){
+        Long testId  = 1L;
+        SuperUser user0 = service.get(testId);
+        Assert.isTrue(user0.getColor1().equals(MyColor.BLACK),"color check.");
+        try{
+            SuperUser user = service.causeExceptionSave(testId, MyColor.RED);
+        }catch (Exception e){
+            //
+        }
+        SuperUser userF = service.get(testId);
+        Assert.isTrue(user0.getColor1().equals(MyColor.BLACK),"color check.");
 
-        SuperUser user1 = service.get(user.getId());
-        //Assert.isTrue(user1.getBigDecimal().equals(BigDecimal.ONE),"After rollback");
+
     }
 
 

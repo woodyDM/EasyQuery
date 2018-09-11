@@ -1,7 +1,5 @@
 package cn.deepmax.entity.adapter;
 
-import cn.deepmax.util.StringUtils;
-
 import javax.persistence.AttributeConverter;
 
 public class JpaConverter implements AttributeConverter<MyColor,String> {

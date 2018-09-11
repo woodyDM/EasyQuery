@@ -39,7 +39,6 @@ public class SpringBeanConfig {
     @Bean("springFactory")
     public QueryTemplateFactory factory(){
 
-
         DefaultQueryTemplateFactory.Builder builder = new DefaultQueryTemplateFactory.Builder();
         return builder.setDataSource(h2Datasource())
                 .setTransactionFactory(new SpringTransactionFactory())
@@ -51,55 +50,24 @@ public class SpringBeanConfig {
     @Bean("defaultFactory")
     public QueryTemplateFactory defaultFactory(){
         DefaultQueryTemplateFactory.Builder builder = new DefaultQueryTemplateFactory.Builder();
-
-
         return builder.setDataSource(h2Datasource())
                 .setShowSql(true)
-
                 .build();
     }
 
-    @Bean("jpaFactory")
-    public QueryTemplateFactory jpaFactory(){
-
-        DefaultQueryTemplateFactory.Builder builder = new DefaultQueryTemplateFactory.Builder();
-
-        return builder.setDataSource(h2Datasource())
-                .setShowSql(true)
-
-                .build();
-    }
 
 
     @Bean
     public PlatformTransactionManager platformTransactionManager(){
-        DataSourceTransactionManager manager = new DataSourceTransactionManager(localDatasource());
+        DataSourceTransactionManager manager = new DataSourceTransactionManager(h2Datasource());
         return manager;
     }
-
-    @Bean("localDatasource")
-    public DataSource localDatasource(){
-        HikariDataSource dataSource = new HikariDataSource();
-        dataSource.setJdbcUrl("jdbc:postgresql://localhost:5432/test");
-        dataSource.setDriverClassName("org.postgresql.Driver");
-        dataSource.setUsername("postgres");
-        dataSource.setPassword("123456");
-        return dataSource ;
-    }
-
 
 
     @Bean("springTemplate")
     public QueryTemplate localSpringFactory(){
-        DefaultQueryTemplateFactory.Builder builder = new DefaultQueryTemplateFactory.Builder();
-        TypeAdapter typeAdapter = new JpaAnnotatedTypeAdapter();
-        EntityInfo info = new JpaEntityInfo(typeAdapter);
-        builder.setDataSource(localDatasource())
-                .setTransactionFactory(new SpringTransactionFactory())
-                .setEntityInfo(info)
-                .setSqlTranslator(new DefaultSqlTranslator(info,(it)->"\""+it+"\"" , typeAdapter))
-                .setShowSql(true);
-        return builder.build().create();
+        QueryTemplateFactory factory = factory();
+        return factory.create();
     }
 
 

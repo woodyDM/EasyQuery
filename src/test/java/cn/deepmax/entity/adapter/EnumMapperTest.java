@@ -2,7 +2,6 @@ package cn.deepmax.entity.adapter;
 
 import cn.deepmax.adapter.mapper.EnumToIntegerPropertyMapper;
 import cn.deepmax.adapter.mapper.EnumToStringPropertyMapper;
-import cn.deepmax.adapter.mapper.PropertyMapper;
 import org.junit.Assert;
 import org.junit.Test;
 
