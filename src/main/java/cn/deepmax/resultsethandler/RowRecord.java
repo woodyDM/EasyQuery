@@ -1,7 +1,6 @@
 package cn.deepmax.resultsethandler;
 
 
-import cn.deepmax.adapter.AbstractCacheableTypeAdapter;
 import cn.deepmax.adapter.SimpleTypeAdapter;
 import cn.deepmax.adapter.TypeAdapter;
 

@@ -3,15 +3,12 @@ package cn.deepmax.entity.querytemplate;
 import cn.deepmax.entity.BaseTest;
 import cn.deepmax.entity.adapter.EnumType;
 import cn.deepmax.entity.adapter.MyColor;
-import cn.deepmax.entity.adapter.MyConverter;
 import cn.deepmax.entity.model.SuperUser;
 import cn.deepmax.querytemplate.QueryTemplate;
 import org.junit.Test;
 import org.springframework.util.Assert;
 
 import java.math.BigDecimal;
-import java.sql.Date;
-import java.sql.Timestamp;
 import java.time.LocalDateTime;
 
 public class EntityOpsTest extends BaseTest {

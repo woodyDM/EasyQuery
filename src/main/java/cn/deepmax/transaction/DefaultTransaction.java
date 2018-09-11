@@ -3,10 +3,10 @@ package cn.deepmax.transaction;
 import cn.deepmax.exception.EasyQueryException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+
 import javax.sql.DataSource;
 import java.sql.Connection;
 import java.sql.SQLException;
-import java.util.concurrent.TimeUnit;
 
 public class DefaultTransaction implements Transaction {
 

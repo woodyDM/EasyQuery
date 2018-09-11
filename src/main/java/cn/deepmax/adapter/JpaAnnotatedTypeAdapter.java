@@ -7,6 +7,7 @@ import cn.deepmax.support.CacheDataSupport;
 import cn.deepmax.util.BeanToMap;
 import cn.deepmax.util.BeanUtils;
 import cn.deepmax.util.ForceTypeAdapter;
+
 import javax.persistence.Convert;
 import javax.persistence.EnumType;
 import javax.persistence.Enumerated;

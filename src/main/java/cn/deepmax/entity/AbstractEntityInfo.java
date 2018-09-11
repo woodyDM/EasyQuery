@@ -1,9 +1,5 @@
 package cn.deepmax.entity;
 
-import cn.deepmax.adapter.AbstractCacheableTypeAdapter;
-
-import cn.deepmax.adapter.JpaAnnotatedTypeAdapter;
-import cn.deepmax.adapter.SimpleTypeAdapter;
 import cn.deepmax.adapter.TypeAdapter;
 import cn.deepmax.exception.EasyQueryException;
 import cn.deepmax.support.CacheDataSupport;
@@ -14,7 +10,9 @@ import java.beans.IntrospectionException;
 import java.beans.PropertyDescriptor;
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
-import java.util.*;
+import java.util.List;
+import java.util.Map;
+import java.util.Objects;
 import java.util.function.Function;
 
 /**

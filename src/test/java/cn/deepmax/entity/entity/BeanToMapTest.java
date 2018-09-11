@@ -1,7 +1,7 @@
 package cn.deepmax.entity.entity;
 
-import cn.deepmax.util.BeanToMap;
 import cn.deepmax.entity.model.SuperUser;
+import cn.deepmax.util.BeanToMap;
 import org.junit.Test;
 import org.springframework.util.Assert;
 

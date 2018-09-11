@@ -2,6 +2,7 @@ package cn.deepmax.entity.support;
 
 import cn.deepmax.support.LocalCache;
 import org.junit.Test;
+
 import java.util.HashMap;
 
 public class LocalCacheTest {

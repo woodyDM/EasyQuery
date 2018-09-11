@@ -1,6 +1,7 @@
 package cn.deepmax.util;
 
 import cn.deepmax.exception.EasyQueryException;
+
 import java.beans.IntrospectionException;
 import java.beans.Introspector;
 import java.beans.PropertyDescriptor;

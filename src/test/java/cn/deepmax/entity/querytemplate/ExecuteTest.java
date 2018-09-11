@@ -6,8 +6,8 @@ import cn.deepmax.querytemplate.QueryTemplate;
 import cn.deepmax.resultsethandler.RowRecord;
 import org.junit.Test;
 import org.springframework.util.Assert;
+
 import java.math.BigDecimal;
-import java.math.BigInteger;
 import java.util.List;
 import java.util.Map;
 

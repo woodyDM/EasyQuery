@@ -1,10 +1,10 @@
 package cn.deepmax.querytemplate;
 
 
-
 import cn.deepmax.pagehelper.PageInfo;
 import cn.deepmax.resultsethandler.RowRecord;
 import cn.deepmax.transaction.Transaction;
+
 import java.util.List;
 import java.util.Map;
 import java.util.function.Function;

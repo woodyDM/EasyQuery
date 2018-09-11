@@ -1,6 +1,7 @@
 package cn.deepmax.adapter.mapper;
 
 import cn.deepmax.support.LocalCache;
+
 import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
 

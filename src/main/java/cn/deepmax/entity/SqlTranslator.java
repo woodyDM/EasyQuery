@@ -1,6 +1,7 @@
 package cn.deepmax.entity;
 
 import cn.deepmax.model.Pair;
+
 import java.util.List;
 
 /**

@@ -1,9 +1,6 @@
 package cn.deepmax.entity;
 
 
-import cn.deepmax.adapter.AbstractCacheableTypeAdapter;
-import cn.deepmax.adapter.JpaAnnotatedTypeAdapter;
-import cn.deepmax.adapter.SimpleTypeAdapter;
 import cn.deepmax.adapter.TypeAdapter;
 import cn.deepmax.util.BeanToMap;
 import cn.deepmax.util.BeanUtils;

@@ -6,10 +6,9 @@ import cn.deepmax.entity.model.SuperUser;
 import org.junit.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.util.Assert;
+
 import java.math.BigDecimal;
-import java.sql.Timestamp;
 import java.time.LocalDateTime;
-import java.util.Date;
 
 public class SpringTransactionTest extends BaseTest{
 

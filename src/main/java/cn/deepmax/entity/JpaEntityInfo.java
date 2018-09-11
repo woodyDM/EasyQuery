@@ -2,7 +2,6 @@ package cn.deepmax.entity;
 
 import cn.deepmax.adapter.TypeAdapter;
 import cn.deepmax.exception.EasyQueryException;
-
 import cn.deepmax.util.BeanToMap;
 import cn.deepmax.util.BeanUtils;
 import cn.deepmax.util.StringUtils;
@@ -14,7 +13,9 @@ import javax.persistence.Transient;
 import java.beans.PropertyDescriptor;
 import java.lang.reflect.Field;
 import java.lang.reflect.Method;
-import java.util.*;
+import java.util.LinkedHashMap;
+import java.util.List;
+import java.util.Map;
 
 public class JpaEntityInfo extends AbstractEntityInfo {
 

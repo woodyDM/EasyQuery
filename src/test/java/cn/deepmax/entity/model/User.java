@@ -1,18 +1,14 @@
 package cn.deepmax.entity.model;
 
 
-
 import cn.deepmax.adapter.mapper.LocalDateTimeToTimestampMapper;
 import cn.deepmax.adapter.mapper.LocalDateToDateMapper;
+
 import javax.persistence.Column;
 import javax.persistence.Convert;
 import javax.persistence.Id;
-import java.math.BigDecimal;
-import java.math.BigInteger;
-import java.sql.Timestamp;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
-import java.util.Date;
 
 public class User {
 

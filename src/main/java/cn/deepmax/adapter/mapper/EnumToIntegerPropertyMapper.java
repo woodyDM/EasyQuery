@@ -2,8 +2,6 @@ package cn.deepmax.adapter.mapper;
 
 import cn.deepmax.exception.EasyQueryException;
 
-import java.util.Objects;
-
 
 /**
  * when   @Enumerated  EnumType.Integer or no annotation

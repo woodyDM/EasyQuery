@@ -1,16 +1,12 @@
 package cn.deepmax.entity;
 
 
-import cn.deepmax.adapter.JpaAnnotatedTypeAdapter;
-import cn.deepmax.adapter.TypeAdapter;
 import cn.deepmax.pagehelper.MySqlPagePlugin;
+import cn.deepmax.querytemplate.DefaultQueryTemplateFactory;
 import cn.deepmax.querytemplate.QueryTemplate;
 import cn.deepmax.querytemplate.QueryTemplateFactory;
-import cn.deepmax.querytemplate.DefaultQueryTemplateFactory;
 import cn.deepmax.transaction.SpringTransactionFactory;
 import com.zaxxer.hikari.HikariDataSource;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.ComponentScan;
 import org.springframework.context.annotation.Configuration;

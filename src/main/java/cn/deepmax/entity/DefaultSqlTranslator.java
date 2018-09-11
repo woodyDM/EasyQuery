@@ -1,14 +1,15 @@
 package cn.deepmax.entity;
 
 
-import cn.deepmax.adapter.AbstractCacheableTypeAdapter;
-import cn.deepmax.adapter.JpaAnnotatedTypeAdapter;
-import cn.deepmax.adapter.SimpleTypeAdapter;
 import cn.deepmax.adapter.TypeAdapter;
 import cn.deepmax.model.Pair;
 import cn.deepmax.support.CacheDataSupport;
 import cn.deepmax.util.BeanToMap;
-import java.util.*;
+
+import java.util.ArrayList;
+import java.util.List;
+import java.util.Map;
+import java.util.Objects;
 
 /**
  * default SqlTranslator implementation supporting cache.

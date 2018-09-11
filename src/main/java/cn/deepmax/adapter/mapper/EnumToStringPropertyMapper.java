@@ -3,10 +3,6 @@ package cn.deepmax.adapter.mapper;
 import cn.deepmax.exception.EasyQueryException;
 import cn.deepmax.util.StringUtils;
 
-import javax.persistence.Enumerated;
-import java.time.Year;
-import java.util.Objects;
-
 
 /**
  * when   @Enumerated  EnumType.String

@@ -1,11 +1,7 @@
 package cn.deepmax.adapter.mapper;
 
-import cn.deepmax.adapter.mapper.PropertyMapper;
-
 import java.sql.Date;
-import java.sql.Timestamp;
 import java.time.LocalDate;
-import java.time.LocalDateTime;
 
 public class LocalDateToDateMapper implements PropertyMapper<LocalDate, Date> {
 

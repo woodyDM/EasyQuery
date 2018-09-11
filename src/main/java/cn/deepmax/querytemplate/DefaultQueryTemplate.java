@@ -1,8 +1,5 @@
 package cn.deepmax.querytemplate;
 
-import cn.deepmax.adapter.AbstractCacheableTypeAdapter;
-import cn.deepmax.adapter.JpaAnnotatedTypeAdapter;
-import cn.deepmax.adapter.SimpleTypeAdapter;
 import cn.deepmax.adapter.TypeAdapter;
 import cn.deepmax.entity.EntityFactory;
 import cn.deepmax.entity.SqlTranslator;
@@ -15,8 +12,12 @@ import cn.deepmax.resultsethandler.RowRecord;
 import cn.deepmax.transaction.Transaction;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+
 import java.sql.*;
-import java.util.*;
+import java.util.ArrayList;
+import java.util.List;
+import java.util.Map;
+import java.util.Objects;
 import java.util.function.Function;
 
 

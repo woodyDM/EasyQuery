@@ -3,13 +3,10 @@ package cn.deepmax.entity.querytemplate;
 import cn.deepmax.entity.BaseTest;
 import cn.deepmax.entity.model.SuperUser;
 import cn.deepmax.querytemplate.QueryTemplate;
-import cn.deepmax.querytemplate.QueryTemplateFactory;
 import org.junit.Test;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.util.Assert;
 
 import java.math.BigDecimal;
-import java.util.concurrent.TimeUnit;
 
 public class JpaOpsTest extends BaseTest{
 
