@@ -8,12 +8,12 @@ public class LocalDateTimeToTimestampMapper implements AttributeConverter<LocalD
 
     @Override
     public Timestamp convertToDatabaseColumn(LocalDateTime attribute) {
-        return (attribute==null)?null: Timestamp.valueOf(attribute);
+        return (attribute==null) ? null : Timestamp.valueOf(attribute);
 
     }
 
     @Override
     public LocalDateTime convertToEntityAttribute(Timestamp dbData) {
-        return (dbData==null)?null: dbData.toLocalDateTime();
+        return (dbData==null) ? null : dbData.toLocalDateTime();
     }
 }

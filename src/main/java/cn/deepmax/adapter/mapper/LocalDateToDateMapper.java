@@ -1,9 +1,10 @@
 package cn.deepmax.adapter.mapper;
 
+import javax.persistence.AttributeConverter;
 import java.sql.Date;
 import java.time.LocalDate;
 
-public class LocalDateToDateMapper implements PropertyMapper<LocalDate, Date> {
+public class LocalDateToDateMapper implements AttributeConverter<LocalDate, Date> {
 
     @Override
     public Date convertToDatabaseColumn(LocalDate attribute) {
