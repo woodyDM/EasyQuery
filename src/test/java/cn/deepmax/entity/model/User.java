@@ -21,8 +21,7 @@ public class User {
     private Long id;
     @Column(name = "USER_NAME")
     private String userName;
-    @Column(name = "CREATE_TIME")
-    @Convert(converter = LocalDateTimeToTimestampMapper.class)
+
     private LocalDateTime createTime;
 
     @Convert(converter = LocalDateToDateMapper.class)
@@ -53,7 +52,8 @@ public class User {
     public void setUserName(String userName) {
         this.userName = userName;
     }
-
+    @Column(name = "CREATE_TIME")
+    @Convert(converter = LocalDateTimeToTimestampMapper.class)
     public LocalDateTime getCreateTime() {
         return createTime;
     }

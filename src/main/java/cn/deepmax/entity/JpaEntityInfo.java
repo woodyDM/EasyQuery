@@ -10,6 +10,7 @@ import cn.deepmax.util.StringUtils;
 import javax.persistence.Column;
 import javax.persistence.Id;
 import javax.persistence.Table;
+import javax.persistence.Transient;
 import java.beans.PropertyDescriptor;
 import java.lang.reflect.Field;
 import java.lang.reflect.Method;
@@ -75,9 +76,12 @@ public class JpaEntityInfo extends AbstractEntityInfo {
             //if one field has propertyDescriptor, field is not null.
             Field field = BeanUtils.getField(clazz, fieldName);
             Method getter = propertyDescriptor.getReadMethod();
+            if(isTransient(field, getter)){
+                continue;
+            }
             Column columnOnField =field.getAnnotation(Column.class);
             Column columnOnGetter =getter.getAnnotation(Column.class);
-            String columnName = getColumnName(clazz, columnOnField, columnOnGetter);
+            String columnName = getColumnName(fieldName, clazz, columnOnField, columnOnGetter);
             if(StringUtils.isNotEmpty(columnName)){
                 fieldNameToColumnNameMap.put(fieldName,columnName);
             }
@@ -85,24 +89,37 @@ public class JpaEntityInfo extends AbstractEntityInfo {
         return fieldNameToColumnNameMap;
     }
 
-    private String getColumnName(Class<?> clazz,Column columnOnField,Column columnOnGetter){
+    private boolean isTransient(Field field, Method getter){
+        Transient tF = field.getAnnotation(Transient.class);
+        Transient tG = getter.getAnnotation(Transient.class);
+        return tF!=null || tG!=null;
+    }
+
+    private String getColumnName(String fieldName, Class<?> clazz,Column columnOnField,Column columnOnGetter){
         if(columnOnField!=null && columnOnGetter!=null){
             //check identity
             if(columnOnField.name().equals(columnOnGetter.name())){
-                return columnOnField.name();
+                return getColumnNameIfEmpty(fieldName, columnOnField.name());
             }else{
                 throw new EasyQueryException("Column name is not unique on field and getter in class["+clazz.getName()+"]");
             }
         }
         if(columnOnField!=null ){
-            return columnOnField.name();
+            return getColumnNameIfEmpty(fieldName,columnOnField.name());
         }
         if(columnOnGetter!=null){
-            return columnOnGetter.name();
+            return getColumnNameIfEmpty(fieldName, columnOnGetter.name());
         }
         return null;
     }
 
+    private String getColumnNameIfEmpty(String fieldName, String definedColumnName){
+        if(StringUtils.isEmpty(definedColumnName)){
+            return fieldName;
+        }else{
+            return definedColumnName;
+        }
+    }
 
 
 }

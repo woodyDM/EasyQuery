@@ -20,6 +20,7 @@ public class SuperUser extends User{
     @Column(name = "COLOR1")
     private MyColor color1; //nothing annotated
 
+
     @Column(name = "AUTH")
     @Enumerated(javax.persistence.EnumType.STRING)
     private EnumType auth;
@@ -32,6 +33,7 @@ public class SuperUser extends User{
     @Column(name = "COLOR3")
     @Convert(converter = JpaConverter.class)
     private MyColor color3;
+    @Transient      // transient
     @Convert(converter = MyConverter.class)
     @Column(name = "COLOR4")
     private MyColor color4;
