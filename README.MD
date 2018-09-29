@@ -129,9 +129,9 @@ Default `EntityInfo` implementation is  `JpaEntityInfo` .<br>
 `JpaEntityInfo` supports standard JPA annotations :`@Table`, `@Column`, `@Id`<br>
  Just like using Hibernate, put `@Table` on your class, and `@Column` in your class field (or field getter) ,
  and `@Id` on the primaryKey field. Every entity class must have a primary key field.
- Also, the typical JPA annotation @Enumerated(javax.persistence.EnumType.STRING),
- @Transient      , @Convert(converter = MyConverter.class) are supported.
- In @Convert(convert = XX.class) the XXclass should implements `javax.persistence.AttributeConverter` or
+ <br>Also, the typical JPA annotation :<br>@Enumerated<br>
+ @Transient      <br>@Convert(converter = MyConverter.class) are supported.
+ In @Convert(convert = XX.class) the XX.class should implements `javax.persistence.AttributeConverter` or
  `cn.deepmax.adapter.mapper.PropertyMapper<X,Y>`<br>
  for example:<br>
  ```java
@@ -147,33 +147,42 @@ public class SuperUser extends User{
     @Column(name = "BIG_DECIMAL")
     private BigDecimal bigDecimal;
     
-
-
+    // MyColor is an Enum Type
     @Column(name = "COLOR1")
-    private MyColor color1; //nothing annotated
+    private MyColor color1; //no @Enumerated annotated is same as @Enumerated(javax.persistence.EnumType.ORDINAL)
     
-
 
     @Column(name = "AUTH")
     @Enumerated(javax.persistence.EnumType.STRING)
     private EnumType auth;
     
 
-
     @Column(name = "COLOR2")
     @Enumerated(javax.persistence.EnumType.ORDINAL)
     private MyColor color2;
     
-
     @Column(name = "COLOR3")
     @Convert(converter = JpaConverter.class)
     private MyColor color3;
     
     @Transient      // transient
-    @Convert(converter = MyConverter.class)
+    @Convert(converter = MyConverter.class) //using convert is also ok.
     @Column(name = "COLOR4")
     private MyColor color4;
     
+    @Column(name = "USER_NAME")
+    private String userName;
+    
+    @Column(name = "CREATE_TIME")
+    @Convert(converter = LocalDateTimeToTimestampMapper.class)
+    private LocalDateTime createTime;
+    
+    @Column(name = "UPDATE_DATE")
+    @Convert(converter = LocalDateToDateMapper.class)
+    private LocalDate updateDate;
+    
+    @Column(name = "SHOW")
+    private Boolean show;
     //getter and setters    
 }
 ```
