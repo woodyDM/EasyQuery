@@ -8,7 +8,7 @@ public class BeanUtils {
 
     private static final String IS_PREFIX = "is";
     private static final String SET_PREFIX= "set";
-    private static final String GET_PREFIX = "putIfAbsent";
+    private static final String GET_PREFIX = "get";
 
 
     public static String getReadMethodName(String propertyName,String javaType){
