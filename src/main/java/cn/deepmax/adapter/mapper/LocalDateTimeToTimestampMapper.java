@@ -6,7 +6,7 @@ import java.time.LocalDateTime;
 
 public class LocalDateTimeToTimestampMapper implements PropertyMapper<LocalDateTime, Timestamp> {
 
-    public static LocalDateTimeToTimestampMapper INSTANCE =null;
+    private static LocalDateTimeToTimestampMapper INSTANCE =null;
 
     public static LocalDateTimeToTimestampMapper getInstance(){
         if(INSTANCE==null){

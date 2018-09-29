@@ -7,6 +7,7 @@ import java.util.List;
 
 public class SimpleTypeAdapter extends AbstractCacheableTypeAdapter {
 
+    @SuppressWarnings("unchecked")
     @Override
     public ClassFieldTypeData load(String uniqueKey) throws Exception {
         Class<?> clazz = Class.forName(uniqueKey);

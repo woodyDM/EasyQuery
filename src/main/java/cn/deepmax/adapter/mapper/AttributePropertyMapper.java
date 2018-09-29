@@ -21,6 +21,7 @@ public class AttributePropertyMapper<X,Y> implements PropertyMapper<X,Y> {
         this.attributeConverter = BeanUtils.newInstance(mapper);
     }
 
+    @SuppressWarnings("unchecked")
     @Override
     public Y convertToDatabaseColumn(X attribute) {
         if(isJpaMapper){
@@ -30,6 +31,7 @@ public class AttributePropertyMapper<X,Y> implements PropertyMapper<X,Y> {
         }
     }
 
+    @SuppressWarnings("unchecked")
     @Override
     public X convertToEntityAttribute(Y dbData) {
         if(isJpaMapper){
