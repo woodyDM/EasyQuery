@@ -4,7 +4,21 @@ import javax.persistence.AttributeConverter;
 import java.sql.Date;
 import java.time.LocalDate;
 
-public class LocalDateToDateMapper implements AttributeConverter<LocalDate, Date> {
+public class LocalDateToDateMapper implements PropertyMapper<LocalDate, Date> {
+
+    public static LocalDateToDateMapper INSTANCE = null;
+
+
+    public static LocalDateToDateMapper getInstance(){
+        if(INSTANCE==null){
+            synchronized (LocalDateToDateMapper.class){
+                if(INSTANCE==null){
+                    INSTANCE = new LocalDateToDateMapper();
+                }
+            }
+        }
+        return INSTANCE;
+    }
 
     @Override
     public Date convertToDatabaseColumn(LocalDate attribute) {
@@ -15,5 +29,10 @@ public class LocalDateToDateMapper implements AttributeConverter<LocalDate, Date
     @Override
     public LocalDate convertToEntityAttribute(Date dbData) {
         return (dbData==null)?null: dbData.toLocalDate();
+    }
+
+    @Override
+    public String toString() {
+        return "LocalDateToDateMapper_EQ";
     }
 }

@@ -13,6 +13,7 @@ public class MapperHolder {
      *
      */
     protected static LocalCache<String, PropertyMapper> cache = new LocalCache<>(new ConcurrentHashMap());
+
     /**
      * key : field
      * value MapperClassFullName

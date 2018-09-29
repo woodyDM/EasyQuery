@@ -43,6 +43,10 @@ public class AttributePropertyMapper<X,Y> implements PropertyMapper<X,Y> {
 
     @Override
     public String toString() {
-        return this.getClass().getName()+"_"+attributeConverter.getClass().getName();
+        if(isJpaMapper){
+            return this.getClass().getName()+"_wrapping_"+attributeConverter.getClass().getName();
+        }else{
+            return ((PropertyMapper)attributeConverter).getUniqueMapperName();
+        }
     }
 }

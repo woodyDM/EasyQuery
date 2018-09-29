@@ -49,7 +49,7 @@ public class User {
         this.userName = userName;
     }
     @Column(name = "CREATE_TIME")
-    @Convert(converter = LocalDateTimeToTimestampMapper.class)
+
     public LocalDateTime getCreateTime() {
         return createTime;
     }

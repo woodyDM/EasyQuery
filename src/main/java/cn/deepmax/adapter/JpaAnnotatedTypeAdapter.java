@@ -38,6 +38,9 @@ public class JpaAnnotatedTypeAdapter extends CacheDataSupport<String,ClassFieldT
     private void parseField(Class<?> clazz,ClassFieldTypeData<MapperHolder> classFieldTypeData, PropertyDescriptor propertyDescriptor){
         String fieldName = propertyDescriptor.getName();
         Field field = BeanUtils.getField(clazz, fieldName);
+        if(field==null){
+            throw new IllegalStateException("unable to get field ["+fieldName+"]in class "+clazz.getName()+"");
+        }
         Method getter = propertyDescriptor.getReadMethod();
         Class<?> converter = getConverterClass(field, getter);
         if(converter!=null){
@@ -52,7 +55,12 @@ public class JpaAnnotatedTypeAdapter extends CacheDataSupport<String,ClassFieldT
                 classFieldTypeData.value.setMapper(fieldName, new EnumToIntegerPropertyMapper(pair.first));
             return;
         }
-        classFieldTypeData.registerTypical(fieldName, field.getType());
+        PropertyMapper mapper = DefaultMapperRegistry.lookFor(field.getType());
+        if(mapper!=null){
+            classFieldTypeData.value.setMapper(fieldName, mapper);
+        }else{
+            classFieldTypeData.registerTypical(fieldName, field.getType());
+        }
     }
 
 
