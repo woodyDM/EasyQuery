@@ -1,6 +1,8 @@
 package cn.deepmax.adapter.mapper;
 
-public interface PropertyMapper<X,Y> {
+import javax.persistence.AttributeConverter;
+
+public interface PropertyMapper<X,Y> extends AttributeConverter<X,Y> {
 
     /**
      * Converts the value stored in the entity attribute into the
