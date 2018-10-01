@@ -16,8 +16,9 @@ It is recommended to use EasyQuery in a spring project.
 
 A. Visit _https://www.jitpack.io_ and look up "https://github.com/woodyDM/EasyQuery" 
 and follow the instructions.<br>
-B. Clone this git or download source code to your computer and build jar yourself.
-C. It is recommended to use branch "entity_enhance" version which support more features for JPA entity defination.
+B. Clone this git or download source code to your computer and build jar yourself.<br>
+C. It is highly recommended to use branch "entity_enhance" version which support more features for JPA entity defination.
+ click ->>> "https://github.com/woodyDM/EasyQuery/tree/entity_enhance"
 
 1 Quick start
 ---
