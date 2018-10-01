@@ -1,5 +1,6 @@
 package cn.deepmax.util;
 
+import cn.deepmax.adapter.TypeAdapter;
 import cn.deepmax.exception.EasyQueryException;
 
 import java.lang.reflect.Field;
@@ -10,7 +11,23 @@ import java.sql.Timestamp;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 
-public class ForceTypeAdapter   {
+public class ForceTypeAdapter implements TypeAdapter {
+
+
+    @Override
+    public Object getCompatibleFieldValue(Class<?> entityClass, String fieldName, Object value) {
+        return new UnsupportedOperationException("ForceTypeAdapter does not support this op.");
+    }
+
+    @Override
+    public Object getCompatibleDatabaseValue(Class<?> entityClass, String fieldName, Object value) {
+        return new UnsupportedOperationException("ForceTypeAdapter does not support this op.");
+    }
+
+    @Override
+    public Object getCompatibleValue(Class<?> targetType, Object value) {
+        return doGetCompatibleValue(targetType, value);
+    }
 
     /**
      * change value to desired java type.
@@ -21,8 +38,7 @@ public class ForceTypeAdapter   {
      * @param value
      * @return
      */
-
-    public static Object getCompatibleValue(Class<?> targetType, Object value){
+    public static Object doGetCompatibleValue(Class<?> targetType, Object value){
         if(value==null){
             return null;
         }
@@ -32,7 +48,7 @@ public class ForceTypeAdapter   {
         if(value instanceof Boolean){       //only support Boolean to Numbers
             Boolean castedValue = (Boolean) value;
             Integer tempValue = (castedValue) ? 1 : 0;
-            return getCompatibleValue(targetType, tempValue);
+            return doGetCompatibleValue(targetType, tempValue);
         }
         String v = value.toString();
         Class valueType = value.getClass();

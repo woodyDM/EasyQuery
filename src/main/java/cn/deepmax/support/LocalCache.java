@@ -8,6 +8,7 @@ public class LocalCache<K, V> {
     private static final Object NIL = new Object();
     private Map<K, Object> cache ;
 
+    @SuppressWarnings("unchecked")
     public LocalCache(Map cache) {
         Objects.requireNonNull(cache);
         this.cache = cache;
@@ -22,12 +23,13 @@ public class LocalCache<K, V> {
      * @param key
      * @return
      */
+    @SuppressWarnings("unchecked")
     public V get(K key){
-        V value = (V)cache.get(key);
+        Object value = cache.get(key);
         if(value==NIL){
             return null;
         }else{
-            return value;
+            return (V)value;
         }
     }
 
@@ -40,7 +42,9 @@ public class LocalCache<K, V> {
         return value;
     }
 
+    @SuppressWarnings("unchecked")
     public V putIfAbsent(K key, Supplier<V> supplier){
+
         Object value = cache.get(key);
         if(value == NIL){
             return null;

@@ -5,6 +5,8 @@ import cn.deepmax.exception.EasyQueryException;
 import cn.deepmax.util.BeanToMap;
 import cn.deepmax.util.BeanUtils;
 import cn.deepmax.util.StringUtils;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import javax.persistence.Column;
 import javax.persistence.Id;
@@ -18,6 +20,9 @@ import java.util.List;
 import java.util.Map;
 
 public class JpaEntityInfo extends AbstractEntityInfo {
+
+    public static final Logger logger = LoggerFactory.getLogger(JpaEntityInfo.class);
+
 
     public JpaEntityInfo(TypeAdapter typeAdapter) {
         super(typeAdapter);
@@ -78,12 +83,14 @@ public class JpaEntityInfo extends AbstractEntityInfo {
             Field field = BeanUtils.getField(clazz, fieldName);
             Method getter = propertyDescriptor.getReadMethod();
             if(isTransient(field, getter)){
+                logger.debug("@Transient field found on field [{}] of class [{}]", fieldName, clazz.getName());
                 continue;
             }
             Column columnOnField =field.getAnnotation(Column.class);
             Column columnOnGetter =getter.getAnnotation(Column.class);
             String columnName = getColumnName(fieldName, clazz, columnOnField, columnOnGetter);
             if(StringUtils.isNotEmpty(columnName)){
+                logger.debug("@Column with columnName {} found on field [{}] of class {} ",columnName, fieldName, clazz.getName());
                 fieldNameToColumnNameMap.put(fieldName,columnName);
             }
         }

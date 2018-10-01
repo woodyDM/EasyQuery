@@ -5,6 +5,9 @@ import cn.deepmax.util.BeanToMap;
 import java.beans.PropertyDescriptor;
 import java.util.List;
 
+/**
+ * no type converted adapter.
+ */
 public class SimpleTypeAdapter extends AbstractCacheableTypeAdapter {
 
     @SuppressWarnings("unchecked")
@@ -15,8 +18,7 @@ public class SimpleTypeAdapter extends AbstractCacheableTypeAdapter {
         List<PropertyDescriptor> propertyDescriptors = BeanToMap.getPropertyDescriptor(clazz);
         for(PropertyDescriptor it:propertyDescriptors){
             String fieldName = it.getName();
-            data.fieldDatabaseTypeMap.put(fieldName, it.getPropertyType());
-            data.fieldEntityTypeMap.put(fieldName, it.getPropertyType());
+            data.registerTypical(fieldName,it.getPropertyType());
         }
         return data;
     }

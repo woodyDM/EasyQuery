@@ -1,6 +1,8 @@
 package cn.deepmax.support;
 
 import cn.deepmax.exception.EasyQueryException;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import java.util.HashSet;
 import java.util.Map;
@@ -16,19 +18,23 @@ import java.util.function.Function;
 public abstract class CacheDataSupport<ID,D> {
 
     protected Set<ID> loadedData = new HashSet<>();
-    protected Map<ID, D> cacheData = new ConcurrentHashMap<>(32);
+    protected Map<ID, D> cacheData = new ConcurrentHashMap<>(64);
+    public static final Logger logger = LoggerFactory.getLogger(CacheDataSupport.class);
+
 
     abstract public D load(ID uniqueKey) throws Exception;
 
     protected <V> V loadThen(ID uniqueKey, Function<D,V> action){
         if(!loadedData.contains(uniqueKey)){
-            synchronized (uniqueKey.toString().intern()){
+            synchronized (uniqueKey.toString().intern()){   //? really effect
                 if(!loadedData.contains(uniqueKey)){
                     try{
+                        logger.debug("Try to load data "+uniqueKey+" in class ["+this.getClass()+"]");
                         D theData= load(uniqueKey);
                         if(theData!=null){
                             loadedData.add(uniqueKey);
                             cacheData.put(uniqueKey, theData);
+                            logger.debug("Load data complete , uniqueKey is  ["+uniqueKey+"] in class ["+this.getClass()+"]");
                         }else{
                             throw new EasyQueryException("load(ID target) should always return a non-null instance. ");
                         }

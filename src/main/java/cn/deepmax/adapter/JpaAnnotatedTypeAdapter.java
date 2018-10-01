@@ -6,7 +6,8 @@ import cn.deepmax.model.Pair;
 import cn.deepmax.support.CacheDataSupport;
 import cn.deepmax.util.BeanToMap;
 import cn.deepmax.util.BeanUtils;
-import cn.deepmax.util.ForceTypeAdapter;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import javax.persistence.Convert;
 import javax.persistence.EnumType;
@@ -23,11 +24,12 @@ import java.util.List;
 public class JpaAnnotatedTypeAdapter extends CacheDataSupport<String,ClassFieldTypeData<MapperHolder>> implements TypeAdapter {
 
 
+    public static final Logger logger = LoggerFactory.getLogger(JpaAnnotatedTypeAdapter.class);
+
     @Override
     public ClassFieldTypeData<MapperHolder> load(String className) throws Exception {
         Class<?> clazz = Class.forName(className);
-        ClassFieldTypeData<MapperHolder> data = new ClassFieldTypeData<>();
-        data.value = new MapperHolder();
+        ClassFieldTypeData<MapperHolder> data = new ClassFieldTypeData<>(new MapperHolder());
         List<PropertyDescriptor> propertyDescriptors = BeanToMap.getPropertyDescriptor(clazz);
         for(PropertyDescriptor it:propertyDescriptors){
             parseField(clazz, data, it);
@@ -44,22 +46,29 @@ public class JpaAnnotatedTypeAdapter extends CacheDataSupport<String,ClassFieldT
         Method getter = propertyDescriptor.getReadMethod();
         Class<?> converter = getConverterClass(field, getter);
         if(converter!=null){
-            classFieldTypeData.value.setMapper(fieldName, new AttributePropertyMapper<>(converter));
+            classFieldTypeData.getValue().setMapper(fieldName, new AttributePropertyMapper<>(converter));
+            logger.debug("converter {} found on field [{}] of class[{}].",converter.getName(),fieldName,clazz.getName());
             return;
         }
         Pair<Class<? extends Enum>,Boolean> pair = getEnumeratedClassWithType(field, getter);
         if(pair!=null){
-            if(pair.last)
-                classFieldTypeData.value.setMapper(fieldName, new EnumToStringPropertyMapper(pair.first));
-            else
-                classFieldTypeData.value.setMapper(fieldName, new EnumToIntegerPropertyMapper(pair.first));
+            if(pair.last){
+                classFieldTypeData.getValue().setMapper(fieldName, new EnumToStringPropertyMapper(pair.first));
+                logger.debug("enumType[{}] found on field [{}] of class[{}].","String",fieldName,clazz.getName());
+            }else{
+                classFieldTypeData.getValue().setMapper(fieldName, new EnumToIntegerPropertyMapper(pair.first));
+                logger.debug("enumType[{}] found on field [{}] of class[{}].","ordinal",fieldName,clazz.getName());
+            }
             return;
         }
         PropertyMapper mapper = DefaultMapperRegistry.lookFor(field.getType());
         if(mapper!=null){
-            classFieldTypeData.value.setMapper(fieldName, mapper);
+
+            classFieldTypeData.getValue().setMapper(fieldName, mapper);
+            logger.debug("defaultMapper [{}] found on field [{}] of class[{}].",mapper.getUniqueMapperName(),fieldName,clazz.getName());
         }else{
             classFieldTypeData.registerTypical(fieldName, field.getType());
+            logger.debug("set typical type to field [{}] of class{}", fieldName, clazz.getName());
         }
     }
 
@@ -72,7 +81,7 @@ public class JpaAnnotatedTypeAdapter extends CacheDataSupport<String,ClassFieldT
         Enumerated enumeratedF = field.getAnnotation(Enumerated.class);
         Enumerated enumeratedG = method.getAnnotation(Enumerated.class);
         if(enumeratedF!=null && enumeratedG!=null){
-            throw new EasyQueryException("Both field and getter are @Enumerated annotated.");
+            throw new EasyQueryException("Both field and getter are @Enumerated annotated on field ==> "+field);
         }
         if(enumeratedF==null && enumeratedG!=null){
             return doGetEnumeratedClassWithType(enumeratedG, field);
@@ -83,6 +92,7 @@ public class JpaAnnotatedTypeAdapter extends CacheDataSupport<String,ClassFieldT
         return doGetEnumeratedClassWithType(null, field);
     }
 
+    @SuppressWarnings("unchecked")
     private Pair<Class<? extends Enum>,Boolean> doGetEnumeratedClassWithType(Enumerated enumerated, Field field){
         boolean byString = false;
         if(enumerated!=null && enumerated.value()== EnumType.STRING){
@@ -98,7 +108,7 @@ public class JpaAnnotatedTypeAdapter extends CacheDataSupport<String,ClassFieldT
             return null;
         }
         if(convertF!=null && convertG!=null){
-            throw new EasyQueryException("both field and getter are @Convert annotated.");
+            throw new EasyQueryException("both field and getter are @Convert annotated on field ==> "+field);
 
         }
         if(convertG!=null){
@@ -107,26 +117,28 @@ public class JpaAnnotatedTypeAdapter extends CacheDataSupport<String,ClassFieldT
         return convertF.converter();
     }
 
+    @SuppressWarnings("unchecked")
     @Override
     public Object getCompatibleFieldValue(Class<?> entityClass, String fieldName, Object value) {
         return loadThen(entityClass.getName(),(data)->{
-            PropertyMapper mapper = data.value.getMapper(fieldName);
+            PropertyMapper mapper = data.getValue().getMapper(fieldName);
             if(mapper!=null){
                 return mapper.convertToEntityAttribute(value);
             }else{
-                return ForceTypeAdapter.getCompatibleValue(data.fieldEntityTypeMap.get(fieldName), value);
+                return getCompatibleValue(data.getFieldType(fieldName), value);
             }
         });
     }
 
+    @SuppressWarnings("unchecked")
     @Override
     public Object getCompatibleDatabaseValue(Class<?> entityClass, String fieldName, Object value) {
         return loadThen(entityClass.getName(),(data)->{
-            PropertyMapper mapper = data.value.getMapper(fieldName);
+            PropertyMapper mapper = data.getValue().getMapper(fieldName);
             if(mapper!=null){
                 return mapper.convertToDatabaseColumn(value);
             }else{
-                return ForceTypeAdapter.getCompatibleValue(data.fieldDatabaseTypeMap.get(fieldName), value);
+                return getCompatibleValue(data.getDatabaseType(fieldName), value);
             }
         });
     }

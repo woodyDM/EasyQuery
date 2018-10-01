@@ -1,9 +1,11 @@
 package cn.deepmax.adapter.mapper;
 
-import javax.persistence.AttributeConverter;
 import java.sql.Timestamp;
 import java.time.LocalDateTime;
 
+/**
+ * Support java8 time to database type;
+ */
 public class LocalDateTimeToTimestampMapper implements PropertyMapper<LocalDateTime, Timestamp> {
 
     private static LocalDateTimeToTimestampMapper INSTANCE =null;

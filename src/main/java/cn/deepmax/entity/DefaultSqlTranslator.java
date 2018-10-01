@@ -25,7 +25,7 @@ public class DefaultSqlTranslator extends CacheDataSupport<String,SqlCacheData> 
         Objects.requireNonNull(typeAdapter);
         this.entityInfo = entityInfo;
         if(columnWrapper==null){
-            this.columnWrapper = (data)->data;
+            this.columnWrapper = data->data;
         }else{
             this.columnWrapper = columnWrapper;
         }

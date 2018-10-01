@@ -27,7 +27,10 @@ public interface PropertyMapper<X,Y> extends AttributeConverter<X,Y> {
     X convertToEntityAttribute (Y dbData);
 
 
-
+    /**
+     * for stateless mapper ,return unique name for cache key.
+     * @return
+     */
     default String getUniqueMapperName(){
         return this.toString();
     }

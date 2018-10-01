@@ -7,9 +7,12 @@ import java.time.LocalDateTime;
 import java.util.Objects;
 import java.util.concurrent.ConcurrentHashMap;
 
+
+/**
+ * default field to database type mapper .
+ * valid always if no @Convert found.
+ */
 public class DefaultMapperRegistry {
-
-
 
     protected static LocalCache<String, PropertyMapper> registry = new LocalCache<>(new ConcurrentHashMap());
 
