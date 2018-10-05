@@ -12,40 +12,37 @@ public class DefaultTransaction implements Transaction {
 
     private static  final  Logger logger = LoggerFactory.getLogger(DefaultTransaction.class);
     protected DataSource dataSource;
-    protected boolean isTransactionMode;
     protected Connection connection;
-    protected boolean isAutoCommit;
-    protected boolean oldAutoCommit;
+    protected boolean isTransactionMode = false;
+    protected Boolean oldAutoCommit ;
 
 
     public DefaultTransaction(DataSource dataSource) {
         this.dataSource = dataSource;
     }
 
+    /**
+     * need auto close ?
+     * when managed by user , return false;
+     * @return
+     */
     @Override
-    public boolean isTransactionMode() {
-        return isTransactionMode;
-    }
-
-    @Override
-    public boolean isAutoCommit() {
-        return isAutoCommit;
+    public boolean needClose() {
+        return !isTransactionMode;
     }
 
     @Override
     public void beginTransaction() {
-        getConnection();
         if(!isTransactionMode){
+            getConnection();
             logger.debug(">>>>>>Begin new transaction with connection [{}]",connection.toString());
             isTransactionMode = true;
-            oldAutoCommit = isAutoCommit;
-            if(isAutoCommit){
-                try {
-                    connection.setAutoCommit(false);
-                    isAutoCommit = false;
-                } catch (SQLException e) {
-                    throw new EasyQueryException("Failed to set autocommit to false",e);
-                }
+            try {
+                oldAutoCommit = connection.getAutoCommit();
+                connection.setAutoCommit(false);
+
+            } catch (SQLException e) {
+                throw new EasyQueryException("Failed to set autocommit to false",e);
             }
         }else{
             logger.debug("Already in transaction with connection[{}]",connection.toString());
@@ -61,7 +58,7 @@ public class DefaultTransaction implements Transaction {
                 connection.commit();
                 connection.setAutoCommit(oldAutoCommit);
                 isTransactionMode = false;
-                isAutoCommit = oldAutoCommit;
+                oldAutoCommit = null;
             } catch (SQLException e) {
                 throw new EasyQueryException("Fail to commit.",e);
             }
@@ -78,7 +75,7 @@ public class DefaultTransaction implements Transaction {
                 connection.rollback();
                 connection.setAutoCommit(oldAutoCommit);
                 isTransactionMode = false;
-                isAutoCommit = oldAutoCommit;
+                oldAutoCommit = null;
             } catch (SQLException e) {
                 throw new EasyQueryException("Fail to rollback.",e);
             }
@@ -92,6 +89,10 @@ public class DefaultTransaction implements Transaction {
 
         if(connection!=null){
             try {
+                if(oldAutoCommit!=null){
+                    connection.setAutoCommit(oldAutoCommit);
+                    oldAutoCommit = null;
+                }
                 connection.close();
                 logger.debug("<<<<<<Close connection [{}]",connection.toString());
                 connection = null;
@@ -111,15 +112,12 @@ public class DefaultTransaction implements Transaction {
 
     private Connection doGetConnection(){
         try {
-            connection = dataSource.getConnection();
-            isAutoCommit = connection.getAutoCommit();
-            oldAutoCommit = isAutoCommit;
-            //if isAutoCommit is false , set transactionMode to true.
-            isTransactionMode = !isAutoCommit;
+            Connection connection = dataSource.getConnection();
             logger.debug(">>>>>>Create new connection [{}], transaction={}",connection.toString(),isTransactionMode);
+            return this.connection = connection;
         } catch (SQLException e) {
             throw new EasyQueryException("Fail to create connection",e);
         }
-        return connection;
+
     }
 }

@@ -16,7 +16,7 @@ public class AdapterCacheTest extends BaseTest {
 
     @Test
     public void testCache(){
-        QueryTemplate template = factory.create();
+        QueryTemplate template = defaultFactory.create();
         for (int i = 0; i < 100; i++) {
             SuperUser user = new SuperUser();
             user.setBigDecimal(BigDecimal.TEN);

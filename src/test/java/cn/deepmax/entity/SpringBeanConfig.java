@@ -5,6 +5,7 @@ import cn.deepmax.pagehelper.MySqlPagePlugin;
 import cn.deepmax.querytemplate.DefaultQueryTemplateFactory;
 import cn.deepmax.querytemplate.QueryTemplate;
 import cn.deepmax.querytemplate.QueryTemplateFactory;
+import cn.deepmax.transaction.DefaultTransactionFactory;
 import cn.deepmax.transaction.SpringTransactionFactory;
 import com.zaxxer.hikari.HikariDataSource;
 import org.springframework.context.annotation.Bean;
@@ -34,12 +35,10 @@ public class SpringBeanConfig {
 
     @Bean("springFactory")
     public QueryTemplateFactory factory(){
-
         DefaultQueryTemplateFactory.Builder builder = new DefaultQueryTemplateFactory.Builder();
         return builder.setDataSource(h2Datasource())
                 .setTransactionFactory(new SpringTransactionFactory())
                 .setShowSql(true)
-                .setPagePlugin(new MySqlPagePlugin())
                 .build();
     }
 
@@ -47,10 +46,10 @@ public class SpringBeanConfig {
     public QueryTemplateFactory defaultFactory(){
         DefaultQueryTemplateFactory.Builder builder = new DefaultQueryTemplateFactory.Builder();
         return builder.setDataSource(h2Datasource())
+                .setTransactionFactory(new DefaultTransactionFactory())
                 .setShowSql(true)
                 .build();
     }
-
 
 
     @Bean

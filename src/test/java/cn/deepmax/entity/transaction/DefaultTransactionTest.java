@@ -15,10 +15,6 @@ public class DefaultTransactionTest extends BaseTest {
     public void testDefaultTransactionNoExceptionUsingDefaultFactory(){
         testDefaultTransactionNoException(defaultFactory);
     }
-    @Test
-    public void testDefaultTransactionNoExceptionUsingSpringFactory(){
-        testDefaultTransactionNoException(factory);
-    }
 
     private void testDefaultTransactionNoException(QueryTemplateFactory factory){
         QueryTemplate template = factory.create();
@@ -50,10 +46,6 @@ public class DefaultTransactionTest extends BaseTest {
     @Test
     public void testDefaultTransactionWithExceptionUsingDefaultFactory(){
         testDefaultTransactionException(defaultFactory);
-    }
-    @Test
-    public void testDefaultTransactionWithExceptionUsingSpringFactory(){
-        testDefaultTransactionException(factory);
     }
 
     private void testDefaultTransactionException(QueryTemplateFactory factory){

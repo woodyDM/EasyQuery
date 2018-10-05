@@ -1,9 +1,11 @@
 package cn.deepmax.entity;
 
+import cn.deepmax.querytemplate.QueryTemplate;
 import cn.deepmax.querytemplate.QueryTemplateFactory;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.test.context.ContextConfiguration;
 import org.springframework.test.context.junit4.SpringRunner;
 import org.springframework.util.Assert;
@@ -18,12 +20,13 @@ import java.sql.Statement;
 public class BaseTest {
 
     @Resource(name = "springFactory")
-    protected QueryTemplateFactory factory;
+    protected QueryTemplateFactory springFactory;
     @Resource(name ="defaultFactory")
     protected QueryTemplateFactory defaultFactory;
     @Resource(name = "H2Datasource")
     DataSource dataSource;
-
+    @Autowired
+    protected QueryTemplate queryTemplate;
 
     @Before
     public void init() throws Exception{
@@ -52,8 +55,10 @@ public class BaseTest {
 
     @Test
     public void test(){
-        Assert.notNull(factory,"factory is null");
+        Assert.notNull(springFactory,"factory is null");
         Assert.notNull(defaultFactory,"defaultFactory is null");
         Assert.notNull(dataSource,"dataSource is null");
+        Assert.notNull(queryTemplate,"QueryTemplate is null");
+        System.out.println("pause");
     }
 }

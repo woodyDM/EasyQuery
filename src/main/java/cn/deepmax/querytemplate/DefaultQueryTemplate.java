@@ -445,12 +445,10 @@ public class DefaultQueryTemplate implements QueryTemplate {
                 //Quitely
             }
         }
-        if(!transaction.isTransactionMode()){
+        if(transaction.needClose()){
             transaction.close();
         }
     }
-
-
 
 
 }

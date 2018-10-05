@@ -11,8 +11,23 @@ import java.math.BigDecimal;
 public class JpaOpsTest extends BaseTest{
 
     @Test
-    public void test1(){
-        QueryTemplate template = factory.create();
+    public void testDefault(){
+        jpaTest(defaultFactory.create());
+    }
+
+    @Test
+    public void testSpring01(){
+        jpaTest(springFactory.create());
+    }
+    @Test
+    public void testSpring02(){
+        jpaTest(queryTemplate);
+    }
+
+
+
+    private void jpaTest(QueryTemplate template){
+
         Assert.notNull(template,"tem null");
         SuperUser user = new SuperUser();
         user.setBigDecimal(BigDecimal.TEN);

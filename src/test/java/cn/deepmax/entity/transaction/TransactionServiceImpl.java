@@ -34,13 +34,13 @@ public class TransactionServiceImpl implements TransactionService {
         queryTemplate.save(u2);
         SuperUser u3 = queryTemplate.get(SuperUser.class, id);
         Assert.isTrue(u3.getColor1().equals(color1),"color check");
-        c();
+        causeException();
         return u3;
     }
 
 
 
-    private void c(){
+    private void causeException(){
         //throw exception
         queryTemplate.selectList("flewjfklewf");
 
