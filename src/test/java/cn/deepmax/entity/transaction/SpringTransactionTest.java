@@ -29,7 +29,7 @@ public class SpringTransactionTest extends BaseTest{
         user.setUpdateDate(null);
         service.save(user);
         SuperUser u2 = service.get(user.getId());
-        Assert.isTrue(u2.getId().equals(user.getId()));
+        Assert.isTrue(u2.getId().equals(user.getId()),"is true");
     }
 
     @Test
