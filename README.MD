@@ -9,26 +9,25 @@ EasyQuery using `QueryTemplate` resolves query result from `ResultSet` to unique
 `QueryTemplate` also support entity operations,such as save(),delete(),get().The
 entity information comes from user defined `EntityInfo` .
 <br>
-It is recommended to use EasyQuery in a spring project.
+It is very easy to use EasyQuery in a spring project.
 
 0 How to use
 ---
 
-A. Visit _https://www.jitpack.io_ and look up "https://github.com/woodyDM/EasyQuery" 
-and follow the instructions.<br>
-B. Clone this git or download source code to your computer and build jar yourself.<br>
-C. It is highly recommended to use branch "entity_enhance" version which support more features for JPA entity defination.
- click ->>> "https://github.com/woodyDM/EasyQuery/tree/entity_enhance"
+Way 1. Visit _https://www.jitpack.io_ and look up "https://github.com/woodyDM/EasyQuery" 
+and follow the instructions, choose the version you like and add to your pom.xml or build.gradle .    
+Way 2. Clone this git or download source code to your computer and build jar yourself.  
 
 1 Quick start
 ---
 
-There is a simple example to show EasyQuery features.<br>
-Step 1: Use  `DefaultQueryTemplateFactory.DefaultQueryTemplateFactoryBuilder` to create `QueryTemplateFactory`. 
+There is a simple example to show EasyQuery features.  
+Step 0: Firstly your need prepare a `DataSource` for EasyQuery.  
+Step 1: Use  `DefaultQueryTemplateFactory.Builder` to create `QueryTemplateFactory`. 
 ```java
+
     @Bean("springFactory")
     public QueryTemplateFactory factory(){
-    
         DefaultQueryTemplateFactory.Builder builder = new DefaultQueryTemplateFactory.Builder();
         return builder.setDataSource(h2Datasource())
                     .setTransactionFactory(new SpringTransactionFactory())

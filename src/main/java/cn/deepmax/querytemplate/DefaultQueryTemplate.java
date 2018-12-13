@@ -49,40 +49,26 @@ public class DefaultQueryTemplate implements QueryTemplate {
         this.typeAdapter = typeAdapter;
     }
 
-    /**
-     *
-     * @param sql
-     * @param params
-     * @return
-     */
-    @Override
-    public List<Map<String,Object>> selectList(String sql, Object... params){
-        return doSelect(sql,params);
-    }
 
     @Override
     public List<RowRecord> selectListEx(String sql, Object... params) {
-        List<Map<String,Object>> rawResults = doSelect(sql,params);
-        List<RowRecord> results = new ArrayList<>();
-        for(Map<String,Object> it:rawResults){
-            RowRecord oneRecord = new RowRecord (it);
-            results.add(oneRecord);
-        }
-        return results;
+        return selectList(sql, Function.identity(), params);
     }
 
     @Override
     public  <T> List<T> selectList(String sql, Class<T> clazz, Object... params) {
-        return selectList(sql, clazz ,map-> entityFactory.create(clazz,map), params);
+        return selectList(sql, map-> entityFactory.create(clazz, map), params);
+    }
+
+    @Override
+    public <T> List<T> selectList(SqlQuery<T> query) {
+        checkTargetClass(query.getTargetClass(), "selectList" );
+        return selectList(query.toSql(), query.getTargetClass(), query.toParameters());
     }
 
     @Override
     public <T> List<T> selectList(String sql, Function<RowRecord, T> converter, Object... params) {
-        return selectList(sql, null ,converter, params);
-    }
-
-    private <T> List<T> selectList(String sql, Class<T> clazz, Function<RowRecord, T> converter, Object... params) {
-        List<Map<String,Object>> results = doSelect(sql,params);
+        List<Map<String,Object>> results = selectList(sql,params);
         List<T> entityList = new ArrayList<>();
         for(Map<String,Object> it:results){
             RowRecord temp = new RowRecord(it);
@@ -92,6 +78,26 @@ public class DefaultQueryTemplate implements QueryTemplate {
         return entityList;
     }
 
+    @Override
+    public List<Map<String,Object>> selectList(String sql, Object... params){
+        Objects.requireNonNull(sql,"Sql should not be null");
+        Connection cn = transaction.getConnection();
+        PreparedStatement ps=null;
+        ResultSet rs=null;
+        try {
+            ps = cn.prepareStatement(sql);
+            setPrepareStatementParams(ps,params);
+            if(isShowSql){
+                logger.debug("[select] {}",sql);
+            }
+            rs = ps.executeQuery();
+            return ResultSetHandler.handle(rs);
+        } catch (SQLException e) {
+            throw new EasyQueryException(e);
+        } finally {
+            closeResources(ps, rs, transaction);
+        }
+    }
 
 
     @Override
@@ -122,6 +128,7 @@ public class DefaultQueryTemplate implements QueryTemplate {
                 result-> selectList((String)result.get(0), converter, (Object[])result.get(2)),
                 params);
     }
+
 
 
     private <T> PageInfo<T>  doSelectPage(String sql, Class<T> clazz, Integer pageNumber, Integer pageSize, Function<List<Object>,List<T>> generator, Object... params) {
@@ -176,6 +183,26 @@ public class DefaultQueryTemplate implements QueryTemplate {
     }
 
     /**
+     * @param query
+     * @return
+     */
+    @Override
+    public <T> T select(SqlQuery<T> query) {
+        List<T> results = selectList(query);
+        return handleUnique(results);
+    }
+
+    /**
+     * @param query
+     * @return
+     */
+    @Override
+    public <T> T selectScalar(SqlQuery<T> query) {
+        Class<T> targetClazz = query.getTargetClass();
+        return selectScalar(query.toSql(), targetClazz, query.toParameters());
+    }
+
+    /**
      *
      * @param sql
      * @param clazz
@@ -183,8 +210,10 @@ public class DefaultQueryTemplate implements QueryTemplate {
      * @param <T>
      * @return
      */
+    @SuppressWarnings("unchecked")
     @Override
     public <T> T selectScalar(String sql, Class<T> clazz, Object... params) {
+        checkTargetClass(clazz, "selectScalar");
         Map<String,Object> oneResult = select(sql,params);
         if(oneResult==null){
             return null;
@@ -199,6 +228,8 @@ public class DefaultQueryTemplate implements QueryTemplate {
         Object obj = oneResult.get(key);
         return (T) typeAdapter.getCompatibleValue(clazz,obj);
     }
+
+
 
     /**
      * batch -> update insert delete
@@ -382,32 +413,6 @@ public class DefaultQueryTemplate implements QueryTemplate {
     }
 
     /**
-     * select operation
-     * @param sql
-     * @param params
-     * @return
-     */
-    private List<Map<String,Object>> doSelect(String sql, Object... params){
-        Objects.requireNonNull(sql,"Sql should not be null");
-        Connection cn = transaction.getConnection();
-        PreparedStatement ps=null;
-        ResultSet rs=null;
-        try {
-            ps = cn.prepareStatement(sql);
-            setPrepareStatementParams(ps,params);
-            if(isShowSql){
-                logger.debug("[select] {}",sql);
-            }
-            rs = ps.executeQuery();
-            return ResultSetHandler.handle(rs);
-        } catch (SQLException e) {
-            throw new EasyQueryException(e);
-        } finally {
-            closeResources(ps, rs, transaction);
-        }
-    }
-
-    /**
      * To set parameters in prepareStatement
      * @param ps
      * @param params
@@ -450,5 +455,15 @@ public class DefaultQueryTemplate implements QueryTemplate {
         }
     }
 
+    /**
+     * check
+     * @param clazz
+     * @param methodName
+     */
+    private void checkTargetClass(Class<?> clazz, String methodName){
+        if(clazz==null){
+            throw new IllegalArgumentException("targetClass must be set when using "+methodName+" method.");
+        }
+    }
 
 }

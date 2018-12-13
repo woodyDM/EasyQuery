@@ -7,6 +7,7 @@ import cn.deepmax.transaction.Transaction;
 
 import java.util.List;
 import java.util.Map;
+import java.util.Optional;
 import java.util.function.Function;
 
 
@@ -59,6 +60,12 @@ public interface QueryTemplate {
      */
     <T> List<T> selectList(String sql, Function<RowRecord,T> converter,Object... params);
 
+    /**
+     *
+     * @param query
+     * @return
+     */
+    <T> List<T> selectList(SqlQuery<T> query);
 
     /**
      *
@@ -145,6 +152,14 @@ public interface QueryTemplate {
 
     /**
      *
+     * @param query
+     * @return
+     */
+    <T> T select(SqlQuery<T> query);
+
+
+    /**
+     *
      * @param sql
      * @param clazz
      * @param params
@@ -153,6 +168,13 @@ public interface QueryTemplate {
      */
     <T> T selectScalar(String sql, Class<T> clazz, Object... params);
 
+    /**
+     *
+     * @param query
+     * @param <T>
+     * @return
+     */
+    <T> T selectScalar(SqlQuery<T> query);
 
     /**
      *
