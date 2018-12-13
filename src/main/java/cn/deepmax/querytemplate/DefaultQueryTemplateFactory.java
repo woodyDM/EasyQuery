@@ -1,6 +1,8 @@
 package cn.deepmax.querytemplate;
 
 
+import cn.deepmax.adapter.JpaAnnotatedTypeAdapter;
+import cn.deepmax.adapter.TypeAdapter;
 import cn.deepmax.entity.*;
 import cn.deepmax.pagehelper.MySqlPagePlugin;
 import cn.deepmax.pagehelper.PagePlugin;
@@ -23,74 +25,91 @@ public class DefaultQueryTemplateFactory implements QueryTemplateFactory {
     private TransactionFactory transactionFactory;
     private PagePlugin pagePlugin;
     private boolean isShowSql = false;
-    private boolean isCollectMetadata = false;
+    private TypeAdapter typeAdapter;
+
     public static Logger logger = LoggerFactory.getLogger(DefaultQueryTemplate.class);
 
-    private DefaultQueryTemplateFactory() {
+    public DefaultQueryTemplateFactory() {
+    }
+
+    public DefaultQueryTemplateFactory(DataSource dataSource) {
+        this.dataSource = dataSource;
     }
 
     @Override
     public QueryTemplate create(){
         Transaction transaction = transactionFactory.newTransaction(dataSource);
-        return new DefaultQueryTemplate(transaction, entityFactory, sqlTranslator, pagePlugin,this.isShowSql, this.isCollectMetadata);
+        DefaultQueryTemplate template =  new DefaultQueryTemplate(transaction, entityFactory, sqlTranslator, pagePlugin,this.isShowSql );
+        template.setTypeAdapter(this.typeAdapter);
+        return template;
     }
 
-    public static class DefaultQueryTemplateFactoryBuilder{
+
+
+    public static class Builder{
         private DefaultQueryTemplateFactory factory = new DefaultQueryTemplateFactory();
 
-        public DefaultQueryTemplateFactoryBuilder setDataSource(DataSource dataSource) {
+
+        public Builder setDataSource(DataSource dataSource) {
             Objects.requireNonNull("Datasource should not be null.");
             this.factory.dataSource = dataSource;
             return this;
         }
 
-        public DefaultQueryTemplateFactoryBuilder setEntityInfo(EntityInfo entityInfo) {
+        public Builder setTypeAdapter(TypeAdapter typeAdapter) {
+            Objects.requireNonNull("typeAdapter should not be null.");
+            this.factory.typeAdapter = typeAdapter;
+            return this;
+        }
+
+        public Builder setEntityInfo(EntityInfo entityInfo) {
             this.factory.entityInfo = entityInfo;
             return this;
         }
 
-        public DefaultQueryTemplateFactoryBuilder setEntityFactory(EntityFactory entityFactory) {
+        public Builder setEntityFactory(EntityFactory entityFactory) {
             this.factory.entityFactory = entityFactory;
             return this;
         }
 
-        public DefaultQueryTemplateFactoryBuilder setSqlTranslator(SqlTranslator sqlTranslator) {
+        public Builder setSqlTranslator(SqlTranslator sqlTranslator) {
             this.factory.sqlTranslator = sqlTranslator;
             return this;
         }
 
-        public DefaultQueryTemplateFactoryBuilder setTransactionFactory(TransactionFactory transactionFactory) {
+        public Builder setTransactionFactory(TransactionFactory transactionFactory) {
             this.factory.transactionFactory = transactionFactory;
             return this;
         }
 
-        public DefaultQueryTemplateFactoryBuilder setPagePlugin(PagePlugin pagePlugin) {
+        public Builder setPagePlugin(PagePlugin pagePlugin) {
             this.factory.pagePlugin = pagePlugin;
             return this;
         }
 
-        public DefaultQueryTemplateFactoryBuilder setShowSql(boolean showSql) {
+        public Builder setShowSql(boolean showSql) {
             this.factory.isShowSql = showSql;
             return this;
         }
 
-        public DefaultQueryTemplateFactoryBuilder setCollectMetadata(boolean collectMetadata) {
-            this.factory.isCollectMetadata = collectMetadata;
-            return this;
-        }
+
 
         public DefaultQueryTemplateFactory build(){
             if(this.factory.dataSource==null){
                 throw new NullPointerException("DefaultQueryTemplateFactory needs a non-null datasource.");
             }
+            if(factory.typeAdapter ==null){
+                logger.debug("No typeAdapter set for DefaultQueryTemplateFactory, set default typeAdapter to JpaAnnotatedTypeAdapter");
+                factory.typeAdapter = new JpaAnnotatedTypeAdapter();
+            }
             if(this.factory.entityInfo==null){
                 logger.debug("No EntityInfo set for DefaultQueryTemplateFactory, set default EntityInfo to JpaEntityInfo");
-                factory.entityInfo = new JpaEntityInfo();
+                factory.entityInfo = new JpaEntityInfo(factory.typeAdapter);
             }
-            factory.entityFactory = new EntityFactory(factory.entityInfo);
+            factory.entityFactory = new EntityFactory(factory.entityInfo, factory.typeAdapter);
             if(this.factory.sqlTranslator ==null){
                 logger.debug("No SqlTranslator set for DefaultQueryTemplateFactory, set default SqlTranslator to DefaultSqlTranslator");
-                factory.sqlTranslator = new DefaultSqlTranslator(factory.entityInfo);
+                factory.sqlTranslator = new DefaultSqlTranslator(factory.entityInfo, null, factory.typeAdapter);
             }
             if(factory.transactionFactory == null){
                 logger.debug("No TransactionFactory set for DefaultQueryTemplateFactory, set default TransactionFactory to DefaultTransactionFactory");
@@ -100,6 +119,7 @@ public class DefaultQueryTemplateFactory implements QueryTemplateFactory {
                 logger.debug("No PagePlugin set for DefaultQueryTemplateFactory, set default PagePlugin to MySqlPagePlugin");
                 factory.pagePlugin = new MySqlPagePlugin();
             }
+
             return factory;
         }
     }

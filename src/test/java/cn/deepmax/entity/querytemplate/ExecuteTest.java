@@ -6,16 +6,37 @@ import cn.deepmax.querytemplate.QueryTemplate;
 import cn.deepmax.resultsethandler.RowRecord;
 import org.junit.Test;
 import org.springframework.util.Assert;
+
 import java.math.BigDecimal;
-import java.math.BigInteger;
 import java.util.List;
 import java.util.Map;
 
 public class ExecuteTest extends BaseTest {
 
+
     @Test
-    public void testExecuteUpdate(){
-        QueryTemplate template = factory.create();
+    public void testDefault(){
+        testExecuteUpdate(defaultFactory.create());
+        testSelectList(defaultFactory.create());
+        testSelectList(defaultFactory.create());
+    }
+
+    @Test
+    public void testSpring01(){
+        testExecuteUpdate(springFactory.create());
+        testSelectList(springFactory.create());
+        testSelectList(springFactory.create());
+    }
+    @Test
+    public void testSpring02(){
+        testExecuteUpdate(queryTemplate);
+        testSelectList(queryTemplate);
+        testSelectList(queryTemplate);
+    }
+
+
+    private void testExecuteUpdate(QueryTemplate template){
+
         SuperUser user = new SuperUser();
         user.setUserName("kitty");
         user.setBigDecimal(BigDecimal.ONE);
@@ -30,9 +51,9 @@ public class ExecuteTest extends BaseTest {
         Assert.isTrue(sUser.isHide(),"boolean  check");
     }
 
-    @Test
-    public void testSelectList(){
-        QueryTemplate template = factory.create();
+
+    private void testSelectList(QueryTemplate template){
+
         String sql = "select * from super_user where id > ? ";
         List<SuperUser> list = template.selectList(sql,SuperUser.class,1);
         Assert.notNull(list,"list not null");
@@ -51,9 +72,9 @@ public class ExecuteTest extends BaseTest {
 
 
 
-    @Test
-    public void testSelectScalar(){
-        QueryTemplate template = factory.create();
+
+    private void testSelectScalar(QueryTemplate template){
+
         String sql = "select count(*) awe from super_user where id > ? ";
         Integer l = template.selectScalar(sql,Integer.class, 2);
         Assert.isTrue(l>0,"L>0");

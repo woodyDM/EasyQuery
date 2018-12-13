@@ -1,11 +1,14 @@
 package cn.deepmax.entity.transaction;
 
 import cn.deepmax.entity.BaseTest;
+import cn.deepmax.entity.adapter.MyColor;
 import cn.deepmax.entity.model.SuperUser;
 import org.junit.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.util.Assert;
+
 import java.math.BigDecimal;
+import java.time.LocalDateTime;
 
 public class SpringTransactionTest extends BaseTest{
 
@@ -13,24 +16,38 @@ public class SpringTransactionTest extends BaseTest{
     TransactionService service;
 
     /**
-     * !! this test need a local mysql database with engine innoDB .
+     *
      */
-//    @Test
-//    public void testWithException(){
-//        SuperUser user = new SuperUser();
-//        user.setBigDecimal(BigDecimal.ONE);
-//        service.save(user);
-//        Assert.notNull(user.getId(),"id null");
-//        try{
-//            //this service set bigDecimal to BigDecimal.TEN,
-//            //rollback after exception.
-//            service.causeExceptionSave(user);
-//        }catch (Exception e){
-//
-//        }
-//        SuperUser user1 = service.get(user.getId());
-//        Assert.isTrue(user1.getBigDecimal().equals(BigDecimal.ONE),"After rollback");
-//    }
+    @Test
+    public void testWithNoException(){
+        SuperUser user = new SuperUser();
+        user.setBigDecimal(BigDecimal.ONE);
+        user.setHide(true);
+        user.setShow(false);
+        user.setaBigPoint(23D);
+        user.setCreateTime(LocalDateTime.now());
+        user.setUpdateDate(null);
+        service.save(user);
+        SuperUser u2 = service.get(user.getId());
+
+        Assert.isTrue(u2.getId().equals(user.getId()),"is true");
+    }
+
+    @Test
+    public void testWithException(){
+        Long testId  = 1L;
+        SuperUser user0 = service.get(testId);
+        Assert.isTrue(user0.getColor1().equals(MyColor.BLACK),"color check.");
+        try{
+            SuperUser user = service.causeExceptionSave(testId, MyColor.RED);
+        }catch (Exception e){
+            //
+        }
+        SuperUser userF = service.get(testId);
+        Assert.isTrue(user0.getColor1().equals(MyColor.BLACK),"color check.");
+
+
+    }
 
 
 }

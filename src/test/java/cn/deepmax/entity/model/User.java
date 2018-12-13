@@ -1,13 +1,14 @@
 package cn.deepmax.entity.model;
 
-import cn.deepmax.annotation.Ignore;
+
+import cn.deepmax.adapter.mapper.LocalDateTimeToTimestampMapper;
+import cn.deepmax.adapter.mapper.LocalDateToDateMapper;
 
 import javax.persistence.Column;
+import javax.persistence.Convert;
 import javax.persistence.Id;
-import java.math.BigDecimal;
-import java.math.BigInteger;
-import java.sql.Timestamp;
-import java.util.Date;
+import java.time.LocalDate;
+import java.time.LocalDateTime;
 
 public class User {
 
@@ -16,19 +17,21 @@ public class User {
     private Long id;
     @Column(name = "USER_NAME")
     private String userName;
-    @Column(name = "CREATE_TIME")
-    private Timestamp createTime;
 
-    private Date updateDate;
+    private LocalDateTime createTime;
+
+    @Convert(converter = LocalDateToDateMapper.class)
+    private LocalDate updateDate;
 
     @Column(name = "SHOW")
     private Boolean show;
     @Column(name = "HIDE")
     private boolean hide;
-    @Ignore
+
     private double transientProperty;
     @Column(name = "A_BIG_POINT")
     private Double aBigPoint;
+
 
     public Long getId() {
         return id;
@@ -45,20 +48,21 @@ public class User {
     public void setUserName(String userName) {
         this.userName = userName;
     }
+    @Column(name = "CREATE_TIME")
 
-    public Timestamp getCreateTime() {
+    public LocalDateTime getCreateTime() {
         return createTime;
     }
 
-    public void setCreateTime(Timestamp createTime) {
+    public void setCreateTime(LocalDateTime createTime) {
         this.createTime = createTime;
     }
     @Column(name = "UPDATE_DATE")
-    public Date getUpdateDate() {
+    public LocalDate getUpdateDate() {
         return updateDate;
     }
 
-    public void setUpdateDate(Date updateDate) {
+    public void setUpdateDate(LocalDate updateDate) {
         this.updateDate = updateDate;
     }
 

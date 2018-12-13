@@ -1,6 +1,7 @@
 package cn.deepmax.entity;
 
 import cn.deepmax.model.Pair;
+
 import java.util.List;
 
 /**
@@ -10,28 +11,28 @@ import java.util.List;
  */
 public interface SqlTranslator {
     /**
-     * get sql and sql array params for obj entity to insert.
+     * putIfAbsent sql and sql array params for obj entity to insert.
      * @param obj
      * @return
      */
     Pair<String,List<Object>> getInsertSQLInfo(Object obj);
 
     /**
-     * get sql and sql array params for obj entity to update.
+     * putIfAbsent sql and sql array params for obj entity to update.
      * @param obj
      * @return
      */
     Pair<String,List<Object>> getUpdateSQLInfo(Object obj);
 
     /**
-     * get sql for obj entity to selectList by primaryKey.
+     * putIfAbsent sql for obj entity to selectList by primaryKey.
      * @param clazz
      * @return
      */
     String getSelectSQLInfo(Class<?> clazz);
 
     /**
-     * get sql and primary key field value for obj entity to delete by primaryKey.
+     * putIfAbsent sql and primary key field value for obj entity to delete by primaryKey.
      * @param obj
      * @return
      */

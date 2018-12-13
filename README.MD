@@ -28,17 +28,13 @@ Step 1: Use  `DefaultQueryTemplateFactory.DefaultQueryTemplateFactoryBuilder` to
 ```java
     @Bean("springFactory")
     public QueryTemplateFactory factory(){
-        MappedEntityInfo entityInfo = new MappedEntityInfo();
-        entityInfo.setToColumnNameMapper(new CamelToUpperUnderLineColumnNameMapper());
-        entityInfo.setToTableNameMapper(new PascalToLowerUnderLineTableNameMapper());
-        DefaultQueryTemplateFactory.DefaultQueryTemplateFactoryBuilder builder = new DefaultQueryTemplateFactory.DefaultQueryTemplateFactoryBuilder();
+    
+        DefaultQueryTemplateFactory.Builder builder = new DefaultQueryTemplateFactory.Builder();
         return builder.setDataSource(h2Datasource())
-                .setTransactionFactory(new SpringTransactionFactory())
-                .setShowSql(true)       
-                .setCollectMetadata(true)
-                .setEntityInfo(entityInfo)
-                .setPagePlugin(new MySqlPagePlugin())
-                .build();
+                    .setTransactionFactory(new SpringTransactionFactory())
+                    .setShowSql(true)
+                    .setPagePlugin(new MySqlPagePlugin())
+                    .build();
     }
 ```
 Step 2: Using `create` method of the factory to create new `QueryTemplate` which 
@@ -54,7 +50,7 @@ Long id = user.getId();
 String sql = "update superuser set name ='Kitty' ,ok1 = '2' where id  = ? ";
 int i = template.executeUpdate(sql,id);                     //execute sql .
 Assert.isTrue(i==1,"1 row");
-SuperUser userFromGet = template.get(SuperUser.class,id);   //get via entity primaryKey value
+SuperUser userFromGet = template.get(SuperUser.class,id);   putIfAbsent
 Assert.isTrue(userFromGet.getName().equals("Kitty"),"name");
 
 PageInfo<SuperUser> pageInfo = template.selectPage(sql,(RowRecord oneRecord) ->{
@@ -67,7 +63,8 @@ PageInfo<SuperUser> pageInfo = template.selectPage(sql,(RowRecord oneRecord) ->{
 2 `QueryTemplate`
 ---
 
-`QueryTemplate` ,the core interface of EasyQuery, provides SQL query and entity operations.
+`QueryTemplate` ,the core interface of EasyQuery, provides SQL query and entity operations.`QueryTemplate` is thread-unsafe when using `DefaultTransactionFactory`,
+and it is thread-safe when using `SpringTransactionFactory` ,which using ThreadLocal to hold the jdbc connection.
 <br>
 `select` and `selectList` is common choose to get data from database, `select` for an
 unique result or `selectList` for list of result.if any parameters in 
@@ -92,7 +89,7 @@ Long userId = rowRecord.getLong("userId");
 Integer userIdInteger = rowRecord.getInteger("userId");
 Boolean isIdNotZero = rowRecord.getBoolean("userId");   //Boolean value
 //but when using Map,must cast:
-//Long userId =(Long) map.get("userId")
+ 
 ```
 There are other 'select' methods requiring `Class<T>` as parameter which return POJO entity or entity list.
 see `EntityInfo` next section.<br>
@@ -123,47 +120,73 @@ to POJO ) is to rule relationship between POJO fields and database columns.
 column label name, and also the relationship between the POJO class and database
 tables.
 <br><br>
-Two `EntityInfo` implementations:`MappedEntityInfo` and `JpaEntityInfo` are provided.
+Default `EntityInfo` implementation is  `JpaEntityInfo` .<br>
+(`MappedEntityInfo` is not supported anymore.)
 <br>
-
-**MappedEntityInfo**
-
-`MappedEntityInfo` uses two `NameMapper` to set those rules.
-'toTableNameMapper' in 'MappedEntityInfo' defines the table name according to entity
-class name and 'toColumnNameMapper' defines the column name that corresponding 
-the field name in POJO. You can define your own `NameMapper` to match your entity class field 
-and the database column name.For example:<br>
-```java
-new NameMapper(){
-    @Override
-    public String convert(Class<?> clazz, String name) {
-            if(name==null){
-                return null;
-            }
-            return name.toUpperCase();
-        }
-};
-```
-Defines an upper case columnNameMapper.If set in "toColumnNameMapper" method, your field name is "userId" ,the database column
- name should be USERID. ie: class field name ---> database columnName<br>
- The same when you facing "toTableNameMapper" method.<br>
  
-**Tip**: If any field in the class that is not desired to persist in database, 
-just put `@Ignore` on the field, just like
-```java
-class User{
-    private Integer id;
-    private String userName;
-    @Ignore
-    private double transientProperty;
-}
-```
-
 **JpaEntityInfo**
 
 `JpaEntityInfo` supports standard JPA annotations :`@Table`, `@Column`, `@Id`<br>
  Just like using Hibernate, put `@Table` on your class, and `@Column` in your class field (or field getter) ,
  and `@Id` on the primaryKey field. Every entity class must have a primary key field.
+ <br>Also, the typical JPA annotation :<br>@Enumerated<br>
+ @Transient      <br>@Convert(converter = MyConverter.class) are supported.
+ In @Convert(convert = XX.class) the XX.class should implements `javax.persistence.AttributeConverter` or
+ `cn.deepmax.adapter.mapper.PropertyMapper<X,Y>`<br>
+ for example:<br>
+ ```java
+
+@Entity
+@Table(name = "super_user" )
+public class SuperUser extends User{
+
+    @Id
+    @Column(name = "ID")    //also no need to define this @Column, the default will be same as field name.
+    private Long id;
+    
+    @Column(name = "BIG_DECIMAL")
+    private BigDecimal bigDecimal;
+    
+    // MyColor is an Enum Type
+    @Column(name = "COLOR1")
+    private MyColor color1; //no @Enumerated annotated is same as @Enumerated(javax.persistence.EnumType.ORDINAL)
+    
+
+    @Column(name = "AUTH")
+    @Enumerated(javax.persistence.EnumType.STRING)
+    private EnumType auth;
+    
+
+    @Column(name = "COLOR2")
+    @Enumerated(javax.persistence.EnumType.ORDINAL)
+    private MyColor color2;
+    
+    @Column(name = "COLOR3")
+    @Convert(converter = JpaConverter.class)
+    private MyColor color3;
+    
+    @Transient      // transient
+    @Convert(converter = MyConverter.class) //using convert is also ok.
+    @Column(name = "COLOR4")
+    private MyColor color4;
+    
+    @Column(name = "USER_NAME")
+    private String userName;
+    
+    @Column(name = "CREATE_TIME")
+    @Convert(converter = LocalDateTimeToTimestampMapper.class)
+    private LocalDateTime createTime;
+    
+    @Column(name = "UPDATE_DATE")
+    @Convert(converter = LocalDateToDateMapper.class)
+    private LocalDate updateDate;
+    
+    @Column(name = "SHOW")
+    private Boolean show;
+    //getter and setters    
+}
+```
+ 
  
 
 4 Transaction
@@ -212,52 +235,7 @@ defaultQueryTemplateFactory.config().setShowSql(true) to true , and logging leve
 
 7 Generator
 --
-A simple POJO class generator is provided.Use like this:
-```java
-
-public static void mysqlTableGenerator(){
-        Config.Builder builder = new Config.Builder();
-        Mapper fieldMapper = new LowerUnderlineToCamelMapper();
-        Mapper classNameMapper = new LowerUnderlineToPascalMapper();
-        Config config = builder.setDatabaseDriver("com.mysql.jdbc.Driver")
-                .setDatabasePassword("")
-                .setDatabaseUserName("root")
-                .setDatabaseUrl("jdbc:mysql://localhost:3306/test")
-                .setPackageName("cn.deepmax.entity")
-                .setEntityPath("/E:/test/po")
-                .setValueObjectPath("/E:/test/vo")
-                .setToClassNameMapper(classNameMapper)
-                .setToFieldNameMapper(fieldMapper)
-                .build();
-        MysqlTableGenerator generator = new MysqlTableGenerator(config,"shoppingh");
-        generator.addTables("db_types");
-        generator.generate();
-    }
-
-
-    public static void fromSqlGenerator(){
-        Config.Builder builder = new Config.Builder();
-        Mapper fieldMapper = new LowerUnderlineToCamelMapper();
-        Mapper classNameMapper = new LowerUnderlineToPascalMapper();
-        Config config = builder.setDatabaseDriver("com.mysql.jdbc.Driver")
-                .setDatabasePassword("")
-                .setDatabaseUserName("root")
-                .setDatabaseUrl("jdbc:mysql://localhost:3306/shoppingh")
-                .setPackageName("cn.deepmax.entity")
-                .setEntityPath("/E:/test/po")
-                .setValueObjectPath("/E:/test/vo")
-                .setToClassNameMapper(classNameMapper)
-                .setToFieldNameMapper(fieldMapper)
-                .build();
-        FromSqlGenerator generator = new FromSqlGenerator(config);
-        String sql = "SELECT p.user_id,p.myTime,p.adress,u.email FROM  t_page p  INNER JOIN t_user u on p.user_id = u.id\n" +
-                "where p.id < ? ";
-        generator.generate("JoinTest",sql,-1);
-        String sql2 = "select * from db_types limit 1";
-        generator.generate("TestJav",sql2);
-
-    }
-```
+This feature is no longer supported.
 
 <br>
 EasyQuery is now only tested on win10 (x64) with mysql 5.7.15, java 1.8. <br>

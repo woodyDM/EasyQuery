@@ -1,11 +1,10 @@
 package cn.deepmax.querytemplate;
 
 
-import cn.deepmax.model.DatabaseMetaData;
-import cn.deepmax.model.Pair;
 import cn.deepmax.pagehelper.PageInfo;
 import cn.deepmax.resultsethandler.RowRecord;
 import cn.deepmax.transaction.Transaction;
+
 import java.util.List;
 import java.util.Map;
 import java.util.function.Function;
@@ -154,14 +153,6 @@ public interface QueryTemplate {
      */
     <T> T selectScalar(String sql, Class<T> clazz, Object... params);
 
-
-    /**
-     *
-     * @param sql
-     * @param params
-     * @return
-     */
-    Pair<DatabaseMetaData,List<Map<String,Object>>> doSelect(String sql, Object... params);
 
     /**
      *

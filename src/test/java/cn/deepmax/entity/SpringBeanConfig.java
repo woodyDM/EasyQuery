@@ -1,15 +1,13 @@
 package cn.deepmax.entity;
 
 
-import cn.deepmax.mapper.column.*;
-import cn.deepmax.mapper.table.PascalToLowerUnderLineTableNameMapper;
 import cn.deepmax.pagehelper.MySqlPagePlugin;
-import cn.deepmax.querytemplate.QueryTemplateFactory;
 import cn.deepmax.querytemplate.DefaultQueryTemplateFactory;
+import cn.deepmax.querytemplate.QueryTemplate;
+import cn.deepmax.querytemplate.QueryTemplateFactory;
+import cn.deepmax.transaction.DefaultTransactionFactory;
 import cn.deepmax.transaction.SpringTransactionFactory;
 import com.zaxxer.hikari.HikariDataSource;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.ComponentScan;
 import org.springframework.context.annotation.Configuration;
@@ -24,8 +22,6 @@ import javax.sql.DataSource;
 @EnableTransactionManagement
 public class SpringBeanConfig {
 
-    private static final Logger logger = LoggerFactory.getLogger(SpringBeanConfig.class);
-
 
     @Bean("H2Datasource")
     public DataSource h2Datasource(){
@@ -39,75 +35,36 @@ public class SpringBeanConfig {
 
     @Bean("springFactory")
     public QueryTemplateFactory factory(){
-        MappedEntityInfo entityInfo = new MappedEntityInfo();
-        entityInfo.setToColumnNameMapper(new CamelToUpperUnderLineColumnNameMapper());
-        entityInfo.setToTableNameMapper(new PascalToLowerUnderLineTableNameMapper());
-        DefaultQueryTemplateFactory.DefaultQueryTemplateFactoryBuilder builder = new DefaultQueryTemplateFactory.DefaultQueryTemplateFactoryBuilder();
+        DefaultQueryTemplateFactory.Builder builder = new DefaultQueryTemplateFactory.Builder();
         return builder.setDataSource(h2Datasource())
                 .setTransactionFactory(new SpringTransactionFactory())
                 .setShowSql(true)
-                .setCollectMetadata(true)
-                .setEntityInfo(entityInfo)
-                .setPagePlugin(new MySqlPagePlugin())
                 .build();
     }
 
     @Bean("defaultFactory")
     public QueryTemplateFactory defaultFactory(){
-        DefaultQueryTemplateFactory.DefaultQueryTemplateFactoryBuilder builder = new DefaultQueryTemplateFactory.DefaultQueryTemplateFactoryBuilder();
-        MappedEntityInfo entityInfo = new MappedEntityInfo();
-        entityInfo.setToColumnNameMapper(new CamelToUpperUnderLineColumnNameMapper());
-        entityInfo.setToTableNameMapper(new PascalToLowerUnderLineTableNameMapper());
+        DefaultQueryTemplateFactory.Builder builder = new DefaultQueryTemplateFactory.Builder();
         return builder.setDataSource(h2Datasource())
+                .setTransactionFactory(new DefaultTransactionFactory())
                 .setShowSql(true)
-                .setEntityInfo(entityInfo)
-                .setCollectMetadata(true)
-                .build();
-    }
-
-    @Bean("jpaFactory")
-    public QueryTemplateFactory jpaFactory(){
-
-        DefaultQueryTemplateFactory.DefaultQueryTemplateFactoryBuilder builder = new DefaultQueryTemplateFactory.DefaultQueryTemplateFactoryBuilder();
-
-        return builder.setDataSource(h2Datasource())
-                .setShowSql(true)
-                .setCollectMetadata(true)
                 .build();
     }
 
 
-//    @Bean
-//    public PlatformTransactionManager platformTransactionManager(){
-//        DataSourceTransactionManager manager = new DataSourceTransactionManager(localDatasource());
-//        return manager;
-//    }
-//
-//    @Bean("localDatasource")
-//    public DataSource localDatasource(){
-//        HikariDataSource dataSource = new HikariDataSource();
-//        dataSource.setJdbcUrl("jdbc:mysql://localhost:3306/test?useUnicode=true&characterEncoding=utf8&autoReconnect=true&useSSL=false");
-//        dataSource.setDriverClassName("com.mysql.jdbc.Driver");
-//        dataSource.setUsername("root");
-//        dataSource.setPassword("123456");
-//        return dataSource ;
-//    }
-//
-//
-//
-//    @Bean("localSpringFactory")
-//    public QueryTemplateFactory localSpringFactory(){
-//        DefaultQueryTemplateFactory factory = new DefaultQueryTemplateFactory(localDatasource());
-//        factory.setTransactionFactory(new SpringTransactionFactory());
-//
-//        factory.setEntityInfo(new JpaEntityInfo());
-//        factory.isShowSql(true);
-//        factory.getConfig().setGenerateClass(true);
-//        factory.getConfig().setToFieldNameMapper(new LowerUnderlineToCamelColumnNameMapper());
-//        factory.getConfig().setValueObjectPath("D:\\Projects\\EasyQuery\\src\\test\\java\\");
-//        factory.getConfig().setEntityPath("D:\\Projects\\EasyQuery\\src\\test\\java\\");
-//        return factory.build();
-//    }
+    @Bean
+    public PlatformTransactionManager platformTransactionManager(){
+        DataSourceTransactionManager manager = new DataSourceTransactionManager(h2Datasource());
+        return manager;
+    }
+
+
+    @Bean("springTemplate")
+    public QueryTemplate localSpringFactory(){
+        QueryTemplateFactory factory = factory();
+        return factory.create();
+    }
+
 
 
 

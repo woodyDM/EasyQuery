@@ -1,10 +1,9 @@
 package cn.deepmax.querytemplate;
 
+import cn.deepmax.adapter.TypeAdapter;
 import cn.deepmax.entity.EntityFactory;
 import cn.deepmax.entity.SqlTranslator;
-import cn.deepmax.util.TypeAdapter;
 import cn.deepmax.exception.EasyQueryException;
-import cn.deepmax.model.DatabaseMetaData;
 import cn.deepmax.model.Pair;
 import cn.deepmax.pagehelper.PageInfo;
 import cn.deepmax.pagehelper.PagePlugin;
@@ -13,8 +12,12 @@ import cn.deepmax.resultsethandler.RowRecord;
 import cn.deepmax.transaction.Transaction;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+
 import java.sql.*;
-import java.util.*;
+import java.util.ArrayList;
+import java.util.List;
+import java.util.Map;
+import java.util.Objects;
 import java.util.function.Function;
 
 
@@ -29,18 +32,21 @@ public class DefaultQueryTemplate implements QueryTemplate {
     private SqlTranslator sqlTranslator;
     private PagePlugin pagePlugin;
     private boolean isShowSql;
-    private boolean isCollectMetadata ;
+    private TypeAdapter typeAdapter;
 
     private static final Logger logger = LoggerFactory.getLogger(DefaultQueryTemplate.class);
 
-
-    public DefaultQueryTemplate(Transaction transaction, EntityFactory entityFactory, SqlTranslator sqlTranslator,PagePlugin pagePlugin,boolean isShowSql, boolean isCollectMetadata) {
+    public DefaultQueryTemplate(Transaction transaction, EntityFactory entityFactory, SqlTranslator sqlTranslator,PagePlugin pagePlugin,boolean isShowSql ) {
         this.transaction = transaction;
         this.entityFactory = entityFactory;
         this.sqlTranslator = sqlTranslator;
         this.pagePlugin = pagePlugin;
         this.isShowSql = isShowSql;
-        this.isCollectMetadata = isCollectMetadata;
+
+    }
+
+    public void setTypeAdapter(TypeAdapter typeAdapter) {
+        this.typeAdapter = typeAdapter;
     }
 
     /**
@@ -51,14 +57,12 @@ public class DefaultQueryTemplate implements QueryTemplate {
      */
     @Override
     public List<Map<String,Object>> selectList(String sql, Object... params){
-        return doSelect(sql,params).last;
+        return doSelect(sql,params);
     }
-
-
 
     @Override
     public List<RowRecord> selectListEx(String sql, Object... params) {
-        List<Map<String,Object>> rawResults = doSelect(sql,params).last;
+        List<Map<String,Object>> rawResults = doSelect(sql,params);
         List<RowRecord> results = new ArrayList<>();
         for(Map<String,Object> it:rawResults){
             RowRecord oneRecord = new RowRecord (it);
@@ -78,10 +82,7 @@ public class DefaultQueryTemplate implements QueryTemplate {
     }
 
     private <T> List<T> selectList(String sql, Class<T> clazz, Function<RowRecord, T> converter, Object... params) {
-        Pair<DatabaseMetaData,List<Map<String,Object>>> pair = doSelect(sql,params);
-
-
-        List<Map<String,Object>> results = pair.last;
+        List<Map<String,Object>> results = doSelect(sql,params);
         List<T> entityList = new ArrayList<>();
         for(Map<String,Object> it:results){
             RowRecord temp = new RowRecord(it);
@@ -196,7 +197,7 @@ public class DefaultQueryTemplate implements QueryTemplate {
             key = oneKey;
         }
         Object obj = oneResult.get(key);
-        return (T)TypeAdapter.getCompatibleValue(clazz,obj);
+        return (T) typeAdapter.getCompatibleValue(clazz,obj);
     }
 
     /**
@@ -251,7 +252,7 @@ public class DefaultQueryTemplate implements QueryTemplate {
     }
 
     /**
-     *  get operation.
+     *  putIfAbsent operation.
      * @param clazz
      * @param primary
      * @param <T>
@@ -259,7 +260,7 @@ public class DefaultQueryTemplate implements QueryTemplate {
      */
     @Override
     public <T> T get(Class<T> clazz,Object primary){
-        Objects.requireNonNull(primary,"PrimaryKey value is null, unable to get entity of type["+clazz.getName()+"]");
+        Objects.requireNonNull(primary,"PrimaryKey value is null, unable to putIfAbsent entity of type["+clazz.getName()+"]");
         String sql = sqlTranslator.getSelectSQLInfo(clazz);
         return select (sql,clazz,primary);
     }
@@ -386,8 +387,7 @@ public class DefaultQueryTemplate implements QueryTemplate {
      * @param params
      * @return
      */
-    @Override
-    public Pair<DatabaseMetaData,List<Map<String,Object>>> doSelect(String sql, Object... params){
+    private List<Map<String,Object>> doSelect(String sql, Object... params){
         Objects.requireNonNull(sql,"Sql should not be null");
         Connection cn = transaction.getConnection();
         PreparedStatement ps=null;
@@ -399,7 +399,7 @@ public class DefaultQueryTemplate implements QueryTemplate {
                 logger.debug("[select] {}",sql);
             }
             rs = ps.executeQuery();
-            return ResultSetHandler.handle(rs, isCollectMetadata);
+            return ResultSetHandler.handle(rs);
         } catch (SQLException e) {
             throw new EasyQueryException(e);
         } finally {
@@ -415,6 +415,7 @@ public class DefaultQueryTemplate implements QueryTemplate {
     private void setPrepareStatementParams(PreparedStatement ps, Object... params){
         for (int i = 0; i < params.length; i++) {
             try {
+
                 ps.setObject(i+1,params[i]);
             } catch (SQLException e) {
                 throw new EasyQueryException("Setting prepareStatement params error, check your parameters.",e);
@@ -444,12 +445,10 @@ public class DefaultQueryTemplate implements QueryTemplate {
                 //Quitely
             }
         }
-        if(!transaction.isTransactionMode()){
+        if(transaction.needClose()){
             transaction.close();
         }
     }
-
-
 
 
 }

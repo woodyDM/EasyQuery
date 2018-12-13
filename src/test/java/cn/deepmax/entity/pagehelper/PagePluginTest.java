@@ -4,6 +4,7 @@ import cn.deepmax.entity.BaseTest;
 import cn.deepmax.entity.model.SuperUser;
 import cn.deepmax.pagehelper.PageInfo;
 import cn.deepmax.querytemplate.QueryTemplate;
+import cn.deepmax.querytemplate.QueryTemplateFactory;
 import cn.deepmax.resultsethandler.RowRecord;
 import org.junit.Test;
 import org.springframework.util.Assert;
@@ -14,9 +15,24 @@ public class PagePluginTest extends BaseTest {
 
 
     @Test
-    public void testPageHelper(){
+    public void testPageHelperDefault(){
+        testPageHelper_(defaultFactory.create());
+    }
 
-        QueryTemplate template = factory.create();
+    @Test
+    public void testPageHelperSpring(){
+        testPageHelper_(springFactory.create());
+    }
+
+    @Test
+    public void testPageHelperSpring2(){
+        testPageHelper_(queryTemplate);
+    }
+
+
+    private void testPageHelper_(QueryTemplate template  ){
+
+
         String sql = "select * from super_user where big_decimal > ? ";
         PageInfo<Map<String,Object>> info = template.selectPage(sql,1,3,1);
         Assert.isTrue(info.getData().size() > 0 ,"info notnull");

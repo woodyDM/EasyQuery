@@ -3,19 +3,31 @@ package cn.deepmax.entity.querytemplate;
 import cn.deepmax.entity.BaseTest;
 import cn.deepmax.entity.model.SuperUser;
 import cn.deepmax.querytemplate.QueryTemplate;
-import cn.deepmax.querytemplate.QueryTemplateFactory;
 import org.junit.Test;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.util.Assert;
 
 import java.math.BigDecimal;
-import java.util.concurrent.TimeUnit;
 
 public class JpaOpsTest extends BaseTest{
 
     @Test
-    public void test1(){
-        QueryTemplate template = jpaFactory.create();
+    public void testDefault(){
+        jpaTest(defaultFactory.create());
+    }
+
+    @Test
+    public void testSpring01(){
+        jpaTest(springFactory.create());
+    }
+    @Test
+    public void testSpring02(){
+        jpaTest(queryTemplate);
+    }
+
+
+
+    private void jpaTest(QueryTemplate template){
+
         Assert.notNull(template,"tem null");
         SuperUser user = new SuperUser();
         user.setBigDecimal(BigDecimal.TEN);

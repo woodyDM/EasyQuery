@@ -1,159 +1,160 @@
 package cn.deepmax.entity;
 
+import cn.deepmax.adapter.TypeAdapter;
 import cn.deepmax.exception.EasyQueryException;
-import cn.deepmax.util.StringUtils;
-import cn.deepmax.util.TypeAdapter;
+import cn.deepmax.support.CacheDataSupport;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import java.beans.IntrospectionException;
 import java.beans.PropertyDescriptor;
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
-import java.util.*;
-import java.util.concurrent.ConcurrentHashMap;
+import java.util.List;
+import java.util.Map;
+import java.util.Objects;
+import java.util.function.Function;
 
 /**
  * provide a abstract EntityInfo implementation to support cache.
  */
-public abstract class AbstractEntityInfo implements EntityInfo {
-
-    private Map<String,PropertyDescriptor> primaryKeyPropertyDescriptorCache = new ConcurrentHashMap<>();
-    private Map<String,List<String>> beanFieldNameCache = new ConcurrentHashMap<>();
-    private Map<String,Map<String,String>> fieldNameToColumnNameMapCache = new ConcurrentHashMap<>();
-    private Map<String,Map<String,String>> columnNameToFieldNameMapCache = new ConcurrentHashMap<>();
-    private Map<String,String> fullTableNameCache = new ConcurrentHashMap<>();
+public abstract class AbstractEntityInfo extends CacheDataSupport<String, ClassMapperData> implements EntityInfo {
 
 
+    public static Logger logger = LoggerFactory.getLogger(AbstractEntityInfo.class);
+    protected  TypeAdapter typeAdapter ;
 
-    abstract List<String> getBeanFieldNameList(Class<?> clazz);
-    abstract Map<String, String> getFieldNameToColumnNameMap(Class<?> clazz);
-
-
-    @Override
-    public String getFullTableName(Class<?> clazz) {
-        String fullTableName = fullTableNameCache.get(clazz.getName());
-        if(StringUtils.isEmpty(fullTableName)){
-            String catalogName = getCatalogName(clazz);
-            if(StringUtils.isEmpty(catalogName)){
-                fullTableName = doGetTableName(clazz);
-            }else{
-                fullTableName = catalogName+"."+doGetTableName(clazz);
-            }
-            fullTableNameCache.put(clazz.getName(),fullTableName);
-        }
-        return fullTableName;
+    public AbstractEntityInfo(TypeAdapter typeAdapter) {
+        Objects.requireNonNull(typeAdapter);
+        this.typeAdapter = typeAdapter;
     }
 
-    private String doGetTableName(Class<?> clazz){
-        String tableName = getTableName(clazz);
-        if(StringUtils.isEmpty(tableName)){
-            throw new EasyQueryException("Unable to get table name of type["+clazz.getName()+"] .");
-        }
-        return tableName;
+    @Override
+    public String getTableName(Class<?> clazz) {
+        return checkLoadedThen(clazz, (data)-> data.tableName);
     }
 
     @Override
     public Map<String, String> fieldNameToColumnNameMap(Class<?> clazz) {
-        Map<String, String> map = fieldNameToColumnNameMapCache.get(clazz.getName());
-        if(map==null){
-            map = getFieldNameToColumnNameMap(clazz);
-            fieldNameToColumnNameMapCache.put(clazz.getName(),map);
-        }
-        return map;
+        return checkLoadedThen(clazz, (data)->data.toColumnMapper);
     }
-
 
 
     @Override
     public Map<String, String> columnNameToFieldNameMap(Class<?> clazz) {
-        Map<String, String> map = columnNameToFieldNameMapCache.get(clazz.getName());
-        if(map==null){
-            map = getColumnNameToFieldNameMap(clazz);
-            columnNameToFieldNameMapCache.put(clazz.getName(),map);
-        }
-        return map;
+        return checkLoadedThen(clazz,(data)->data.toFieldMapper);
     }
 
-
-    /**
-     * just reverse fieldNameToColumnNameMap
-     * @param clazz
-     * @return
-     */
-    private Map<String, String> getColumnNameToFieldNameMap(Class<?> clazz) {
-        Map<String,String> map = new LinkedHashMap<>();
-        for(Map.Entry<String,String> entry:fieldNameToColumnNameMap(clazz).entrySet()){
-            map.put(entry.getValue(),entry.getKey());
-        }
-        return map;
-    }
 
     @Override
     public List<String> beanFieldNameList(Class<?> clazz) {
-        List<String> list = beanFieldNameCache.get(clazz.getName());
-        if(list==null){
-            list = getBeanFieldNameList(clazz);
-            beanFieldNameCache.put(clazz.getName(),list);
-        }
-        return list;
+        return checkLoadedThen(clazz,(data)->data.beanFieldNameList);
     }
 
 
     @Override
+    public String getPrimaryKeyFieldName(Class<?> clazz) {
+        return checkLoadedThen(clazz,(data)->data.primaryKeyDescriptor.getName());
+    }
+
+    @Override
     public Class<?> getPrimaryKeyFieldType(Class<?> clazz) {
-         return getPrimaryKeyFieldPropertyDescriptor(clazz).getPropertyType();
+        return checkLoadedThen(clazz,(data)->data.primaryKeyDescriptor.getPropertyType());
     }
 
     @Override
     public Object getPrimaryKeyFieldValue(Object object) {
         Objects.requireNonNull(object,"TargetObject is null.");
         Class<?> clazz = object.getClass();
-        PropertyDescriptor descriptor = getPrimaryKeyFieldPropertyDescriptor(clazz);
-        return getPrimaryKeyFieldValue(object,descriptor.getReadMethod());
+        return checkLoadedThen(clazz,(data)->{
+            PropertyDescriptor descriptor = data.primaryKeyDescriptor;
+            return getPrimaryKeyFieldValue(object, descriptor.getReadMethod());
+        });
+    }
+
+    private Object getPrimaryKeyFieldValue(Object target, Method getter){
+        try {
+            return getter.invoke(target);
+        } catch (IllegalAccessException |InvocationTargetException e) {
+            throw new EasyQueryException("unable to putIfAbsent primary key value.", e);
+        }
     }
 
     @Override
     public void setPrimaryKeyFieldValue(Object target, Object value) {
         Objects.requireNonNull(target,"TargetObject is null.");
         Class<?> clazz = target.getClass();
-        PropertyDescriptor descriptor = getPrimaryKeyFieldPropertyDescriptor(clazz);
-        setPrimaryKeyFieldValue(target,value,descriptor.getWriteMethod());
-    }
-
-    private PropertyDescriptor getPrimaryKeyFieldPropertyDescriptor(Class<?> clazz){
-        PropertyDescriptor descriptor = primaryKeyPropertyDescriptorCache.get(clazz.getName());
-        if(descriptor!=null){
-            return descriptor;
-        }
-        try {
-            descriptor = new PropertyDescriptor(getPrimaryKeyFieldName(clazz),clazz);
-            primaryKeyPropertyDescriptorCache.put(clazz.getName(),descriptor);
-            return descriptor;
-        } catch (IntrospectionException e) {
-            throw new EasyQueryException(e);
-        }
-    }
-
-    private Object getPrimaryKeyFieldValue(Object target, Method getter){
-        try {
-            return getter.invoke(target);
-        } catch (IllegalAccessException e) {
-            throw new EasyQueryException(e);
-        } catch (InvocationTargetException e) {
-            throw new EasyQueryException(e);
-        }
+        checkLoadedThen(clazz,(data)->{
+            PropertyDescriptor descriptor = data.primaryKeyDescriptor;
+            setPrimaryKeyFieldValue(target, value, descriptor.getWriteMethod());
+            return null;
+        });
     }
 
     private void setPrimaryKeyFieldValue(Object target,Object value, Method setter){
-        Class<?> targetType = getPrimaryKeyFieldType(target.getClass());
-        value = TypeAdapter.getCompatibleValue(targetType,value);
+
+        Class<?> entityType = target.getClass();
+        String idField = getPrimaryKeyFieldName(entityType);
+        value = typeAdapter.getCompatibleFieldValue(entityType, idField, value);
         try {
             setter.invoke(target,value);
-        } catch (IllegalAccessException e) {
-            throw new EasyQueryException(e);
-        } catch (InvocationTargetException e) {
-            throw new EasyQueryException(e);
+        } catch (IllegalAccessException  |InvocationTargetException e) {
+            throw new EasyQueryException("unable to set primary key value.", e);
         }
     }
+
+
+
+    /**
+     * load if not loaded.
+     * then action
+     * @param clazz
+     * @param function
+     * @param <T>
+     * @return
+     */
+    protected <T> T checkLoadedThen(Class<?> clazz, Function<ClassMapperData, T> function){
+        String className = clazz.getName();
+        return loadThen(className, function);
+    }
+
+    /**
+     * do load action
+     */
+    @Override
+    public ClassMapperData load(String className) throws Exception{
+        Class<?> clazz = Class.forName(className);
+        logger.debug("try to load class mapper data -->{}" , clazz.getName());
+        String tableName = getTableNameInternal(clazz);
+        String primaryKeyFieldName = getPrimaryKeyFieldNameInternal(clazz);
+        PropertyDescriptor descriptor = null;
+        try {
+            descriptor = new PropertyDescriptor(primaryKeyFieldName, clazz);
+        } catch (IntrospectionException e) {
+            throw new EasyQueryException("Unable to create descriptor of class "+clazz.getName()+" primary field "+primaryKeyFieldName);
+        }
+        Map<String, String> toColumnMap = getFieldNameToColumnNameMap(clazz);
+        if(!toColumnMap.containsKey(primaryKeyFieldName)){
+            toColumnMap.put(primaryKeyFieldName, primaryKeyFieldName);
+        }
+        ClassMapperData data = new ClassMapperData();
+        data.tableName = tableName;
+        data.primaryKeyDescriptor = descriptor;
+        toColumnMap.forEach((fieldName, columnName)->{
+            data.addMapper(fieldName, columnName);
+            data.appendFieldName(fieldName);
+        });
+
+        return data;
+    }
+
+
+
+    abstract String getPrimaryKeyFieldNameInternal(Class<?> clazz);
+    abstract Map<String, String> getFieldNameToColumnNameMap(Class<?> clazz);
+    abstract String getTableNameInternal(Class<?> clazz);
+
+
 
 
 }

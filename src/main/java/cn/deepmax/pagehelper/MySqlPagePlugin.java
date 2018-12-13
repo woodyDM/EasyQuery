@@ -1,6 +1,7 @@
 package cn.deepmax.pagehelper;
 
 
+import java.util.UUID;
 
 public class MySqlPagePlugin implements PagePlugin {
 
@@ -8,7 +9,8 @@ public class MySqlPagePlugin implements PagePlugin {
     public String getSqlForTotalRow(String rawSql) {
         StringBuilder sb = new StringBuilder();
         sb.append("select count(*) from ( ");
-        sb.append(rawSql).append(" ) shouldNotBeUsedByUser ");
+        String uuid = UUID.randomUUID().toString().replace("-","");
+        sb.append(rawSql).append(" )  Table_").append(uuid);
         return sb.toString();
     }
 

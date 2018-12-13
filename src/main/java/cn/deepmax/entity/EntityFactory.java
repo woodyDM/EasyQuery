@@ -1,15 +1,18 @@
 package cn.deepmax.entity;
 
 
+import cn.deepmax.adapter.TypeAdapter;
 import cn.deepmax.util.BeanToMap;
+import cn.deepmax.util.BeanUtils;
 import cn.deepmax.util.StringUtils;
-import cn.deepmax.util.TypeAdapter;
 
 import java.beans.PropertyDescriptor;
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
 import java.util.LinkedHashMap;
+import java.util.List;
 import java.util.Map;
+import java.util.Objects;
 
 /**
  * factory to create entity.
@@ -18,13 +21,25 @@ public class EntityFactory {
 
 
     private EntityInfo entityInfo;
+    protected TypeAdapter typeAdapter;
 
-    public EntityFactory(EntityInfo entityInfo) {
+    public EntityFactory(EntityInfo entityInfo, TypeAdapter typeAdapter) {
+        Objects.requireNonNull(entityInfo);
+        Objects.requireNonNull(typeAdapter);
         this.entityInfo = entityInfo;
+        this.typeAdapter = typeAdapter;
     }
 
     public EntityInfo getEntityInfo() {
         return entityInfo;
+    }
+
+    public void setEntityInfo(EntityInfo entityInfo) {
+        this.entityInfo = entityInfo;
+    }
+
+    public void setTypeAdapter(TypeAdapter typeAdapter) {
+        this.typeAdapter = typeAdapter;
     }
 
     /**
@@ -38,7 +53,7 @@ public class EntityFactory {
         if(clazz==null){
             return null;
         }
-        T targetObj = newInstance(clazz);
+        T targetObj = BeanUtils.newInstance(clazz);
         Map<String,PropertyDescriptor> propertyDescriptorMap = getPropertyDescriptorMap(clazz);
         Map<String,String> columnNameToFieldMap = entityInfo.columnNameToFieldNameMap(clazz);
         for(Map.Entry<String,Object> entry:columnNameWithFieldValueMap.entrySet()){
@@ -50,8 +65,7 @@ public class EntityFactory {
                 PropertyDescriptor propertyDescriptor = propertyDescriptorMap.get(fieldName);
                 if(propertyDescriptor!=null){
                     Method setterMethod = propertyDescriptor.getWriteMethod();
-                    Class<?> beanFieldType = setterMethod.getParameterTypes()[0];
-                    value = TypeAdapter.getCompatibleValue(beanFieldType,value);
+                    value = typeAdapter.getCompatibleFieldValue(clazz, fieldName, value);
                     setValue(targetObj, value, setterMethod);
                 }
             }
@@ -67,29 +81,19 @@ public class EntityFactory {
      */
     private Map<String,PropertyDescriptor> getPropertyDescriptorMap(Class<?> clazz){
         Map<String,PropertyDescriptor> propertyDescriptorMap = new LinkedHashMap<>();
-        PropertyDescriptor[] propertyDescriptors = BeanToMap.getPropertyDescriptor(clazz);
+        List<PropertyDescriptor> propertyDescriptors = BeanToMap.getPropertyDescriptor(clazz);
         for(PropertyDescriptor it:propertyDescriptors){
             propertyDescriptorMap.put(it.getName(),it);
         }
         return propertyDescriptorMap;
     }
 
-    private <T> T newInstance(Class<T> clazz){
-        try {
-            return clazz.newInstance();
-        } catch (InstantiationException e) {
-            throw new RuntimeException("can't create new instance of type "+clazz.getName(),e);
-        } catch (IllegalAccessException e) {
-            throw new RuntimeException("can't create new instance of type "+clazz.getName(),e);
-        }
-    }
+
 
     private void setValue(Object target,Object value,Method setter){
         try {
             setter.invoke(target,value);
-        } catch (IllegalAccessException e) {
-            throw new RuntimeException("can't set value of type "+value.getClass().getName() +" to entity "+target.getClass().getName()+" "+setter.getName());
-        } catch (InvocationTargetException e) {
+        } catch (IllegalAccessException | InvocationTargetException e) {
             throw new RuntimeException("can't set value of type "+value.getClass().getName() +" to entity "+target.getClass().getName()+" "+setter.getName());
         }
     }
