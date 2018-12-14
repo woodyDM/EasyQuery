@@ -31,6 +31,14 @@ public interface QueryTemplate {
      */
     List<Map<String,Object>> selectList(String sql, Object... params);
 
+
+    /**
+     *
+     * @param query
+     * @return
+     */
+    List<Map<String,Object>> selectListMap(SqlQuery  query);
+
     /**
      *
      * @param sql

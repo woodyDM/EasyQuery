@@ -2,8 +2,8 @@ package cn.deepmax.easyquery.test;
 
 
 import cn.deepmax.easyquery.adapter.TypeAdapter;
-import cn.deepmax.easyquery.support.CacheDataSupport;
 import cn.deepmax.easyquery.model.Pair;
+import cn.deepmax.easyquery.support.CacheDataSupport;
 import cn.deepmax.easyquery.util.BeanToMap;
 
 import java.util.ArrayList;

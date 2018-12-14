@@ -1,11 +1,10 @@
 package cn.deepmax.easyquery.test.model;
 
 
-
+import cn.deepmax.easyquery.test.adapter.EnumType;
 import cn.deepmax.easyquery.test.adapter.JpaConverter;
 import cn.deepmax.easyquery.test.adapter.MyColor;
 import cn.deepmax.easyquery.test.adapter.MyConverter;
-import cn.deepmax.easyquery.test.adapter.EnumType;
 
 import javax.persistence.*;
 import java.math.BigDecimal;

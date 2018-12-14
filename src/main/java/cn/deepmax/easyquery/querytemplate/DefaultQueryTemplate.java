@@ -1,14 +1,14 @@
 package cn.deepmax.easyquery.querytemplate;
 
 import cn.deepmax.easyquery.adapter.TypeAdapter;
-import cn.deepmax.easyquery.test.EntityFactory;
-import cn.deepmax.easyquery.test.SqlTranslator;
 import cn.deepmax.easyquery.exception.EasyQueryException;
 import cn.deepmax.easyquery.model.Pair;
 import cn.deepmax.easyquery.pagehelper.PageInfo;
 import cn.deepmax.easyquery.pagehelper.PagePlugin;
 import cn.deepmax.easyquery.resultsethandler.ResultSetHandler;
 import cn.deepmax.easyquery.resultsethandler.RowRecord;
+import cn.deepmax.easyquery.test.EntityFactory;
+import cn.deepmax.easyquery.test.SqlTranslator;
 import cn.deepmax.easyquery.transaction.Transaction;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -53,6 +53,11 @@ public class DefaultQueryTemplate implements QueryTemplate {
     @Override
     public <T> List<T> selectList(SqlQuery<T> query) {
         return selectList(query.toSql(), query.getTargetClass(), query.toParameters());
+    }
+
+    @Override
+    public List<Map<String,Object>> selectListMap(SqlQuery  query){
+        return selectList(query.toSql(), query.toParameters());
     }
 
     @Override

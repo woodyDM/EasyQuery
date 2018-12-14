@@ -1,7 +1,6 @@
 package cn.deepmax.easyquery.adapter;
 
 import cn.deepmax.easyquery.adapter.mapper.*;
-import cn.deepmax.easyquery.adapter.mapper.*;
 import cn.deepmax.easyquery.exception.EasyQueryException;
 import cn.deepmax.easyquery.model.Pair;
 import cn.deepmax.easyquery.support.CacheDataSupport;

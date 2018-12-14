@@ -1,9 +1,9 @@
 package cn.deepmax.easyquery.test.querytemplate;
 
 import cn.deepmax.easyquery.querytemplate.QueryTemplate;
+import cn.deepmax.easyquery.resultsethandler.RowRecord;
 import cn.deepmax.easyquery.test.BaseTest;
 import cn.deepmax.easyquery.test.model.SuperUser;
-import cn.deepmax.easyquery.resultsethandler.RowRecord;
 import org.junit.Test;
 import org.springframework.util.Assert;
 

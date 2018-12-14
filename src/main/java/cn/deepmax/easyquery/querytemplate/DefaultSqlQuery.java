@@ -16,6 +16,9 @@ public class DefaultSqlQuery<T> implements SqlQuery<T> {
         return new DefaultSqlQuery<>();
     }
 
+    public static <T> DefaultSqlQuery<T> newInstance(Class<T> clazz){
+        return new DefaultSqlQuery<T>().addTargetClass(clazz);
+    }
 
 
     public DefaultSqlQuery<T> addTargetClass(Class<T> clazz) {

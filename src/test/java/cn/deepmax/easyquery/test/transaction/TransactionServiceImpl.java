@@ -1,8 +1,8 @@
 package cn.deepmax.easyquery.test.transaction;
 
+import cn.deepmax.easyquery.querytemplate.QueryTemplate;
 import cn.deepmax.easyquery.test.adapter.MyColor;
 import cn.deepmax.easyquery.test.model.SuperUser;
-import cn.deepmax.easyquery.querytemplate.QueryTemplate;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.util.Assert;

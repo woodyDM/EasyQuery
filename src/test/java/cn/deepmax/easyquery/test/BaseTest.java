@@ -41,14 +41,14 @@ public class BaseTest {
                 " ) ENGINE=InnoDB   ;";
         st.execute(delete);
         st.execute(createTalbe);
-        st.execute("INSERT INTO `super_user` VALUES ('1', 'name1', '2017-10-18 13:57:05', '1.52', '1.500',   '2017-10-10', '0', '1','TYPE1',1,2,'红色','白色');");
+        st.execute("INSERT INTO `super_user` VALUES ('1', 'name1', '2017-10-18 13:57:05', '1.52', '1.500',   '2017-10-10', '0', '1','TYPE1',1,1,'红色','白色');");
         st.execute("INSERT INTO `super_user` VALUES ('2', 'name2', '2017-10-18 13:57:05', '2.25', '2.500',   '2017-10-11', '1', '0','TYPE3',1,2,'红色','白色');");
-        st.execute("INSERT INTO `super_user` VALUES ('3', 'name3', '2017-10-18 13:57:05', '3.25', '3.500',   '2017-10-12', '1', '0','TYPE2',1,2,'红色','白色');");
+        st.execute("INSERT INTO `super_user` VALUES ('3', 'name3', '2017-10-18 13:57:05', '3.25', '3.500',   '2017-10-12', '1', '0','TYPE2',1,0,'红色','白色');");
         st.execute("INSERT INTO `super_user` VALUES ('4', 'name4', '2017-10-18 13:57:05', '4.25', '4.500',   '2017-10-13', '1', '0','TYPE1',1,2,'红色','白色');");
-        st.execute("INSERT INTO `super_user` VALUES ('5', 'name5', '2017-10-18 13:57:05', '5.25', '5.500',   '2017-10-14', '1', '0','TYPE1',1,2,'红色','白色');");
-        st.execute("INSERT INTO `super_user` VALUES ('6', 'name6', '2017-10-18 13:57:05', '6.25', '6.500',   '2017-10-15', '1', '0','TYPE1',1,2,'红色','白色');");
+        st.execute("INSERT INTO `super_user` VALUES ('5', 'name5', '2017-10-18 13:57:05', '5.25', '5.500',   '2017-10-14', '1', '0','TYPE2',1,2,'红色','白色');");
+        st.execute("INSERT INTO `super_user` VALUES ('6', 'name6', '2017-10-18 13:57:05', '6.25', '6.500',   '2017-10-15', '1', '0','TYPE3',1,2,'红色','白色');");
         st.execute("INSERT INTO `super_user` VALUES ('7', 'name7', '2017-10-18 13:57:05', '7.25', '7.500',   '2017-10-16', '1', '0','TYPE1',1,2,'红色','白色');");
-        st.execute("INSERT INTO `super_user` VALUES ('8', 'name8', '2017-10-18 13:57:05', '8.25', '8.500',   '2017-10-17', '1', '0','TYPE1',1,2,'红色','白色');");
+        st.execute("INSERT INTO `super_user` VALUES ('8', 'name8', '2017-10-18 13:57:05', '8.25', '8.500',   '2017-10-17', '1', '0','TYPE2',1,2,'红色','白色');");
         st.close();
         cn.close();
     }
