@@ -7,8 +7,8 @@ import cn.deepmax.easyquery.pagehelper.PageInfo;
 import cn.deepmax.easyquery.pagehelper.PagePlugin;
 import cn.deepmax.easyquery.resultsethandler.ResultSetHandler;
 import cn.deepmax.easyquery.resultsethandler.RowRecord;
-import cn.deepmax.easyquery.test.EntityFactory;
-import cn.deepmax.easyquery.test.SqlTranslator;
+import cn.deepmax.easyquery.entity.EntityFactory;
+import cn.deepmax.easyquery.entity.SqlTranslator;
 import cn.deepmax.easyquery.transaction.Transaction;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -335,7 +335,8 @@ public class DefaultQueryTemplate implements QueryTemplate {
         PreparedStatement ps=null;
         ResultSet rs=null;
         try {
-            ps = cn.prepareStatement(info.first,Statement.RETURN_GENERATED_KEYS);
+
+            ps = cn.prepareStatement(info.first  , Statement.RETURN_GENERATED_KEYS);
             setPrepareStatementParams(ps,info.last.toArray());
             if(isShowSql){
                 logger.debug("[insert] {}",info.first);

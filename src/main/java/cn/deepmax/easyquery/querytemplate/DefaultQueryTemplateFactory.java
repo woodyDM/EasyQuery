@@ -5,7 +5,7 @@ import cn.deepmax.easyquery.adapter.JpaAnnotatedTypeAdapter;
 import cn.deepmax.easyquery.adapter.TypeAdapter;
 import cn.deepmax.easyquery.pagehelper.MySqlPagePlugin;
 import cn.deepmax.easyquery.pagehelper.PagePlugin;
-import cn.deepmax.easyquery.test.*;
+import cn.deepmax.easyquery.entity.*;
 import cn.deepmax.easyquery.transaction.DefaultTransactionFactory;
 import cn.deepmax.easyquery.transaction.Transaction;
 import cn.deepmax.easyquery.transaction.TransactionFactory;
