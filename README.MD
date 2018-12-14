@@ -131,7 +131,7 @@ Default `EntityInfo` implementation is  `JpaEntityInfo` .<br>
  <br>Also, the typical JPA annotation :<br>@Enumerated<br>
  @Transient      <br>@Convert(converter = MyConverter.class) are supported.
  In @Convert(convert = XX.class) the XX.class should implements `javax.persistence.AttributeConverter` or
- `cn.deepmax.adapter.mapper.PropertyMapper<X,Y>`<br>
+ `PropertyMapper<X,Y>`<br>
  for example:<br>
  ```java
 
@@ -230,7 +230,7 @@ and finally call `build` method to complete.<br>
 --
 
 EasyQuery uses logback for logging. If SQLs are desired to be logged, set `DefaultQueryTemplateFactory`
-defaultQueryTemplateFactory.config().setShowSql(true) to true , and logging level of `cn.deepmax.querytemplate.DefaultQueryTemplate` class to DEBUG.
+defaultQueryTemplateFactory.config().setShowSql(true) to true , and logging level of `DefaultQueryTemplate` class to DEBUG.
 
 7 Generator
 --
