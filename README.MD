@@ -22,7 +22,7 @@ Way 2. Clone this git or download source code to your computer and build jar you
 ---
 
 There is a simple example to show EasyQuery features.  
-Step 0: Firstly your need prepare a `DataSource` for EasyQuery.  
+Step 0: Firstly, you need prepare a `DataSource` for EasyQuery.  
 Step 1: Use  `DefaultQueryTemplateFactory.Builder` to create `QueryTemplateFactory`. 
 ```java
 
@@ -49,7 +49,7 @@ Long id = user.getId();
 String sql = "update superuser set name ='Kitty' ,ok1 = '2' where id  = ? ";
 int i = template.executeUpdate(sql,id);                     //execute sql .
 Assert.isTrue(i==1,"1 row");
-SuperUser userFromGet = template.get(SuperUser.class,id);   putIfAbsent
+SuperUser userFromGet = template.get(SuperUser.class,id);    
 Assert.isTrue(userFromGet.getName().equals("Kitty"),"name");
 
 PageInfo<SuperUser> pageInfo = template.selectPage(sql,(RowRecord oneRecord) ->{
@@ -63,13 +63,13 @@ PageInfo<SuperUser> pageInfo = template.selectPage(sql,(RowRecord oneRecord) ->{
 ---
 
 `QueryTemplate` ,the core interface of EasyQuery, provides SQL query and entity operations.`QueryTemplate` is thread-unsafe when using `DefaultTransactionFactory`,
-and it is thread-safe when using `SpringTransactionFactory` ,which using ThreadLocal to hold the jdbc connection.
-<br>
+and it is thread-safe when using `SpringTransactionFactory` when in spring transaction mode, which using ThreadLocal to hold the jdbc connection.  
+ 
 `select` and `selectList` is common choose to get data from database, `select` for an
 unique result or `selectList` for list of result.if any parameters in 
 SQL , use '?' as placeholder,and add the parameters in method.
 The result type is `Map<String,Object>` or POJO entity or `RowRecord` (or list of those).
-The key of map is sql column label name.For example:<br>
+The key of map is sql column label name.For example:    
 ```java
 String sql="select id as userId, name ,password pwd from t_user where id < ?";
 List<Map<String,Object>> resultList = template.selectList(sql,10);
@@ -97,9 +97,9 @@ see `EntityInfo` next section.<br>
 String sql = "select count(*) from t_user where id < ?";
 Long count = template.selectScalar(sql,Long.class,100);
 ```
-`executeBatch` and `executeUpdate` can be used for update,delete,insert SQL statement.
-<br><br>
-**Method in QueryTemplate** <br>
+`executeBatch` and `executeUpdate` can be used for update,delete,insert SQL statement.   
+ 
+ 
  
  
 3 `EntityInfo`
@@ -216,8 +216,8 @@ When in Spring-managed environment,you can choose `SpringTransaction` from `Spri
 which is defined with @Transactional and TransactionManager 
 (commonly `DataSourceTransactionManager` when using EasyQuery).
 In this condition, the template gets jdbc connection via `DataSourceUtils` provided by Spring.
-Directly using `QueryTemplate` methods is ok, the transaction now is managed by Spring.
-Also in non-transactional condition ,you can also use `beginTransaction`,`commit` and `rollback`.
+Using `QueryTemplate` as Singletone is ok, the transaction now is managed by Spring transaction manager.
+Also in non-transactional condition ,you can also use `beginTransaction`,`commit` and `rollback`.  
 
 5 DefaultQueryTemplateFactory
 ---
@@ -240,3 +240,4 @@ This feature is no longer supported.
 EasyQuery is now only tested on win10 (x64) with mysql 5.7.15, java 1.8. <br>
 Any question or problem: woody@alumni.sjtu.edu.cn. <br>
 2017.09~2017.10
+updated : 2018-12
