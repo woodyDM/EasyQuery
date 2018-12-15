@@ -6,10 +6,7 @@ import cn.deepmax.easyquery.model.Pair;
 import cn.deepmax.easyquery.support.CacheDataSupport;
 import cn.deepmax.easyquery.util.BeanToMap;
 
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Map;
-import java.util.Objects;
+import java.util.*;
 
 /**
  * default SqlTranslator implementation supporting cache.
@@ -115,7 +112,7 @@ public class DefaultSqlTranslator extends CacheDataSupport<String,SqlCacheData> 
         StringBuilder sb = new StringBuilder();
         sb.append("UPDATE ")
                 .append(entityInfo.getTableName(clazz))
-                .append(" set ");
+                .append(" SET ");
         Map<String,String> fieldNameToColumnNameMap = entityInfo.fieldNameToColumnNameMap(clazz);
         String pkFieldName = entityInfo.getPrimaryKeyFieldName(clazz);
         int counter=0;
@@ -129,7 +126,7 @@ public class DefaultSqlTranslator extends CacheDataSupport<String,SqlCacheData> 
         }
         deleteLastChar(sb,counter);
         String pkColumnName = fieldNameToColumnNameMap.get(pkFieldName);
-        sb.append(" where ").append(columnWrapper.wrap(pkColumnName)).append(" = ? ");
+        sb.append(" WHERE ").append(columnWrapper.wrap(pkColumnName)).append(" = ? ");
         return sb.toString();
     }
 
@@ -145,9 +142,17 @@ public class DefaultSqlTranslator extends CacheDataSupport<String,SqlCacheData> 
         String primaryFieldName = entityInfo.getPrimaryKeyFieldName(clazz);
         String primaryColumnName = entityInfo.fieldNameToColumnNameMap(clazz).get(primaryFieldName);
         primaryColumnName = columnWrapper.wrap(primaryColumnName);
-        sb.append("select  * from ")
+        Set<String> columnNameSet = entityInfo.columnNameToFieldNameMap(clazz).keySet();
+
+        sb.append("SELECT  ");
+        for(String oneColumn:columnNameSet){
+            sb.append(columnWrapper.wrap(oneColumn))
+                    .append(" ,");
+        }
+        sb.deleteCharAt(sb.length()-1);
+        sb.append(" FROM ")
                 .append(tableName)
-                .append( "  where ")
+                .append( "  WHERE ")
                 .append(primaryColumnName)
                 .append(" = ?  ");
         return sb.toString();
@@ -167,9 +172,9 @@ public class DefaultSqlTranslator extends CacheDataSupport<String,SqlCacheData> 
         String tableName = entityInfo.getTableName(clazz);
         String primaryColumnName = entityInfo.fieldNameToColumnNameMap(clazz).get(entityInfo.getPrimaryKeyFieldName(clazz));
         primaryColumnName = columnWrapper.wrap(primaryColumnName);
-        sb.append("DELETE from ")
+        sb.append("DELETE FROM ")
                 .append(tableName)
-                .append( "  where ")
+                .append( "  WHERE ")
                 .append(primaryColumnName)
                 .append(" = ?  ");
         return sb.toString();
